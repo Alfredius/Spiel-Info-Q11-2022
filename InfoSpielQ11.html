@@ -27,9 +27,7 @@
         let ctx;
         let bild1;
         //zum Testen der Bewege Funktion die x und y Koordinate des Kastens 
-        //(wird im späteren Verlauf des Codes klar welchen Kasten ich meine, der mit dem roten Rand)r
-
-        //Kommentiere ich hier gerade 
+        //(wird im späteren Verlauf des Codes klar welchen Kasten ich meine, der mit dem roten Rand)
 
         let x = 50;
         let y = 50;
@@ -85,12 +83,10 @@
 
                 //Bildvariable, x-Koordinate, y-Koordinate, Breite, Höhe (rescaled automatisch)
                 ctx.drawImage(bild1, 250, 20, 200, 200);
-
             }
-
             var interval = setInterval(function() {
-                console.log("Hura!!")
-            }, 1000)
+                console.log("hey!")
+            }, 15);
         }
 
         //Funktion zum Testweise zeichnen eines Rechtecks mit übergabewerten für die x- und y-Koordinate
@@ -101,8 +97,9 @@
 
             // Ein ausgemaltes Rechteck malen
             ctx.fillRect(xPos, yPos, 200, 200);
-            // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand)
+            // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand 
             ctx.strokeRect(xPos, yPos, 200, 200);
+
 
         }
 
