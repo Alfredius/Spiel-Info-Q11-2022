@@ -19,10 +19,12 @@
 
     <h1 id="caption">Hallo</h1>
     <script>
-        function keyPressed() {
-            if (keyCode === 0) {
-                document.getElementById("caption").innerHTML = "Tschau";
-                alert("Hallo");
+        function draw() {
+            function keyPressed() {
+                if (keyCode === 0) {
+                    document.getElementById("caption").innerHTML = "Tschau";
+                    alert("Hallo");
+                }
             }
         }
 
