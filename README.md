@@ -7,3 +7,15 @@ Ladet gerne auch schon mal eure Bilder hoch (denke das sollte vom speicherplatz 
 Falls sich jemand nicht auskennt mit Github gerne bescheid sagen.
 Falls ihr ein Dokument bearbeitet oder erweitert denkt bitte daran, euern Code zu kommentieren (nicht zu knapp) damit jeder immer versteht was der andere
 gemacht hat und was das eingefügte bisschen code tut. 
+
+
+to Do 
+    korlisionen (oben, links, rechts)
+    gegner
+        - schießen
+        - bewegung 
+    you died
+        - leben 
+    neues level laden?
+        // nur Startbildschirn
+        - Tor (kammera stoppt bewegung)
