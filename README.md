@@ -8,8 +8,16 @@ Falls sich jemand nicht auskennt mit Github gerne bescheid sagen.
 Falls ihr ein Dokument bearbeitet oder erweitert denkt bitte daran, euern Code zu kommentieren (nicht zu knapp) damit jeder immer versteht was der andere
 gemacht hat und was das eingefügte bisschen code tut. 
 
+to do 
+Jonas:
+    Korlision; 
 
-to Do 
+ALfred:
+    Gegner;
+    (vielleicht noch "you died");  
+
+
+to Do allgemein
     korlisionen (oben, links, rechts)
     gegner
         - schießen
