@@ -44,7 +44,7 @@
             //weitere Variablen wie Geschwindigkeit, Beschleunigung und Reference Frame werden erstellt, sie bestehen aus einer x
             //und einer y komponente
         let generalRF = {
-            x: 0,
+            x: -100,
             y: 400
         }
         let beschl = {
@@ -118,6 +118,16 @@
 
 
         ];
+
+        let schussArray = [
+        {
+                    xPosition: 0,
+                    yPosi: 0,
+                    breite: 0,
+                    höhe: 0,
+                    xGeschw: 0
+                 }
+        ];
         //das ist der KeyListener, der aufgerufen wird, sobald eine taste gedrückt wird, wird die Taste
         //länger gedrückt gehalten wird er mehrere male ausgeführt, bis die taste wieder los gelassen wird,
         //Alternativen dazu sind z.B. "keyup"
@@ -146,6 +156,10 @@
             }
             if (name == "d") {
                 geschw.x = 3;
+            }
+            if (name == "f") {
+                schuss();
+                console.log("bumm")
             }
 
 
@@ -219,18 +233,18 @@
                     console.log("Hinderniss " + j + " hinzugefügt");
                 }
                 if(bildArray[j].schräge){
-                    addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd);
+                    addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd,20);
                     console.log("schräge hinzugefügt");
                 }
             }
 
         }
-        function addPlatformSchräge(xKoord, yKoord, br, schrägeEnd){
+        function addPlatformSchräge(xKoord, yKoord, br, schrägeEnd,tiefe){
             let tempI = 0;
             for (i = (0 + xKoord); i < (br + xKoord); i++) {
                 tempI +=1;
                 hindernisse[i][0] += 1;
-                hindernisse[i].push(-(yKoord - tempI*((yKoord-schrägeEnd)/br)),-1000);
+                hindernisse[i].push(-(yKoord - tempI*((yKoord-schrägeEnd)/br)),-(yKoord - tempI*((yKoord-schrägeEnd)/br))-tiefe);
             }
         }
         hindernisseHinzufuegen();
@@ -260,6 +274,21 @@
 
         let intervall = setInterval(ticke, 5);
 
+        function schuss(){
+
+            schussArray.push(
+                 {
+                    
+                    yPosi: generalRF.y+character.hight/2,
+                    breite: 20,
+                    höhe: 5,
+                    xGeschw: geschw.x/3,
+                    xPosition: generalRF.x/2
+                 }
+            )
+            console.log(schussArray)
+            
+        }
 
         function ticke() {
             console.log("tick");
@@ -267,6 +296,23 @@
             bewegeBild();
 
             zeichneBild()
+
+            bewegeSchuss()
+        }
+
+        function bewegeSchuss(){
+            for(i = 1;i<schussArray.length;i++){
+/*
+                ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            ctx.fillRect(-generalRF + schussArray[i].xPosition, schussArray.yPosition, schussArray[i].breite, schussArray[i].höhe);
+            // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand)
+            ctx.strokeRect(schussArray[i].xPosition, schussArray.yPosition, schussArray[i].breite, schussArray[i].höhe);
+                */
+            schussArray[i].xPosition -= schussArray[i].xGeschw;
+            }
         }
 
         function bewegeBild() {
@@ -284,13 +330,24 @@
 
             }
 
-            zeichneReck(400, -generalRF.y - character.hight);
+            zeichneCharacter(400, -generalRF.y - character.hight);
+      
+      
+                ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for(i= 1;i<schussArray.length;i++){
+
+            // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand)
+            ctx.fillRect(schussArray[i].xPosition-generalRF.x, - schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+                }
         }
 
 
 
         //Funktion zum Testweise zeichnen eines Rechtecks mit übergabewerten für die x- und y-Koordinate
-        function zeichneReck(xPos, yPos) {
+        function zeichneCharacter(xPos, yPos) {
             // fill(Füllfarbe) und stroke(der Rand ausen rum) wird eine Farbe zuweisen
             ctx.fillStyle = '#F0DB4F';
             ctx.strokeStyle = 'red';
@@ -303,24 +360,58 @@
         }
 
 
+        function istHindernis(xPosi,yPosi){
+            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
+
+                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
+                    return true;
+                }
+
+            }
+        }
+
 
         //Testfunktion zum verändern der Position des Kastens
         function bewege() {
             geschw.y = geschw.y + beschl.y;
             let yh;
             //die Koordinaten des characters werden angepasst
-            onGround = false;
-            for (i = 0; i < hindernisse[-generalRF.x][0]; i++) {
+          
+          
+          
+          
+          
+          
+          
+            onGround = istHindernis(generalRF.x,generalRF.y);
 
-                if (generalRF.y <= hindernisse[-generalRF.x][(i * 2) + 1] && generalRF.y >= hindernisse[-generalRF.x][(i * 2) + 2]) {
-                    onGround = true;
-                    yh = hindernisse[-generalRF.x][(i * 2) + 1];
-                    break;
-                } else {
-                    onGround = false;
+           if(onGround){
+                yh = hindernisse[-generalRF.x][(i * 2) + 1];
+           }
+
+ if(istHindernis(generalRF.x,(generalRF.y + character.hight))){
+                console.log("kopf gestoßen");
+                if(geschw.y<0){
+                    geschw.y = 0;
                 }
-
             }
+
+            if(istHindernis((generalRF.x + character.breite/2),(generalRF.y + character.hight/2))){
+                console.log("links gestoßen");
+                if(geschw.x<0){
+                    geschw.x = 0;
+                }
+            }
+
+            if(istHindernis((generalRF.x - character.breite/2),(generalRF.y + character.hight/2))){
+                console.log("links gestoßen");
+                if(geschw.x>0){
+                    geschw.x = 0;
+                }
+            }
+
+
+
             if (!onGround) {
                 generalRF.x = generalRF.x - geschw.x;
 
@@ -338,20 +429,11 @@
                 generalRF.x = generalRF.x - geschw.x;
 
             }
+
+           
         }
 
-        function korlision(xPos, yPos) {
-            for (i = 0; i < hindernisse[-xPos][0]; i++) {
-
-                if (yPos <= hindernisse[-xPos][(i * 2) + 1] && yPos >= hindernisse[-xPos][(i * 2) + 2]) {
-                    return true;
-
-                } else {
-                    return false;
-                }
-                // console.log(aufHind);
-            }
-        }
+       
     </script>
 
 </body>
