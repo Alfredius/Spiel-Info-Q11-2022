@@ -49,7 +49,7 @@
         }
         let beschl = {
             x: 0,
-            y: 1
+            y: 0.2
         }
         let geschw = {
             x: 0,
@@ -67,35 +67,50 @@
                 yPos: 0,
                 breite: 4000,
                 höhe: 1000,
-                hindernis: false
+                hindernis: false,
+                schräge:false
             }, {
                 bild: new Image(),
                 xPos: 1500,
                 yPos: 750,
                 breite: 1000,
                 höhe: 250,
-                hindernis: true
+                hindernis: true,
+                schräge:false
             }, {
                 bild: new Image(),
                 xPos: 2500,
                 yPos: 400,
                 breite: 400,
                 höhe: 130,
-                hindernis: true
+                hindernis: true,
+                schräge:false
             }, {
                 bild: new Image(),
                 xPos: 3000,
                 yPos: 200,
                 breite: 400,
                 höhe: 130,
-                hindernis: true
+                hindernis: true,
+                schräge:false
             }, {
                 bild: new Image(),
                 xPos: 3800,
                 yPos: 50,
                 breite: 400,
                 höhe: 130,
-                hindernis: true
+                hindernis: true,
+                schräge:false
+            } , {
+                bild: new Image(),
+                xPos: 4000,
+                yPos: 500,
+                breite: 400,
+                höhe: 400,
+                hindernis: false,
+                schräge:true,
+                schrägeStart: 700,
+                schrägeEnd: 500
             }
 
 
@@ -120,17 +135,17 @@
             if (name == "w" || code == "Space") {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -30;
+                    geschw.y = -15;
                 }
             }
             if (name == "a") {
-                geschw.x = -10
+                geschw.x = -3
             }
             if (name == "s") {
                 // geschw.y = 10;
             }
             if (name == "d") {
-                geschw.x = 10;
+                geschw.x = 3;
             }
 
 
@@ -173,7 +188,7 @@
             }
 
             if (name == "g") {
-                intervall = setInterval(ticke, 20);
+                intervall = setInterval(ticke, 5);
             }
 
 
@@ -203,8 +218,20 @@
                     addPlatform(bildArray[j].xPos, -bildArray[j].yPos, bildArray[j].breite, bildArray[j].höhe);
                     console.log("Hinderniss " + j + " hinzugefügt");
                 }
+                if(bildArray[j].schräge){
+                    addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd);
+                    console.log("schräge hinzugefügt");
+                }
             }
 
+        }
+        function addPlatformSchräge(xKoord, yKoord, br, schrägeEnd){
+            let tempI = 0;
+            for (i = (0 + xKoord); i < (br + xKoord); i++) {
+                tempI +=1;
+                hindernisse[i][0] += 1;
+                hindernisse[i].push(-(yKoord - tempI*((yKoord-schrägeEnd)/br)),-1000);
+            }
         }
         hindernisseHinzufuegen();
         console.log(hindernisse)
@@ -224,13 +251,14 @@
             bildArray[2].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
             bildArray[3].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
             bildArray[4].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
+            bildArray[5].bild.src = "./Bilder/Objekte/x10/Schräge mit Pfeiler x10.png";
 
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
 
 
         }
 
-        let intervall = setInterval(ticke, 15);
+        let intervall = setInterval(ticke, 5);
 
 
         function ticke() {
@@ -247,7 +275,7 @@
 
         function zeichneBild() {
             ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, 1000, 1000);
+            ctx.fillRect(0, 0, canvas.height, canvas.width);
 
             ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
 
