@@ -63,7 +63,7 @@
 
         let bildArray = [{
                 bild: new Image(),
-                xPos: 900,
+                xPos: 0,
                 yPos: 0,
                 breite: 4000,
                 höhe: 1000,
@@ -79,7 +79,7 @@
                 schräge:false
             }, {
                 bild: new Image(),
-                xPos: 2500,
+                xPos: 2800,
                 yPos: 400,
                 breite: 400,
                 höhe: 130,
@@ -87,7 +87,7 @@
                 schräge:false
             }, {
                 bild: new Image(),
-                xPos: 3000,
+                xPos: 2400,
                 yPos: 200,
                 breite: 400,
                 höhe: 130,
@@ -138,56 +138,7 @@
                     xGeschw: 0
                  }
         ];
-        //das ist der KeyListener, der aufgerufen wird, sobald eine taste gedrückt wird, wird die Taste
-        //länger gedrückt gehalten wird er mehrere male ausgeführt, bis die taste wieder los gelassen wird,
-        //Alternativen dazu sind z.B. "keyup"
-       /* document.addEventListener('keypress', (event) => {
-            //Alles zwischen hier.....
-            var name = event.key
-                //name wäre z.B. "Shift" oder "f"
-            var code = event.code
-                //code wäre z.B. "ShiftLeft" oder "KeyF"
-
-            //die variable name und code werden in die Konsole ausgegeben (im Browser öffnen mit f12) oder drei Punkte -> Entwickleroptionen (o.ä.)
-            console.log('Gedrückte Taste: ' + name + "\r \n Key code value: " + code)
-
-            //der Kasten wird bewegt, abhängig von der Taste. versuche im geöffneten file(im Browser) mal die Tasten  "a" und "d" und die "Leertaste"(/"w") zum Springen
-          
-            if (name == "a") {
-                geschw.x = -3
-            }
-            if (name == "s") {
-                // geschw.y = 10;
-            }
-            if (name == "d") {
-                geschw.x = 3;
-            }
-            if (name == "f") {
-                schuss();
-                console.log("bumm")
-            }
-
-
-
-
-
-            //.....und hier wird ausgeführt wenn eine Taste gedrückt wird
-        }, false)/*
-/*
-        document.addEventListener('keypress', (event) => {
-            
-            var name = event.key
-            
-            var code = event.code
-            if (name == "w" || code == "Space") {
-                //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
-                if (onGround) {
-                    geschw.y = -15;
-                }
-            }
-           
-        }, false)
-*/
+       
 
 var map = [];
 let pausiert = false;
@@ -203,49 +154,7 @@ document.onkeydown = document.onkeyup = function(e){
     
 
 
-        //wenn eine Taste losgelassen wird, wird dieser Keylistener aufgerufen um die X-Geschwindigkeit auf 0 zu setzen
-       /* document.addEventListener('keyup', (event) => {
-
-            var name = event.key
-            var code = event.code
-
-            console.log('Gedrückte Taste: ' + name + "\r \n Key code value: " + code)
-
-            //der Kasten wird bewegt, abhängig von der Taste, teste im geöffneten file(im Browser) mal die Tasten "w", "a", "s" und "d"
-            if (name == "w") {
-                // Vertikale Geschwindigkeit wird nicht verändert, nur beim auftreffen auf den Boden
-            }
-            if (name == "a") {
-                if (geschw.x < 0) {
-                    //Vorsichtsmaßname falls die Tasten zu oft gedrückt werden
-                    geschw.x = 0;
-                }
-            }
-            if (name == "s") {
-                //
-            }
-            if (name == "d") {
-                if (geschw.x > 0) {
-                    geschw.x = 0;
-                }
-            }
-
-            if (name == "Escape") {
-                clearInterval(intervall);
-            }
-
-            if (name == "g") {
-                intervall = setInterval(ticke, 5);
-            }
-
-
-            //das Rechteck wird in den canvas eingefügt
-
-            //.....und hier wird ausgeführt wenn eine Taste gedrückt wird
-        }, false)
-
-
-*/
+       
 
         function addPlatform(xKoord, yKoord, br, hgt) {
             for (i = (0 + xKoord); i < (br + xKoord); i++) {
