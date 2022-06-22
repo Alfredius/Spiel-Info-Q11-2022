@@ -138,6 +138,18 @@
                     xGeschw: 0
                  }
         ];
+
+        let gegnerArray = [
+        {
+                    xPosition: 2000,
+                    yPosi: -300,
+                    breite: 200,
+                    höhe: 100,
+                    xGeschw: 0,
+                    typ: "melee",
+                    bild: new Image()
+                 }
+        ];
        
 
 var map = [];
@@ -145,7 +157,7 @@ let pausiert = false;
 document.onkeydown = document.onkeyup = function(e){
     e = e || event; // to deal with IE
     map[e.keyCode] = e.type == 'keydown';
-    console.log(map);
+   // console.log(map);
     /* insert conditional here */
   
            
@@ -218,9 +230,9 @@ document.onkeydown = document.onkeyup = function(e){
 
         function schuss(){
              if(geschw.x<0){
-                geschwitemp = -3;
+                geschwitemp = -10;
             }else{
-                geschwitemp = 3;
+                geschwitemp = 10;
             }
 
             schussArray.push(
@@ -230,18 +242,18 @@ document.onkeydown = document.onkeyup = function(e){
                     breite: 20,
                     höhe: 5,
                     xGeschw: geschwitemp,
-                    xPosition: generalRF.x/2
+                    xPosition: generalRF.x/2 - character.breite/2 - geschwitemp
                  }
             )
 
-            console.log(schussArray)
+           //console.log(schussArray)
 
         }
 
         function bewegeSchuss(){
             for(i = 1;i<schussArray.length;i++){
 
-            schussArray[i].xPosition += schussArray[i].xGeschw;
+            schussArray[i].xPosition -= schussArray[i].xGeschw;
             }
         }
 
@@ -258,6 +270,27 @@ document.onkeydown = document.onkeyup = function(e){
             zeichneBild()
 
             bewegeSchuss()
+            bewegeGegner();
+            gegnerZeichnen();
+        }
+
+        function gegnerZeichnen(){
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for(i= 0;i<gegnerArray.length;i++){
+
+            ctx.fillRect(gegnerArray[i].xPosition+generalRF.x +900, - gegnerArray[i].yPosi, gegnerArray[i].breite, gegnerArray[i].höhe);
+           
+        }
+        }
+        function bewegeGegner(){
+            if(-generalRF.x < gegnerArray[0].xPosition){
+                gegnerArray[0].xGeschw = 1;
+            }else{gegnerArray[0].xGeschw = -1;}
+
+            gegnerArray[0].xPosition -= gegnerArray[0].xGeschw
         }
 
 
@@ -321,7 +354,7 @@ document.onkeydown = document.onkeyup = function(e){
             // Ein ausgemaltes Rechteck malen
             for(i= 1;i<schussArray.length;i++){
 
-            ctx.fillRect(schussArray[i].xPosition-generalRF.x/2 +900, - schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            ctx.fillRect(-schussArray[i].xPosition+generalRF.x/2 +900, - schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
                 }
         }
 
