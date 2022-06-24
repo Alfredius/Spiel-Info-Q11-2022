@@ -139,6 +139,22 @@
             bild: new Image()
         }];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // hier stehen die sachen direktbeim laden ausgeführt werden müssen 
+
         // ist der key listener 
         var map = [];
         let pausiert = false;
@@ -203,6 +219,21 @@
                 hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(yKoord - tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //hier stehen die akktionnen, welche jeden Tick ausgeführt werden 
 
         function ticke() {
             bewegeSpieler()
@@ -295,6 +326,15 @@
             }
         }
 
+        function istHindernis(xPosi, yPosi) {
+            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
+
+                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
+                    return true;
+                }
+            }
+        }
+
         function zeichneBild() {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.height, canvas.width);
@@ -318,6 +358,13 @@
 
                 ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
             }
+        }
+
+        function zeichneCharacter(xPos, yPos) {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(xPos, yPos, character.breite, character.hight);
+            ctx.drawImage(character.bild, xPos, yPos, character.breite, character.hight);
         }
 
         function bewegeSchuss() {
@@ -377,40 +424,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        function zeichneCharacter(xPos, yPos) {
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-            ctx.strokeRect(xPos, yPos, character.breite, character.hight);
-            ctx.drawImage(character.bild, xPos, yPos, character.breite, character.hight);
-        }
-
-        function istHindernis(xPosi, yPosi) {
-            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
-
-                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
-                    return true;
-                }
-            }
-        }
+        // Aktionen des Characters ?
 
         function schuss() {
             if (geschw.x < 0) {
