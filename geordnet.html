@@ -19,30 +19,19 @@
     <canvas height="1000" width="1800" id="canvas" onload="test()"></canvas>
     <br>
     <script>
-        //Variablen werden als globale Variablen erstellt
-        //(strichpunkte nach Zeilen sind möglich aber nicht notwendig, aus gewohnheit rutschen sie aber trotzdem rein, sorry dafür)
         let canvas;
         let ctx;
-        //Eine spezielle Form einer Variable. Keine Ahnung ob das in Java auch geht
-        //wie diese Variablen verwendet werden seht ihr weiter unten.
-
-
-        //falls der Spieler auf dem Boden ist wird diese Variable true
         let onGround = false;
-        //der Array mit Hindernissen (siehe Discord)
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
             //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
             hindernisse[i] = [1, -900, -1000];
         }
         for (var i = 1000; i < 20000; i++) {
-            //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
             hindernisse[i] = [1, -900, -1000]
         }
-        //gibt den Array in die Konsole aus, nicht nötig aber interressant an zu schauen
         console.log(hindernisse)
-            //weitere Variablen wie Geschwindigkeit, Beschleunigung und Reference Frame werden erstellt, sie bestehen aus einer x
-            //und einer y komponente
+
         let generalRF = {
             x: -100,
             y: 400
