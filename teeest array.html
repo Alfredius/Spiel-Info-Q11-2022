@@ -61,6 +61,8 @@
             bild: new Image()
         }
 
+        let renderedistance = 200;
+
         let bildArray = [{
                 bild: new Image(),
                 xPos: 0,
@@ -257,6 +259,15 @@
             for (i = 1; i < schussArray.length; i++) {
 
                 schussArray[i].xPosition -= schussArray[i].xGeschw;
+
+
+                if (schussArray[i].xPosition + generalRF.x >= renderedistance) {
+                    schussArray.splice(i, 1);
+                    console.log(schussArray);
+                }
+                if (schussArray[i].xPosition + generalRF.x <= -renderedistance) {
+                    schussArray.splice(i, 1);
+                }
             }
         }
 
