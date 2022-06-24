@@ -61,7 +61,7 @@
             bild: new Image()
         }
 
-        let renderedistance = 200;
+        let renderedistance = 1100;
 
         let bildArray = [{
                 bild: new Image(),
@@ -234,12 +234,13 @@
         }
 
         let intervall = setInterval(ticke, 5);
-
+let currentDate = Date.now()
         function schuss() {
+            if(currentDate+300 <= Date.now()){
             if (geschw.x < 0) {
-                geschwitemp = -10;
+                geschwitemp = -7;
             } else {
-                geschwitemp = 10;
+                geschwitemp = 7;
             }
 
             schussArray.push({
@@ -252,20 +253,23 @@
             })
 
             //console.log(schussArray)
-
+            currentDate = Date.now()
+        }
         }
 
         function bewegeSchuss() {
             for (i = 1; i < schussArray.length; i++) {
 
                 schussArray[i].xPosition -= schussArray[i].xGeschw;
-
-
-                if (schussArray[i].xPosition + generalRF.x >= renderedistance) {
-                    schussArray.splice(i, 1);
                     console.log(schussArray);
+                    console.log( schussArray[i].xPosition+"   "+generalRF.x+"   "+(schussArray[i].xPosition - generalRF.x))
+
+                console.log(schussArray[i].xPosition - generalRF.x/2)
+                if (schussArray[i].xPosition - generalRF.x/2 >= renderedistance) {
+                    schussArray.splice(i, 1);
+                    
                 }
-                if (schussArray[i].xPosition + generalRF.x <= -renderedistance) {
+                else if (schussArray[i].xPosition - generalRF.x/2 <= -renderedistance) {
                     schussArray.splice(i, 1);
                 }
             }
@@ -284,8 +288,8 @@
             zeichneBild()
 
             bewegeSchuss()
-            bewegeGegner();
-            gegnerZeichnen();
+           // bewegeGegner();
+          //  gegnerZeichnen();
         }
 
         function gegnerZeichnen() {
