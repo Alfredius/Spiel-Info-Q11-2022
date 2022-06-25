@@ -49,7 +49,7 @@
         }
         let beschl = {
             x: 0,
-            y: 0.2
+            y: 0.1
         }
         let geschw = {
             x: 0,
@@ -67,7 +67,7 @@
                 bild: new Image(),
                 xPos: 0,
                 yPos: 0,
-                breite: 4000,
+                breite: 8000,
                 höhe: 1000,
                 hindernis: false,
                 schräge: false
@@ -75,7 +75,7 @@
                 bild: new Image(),
                 xPos: 0,
                 yPos: 0,
-                breite: 4000,
+                breite: 10000,
                 höhe: 1000,
                 hindernis: false,
                 schräge: false
@@ -173,6 +173,22 @@
                 yPos: 605,
                 breite: 230,
                 höhe: 15,
+                hindernis: true,
+                schräge: false
+            },{
+                bild: new Image(),
+                xPos: 4650,
+                yPos: 435,
+                breite: 650,
+                höhe: 50,
+                hindernis: true,
+                schräge: false
+            },{
+                bild: new Image(),
+                xPos: 5370,
+                yPos: 435,
+                breite: 660,
+                höhe: 50,
                 hindernis: true,
                 schräge: false
             }
@@ -374,7 +390,7 @@ zeichneBild()
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -15;
+                    geschw.y = -6;
                 }
             }
             if (map[27] && pausiert) {
