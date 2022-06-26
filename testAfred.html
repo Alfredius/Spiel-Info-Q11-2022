@@ -22,6 +22,7 @@
         let canvas;
         let ctx;
         let onGround = false;
+        let gegner = [];
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
             //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
@@ -359,7 +360,7 @@
             ctx.drawImage(bildArray[1].bild, (generalRF.x / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, (generalRF.x / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
 
-            //Zeichnet den Bild Array 
+            //Zeichnet den Bild Array
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
             }
