@@ -21,10 +21,11 @@
     <script>
         let canvas;
         let ctx;
+        let deathSreen = new Image();
         let onGround = false;
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
-            //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
+            //zwischen x-Position 0 und x-Position 1000 ist ein Hindernis auf y -2000 Pixeln
             hindernisse[i] = [1, -900, -1000];
         }
         for (var i = 1000; i < 20000; i++) {
@@ -45,6 +46,7 @@
             y: 0
         }
         let character = {
+            defaultHight: 100,
             hight: 100,
             breite: 50,
             health: 3,
@@ -52,7 +54,7 @@
         }
 
         let renderedistance = 1000;
-        let intervall = setInterval(ticke, 5); // setzt den tick speed 
+        let intervall = setInterval(ticke, 10); // setzt den tick speed 
 
         let bildArray = [{
             bild: new Image(),
@@ -131,23 +133,27 @@
         }];
 
         let gegnerArray = [{
-            xPos: 500,
-            yPos: 500,
+            xPos: 300,
+            yPos: 400,
             breite: 50,
             höhe: 100,
             xGeschw: 0,
+            yGeshwi: 0,
             typ: "melee",
             bild: new Image(),
             health: 1,
+            onGround: false,
         }, {
-            xPos: 1000,
+            xPos: 400,
             yPos: 500,
             breite: 50,
             höhe: 100,
             xGeschw: 0,
+            yGeschw: 0,
             typ: "melee",
             bild: new Image(),
             health: 1,
+            onGround: false,
         }];
 
 
@@ -198,12 +204,13 @@
             bildArray[6].bild.src = "./Bilder/Objekte/x10/Schräge mit Pfeiler x10.png";
             bildArray[7].bild.src = "data:image/png;base64,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";
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
+            deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
 
-            gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
+            gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
             hindernisseHinzufuegen();
-            //console.log(hindernisse)
+            console.log(hindernisse)
         }
 
 
@@ -261,32 +268,58 @@
             bewegeSchuss();
             //zeichne schuss
             bewegeGegner();
+            nochAmLeben();
         }
 
 
         function bewegeSpieler() {
+            //nach links laufen auf "s"
             if (map[65]) {
                 geschw.x = -3;
             } else {
                 geschw.x = 0;
             }
 
+            //nach rechts laufen auf "d"
             if (map[68]) {
                 geschw.x = 3;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
             }
+
+            // sneaken auf "s" oder "Strg"
+            if (map[17] || map[83]) {
+                if (onGround) {
+                    character.hight = character.defaultHight / 2;
+                }
+            } else if (character.hight <= character.defaultHight) {
+                character.hight = character.defaultHight;
+            }
+
+            //sprinten (klappt noch nicht )
+            /*
+            if (map[16]) {
+                geschw.x = geschw.x * 2;
+            } else if (geschw.x != 0) {
+                geschw.x = geschw.x / 2;
+            }
+            */
+
+            //range attack auf "f"
             if (map[70]) {
                 schuss();
                 console.log("es wurde geschossen")
             }
 
+            //springen auf space
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
                     geschw.y = -15;
                 }
             }
+
+            //pause auf "esc"
             if (map[27] && pausiert) {
                 intervall = setInterval(ticke, 5);
                 pausiert = false;
@@ -294,6 +327,13 @@
                 clearInterval(intervall);
                 pausiert = true;
             }
+
+            //zum testen die taste "t"
+            //setzt gerade die lebne auf 0 
+            if (map[84]) {
+                character.health = 0;
+            }
+
         }
 
         function bewegeBild() {
@@ -410,12 +450,49 @@
         function zeichneSchuss() {}
 
         function bewegeGegner() {
-            if (-generalRF.x < gegnerArray[0].xPosition) {
-                gegnerArray[0].xGeschw = 1;
-            } else {
-                gegnerArray[0].xGeschw = -1;
+            for (g = 0; g < gegnerArray.length; g++) {
+
+                //gegner laufen dem Spieler hinterher 
+                if (-generalRF.x < gegnerArray[g].xPos) {
+                    gegnerArray[g].xGeschw = 1;
+                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                } else {
+                    gegnerArray[g].xGeschw = -1;
+                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+
+                }
+
+                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert", was eine Kopie von istHindernis ist)
+                /*
+                                gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
+                                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
+                if (gegnerArray[g].onGround == false) {
+                    gegnerArray[g].yGeschw -= beschl.y;
+                    console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
+                    gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
+                } else {
+                    gegnerArray[g].yGeschw = 0;
+                }*/
+
             }
-            gegnerArray[0].xPosition -= gegnerArray[0].xGeschw
+        }
+
+        function kolidiert(xPosi, yPosi) {
+            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
+
+                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
+                    return true;
+                }
+            }
+        }
+
+
+
+        function nochAmLeben() {
+            if (character.health == 0) {
+                ctx.drawImage(deathSreen, 0, 0, 1800, 1000);
+                clearInterval(intervall);
+            }
         }
 
 
