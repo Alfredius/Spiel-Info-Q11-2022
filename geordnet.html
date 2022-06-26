@@ -30,7 +30,7 @@
         for (var i = 1000; i < 20000; i++) {
             hindernisse[i] = [1, -900, -1000]
         }
-        console.log(hindernisse)
+        //console.log(hindernisse)
 
         let generalRF = {
             x: -100,
@@ -203,7 +203,7 @@
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
             hindernisseHinzufuegen();
-            console.log(hindernisse)
+            //console.log(hindernisse)
         }
 
 
@@ -216,7 +216,7 @@
                 }
                 if (bildArray[j].schräge) {
                     addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd, 20);
-                    console.log("schräge hinzugefügt");
+                    console.log("schräge    " + j + " hinzugefügt");
                 }
             }
         }
@@ -278,7 +278,7 @@
             }
             if (map[70]) {
                 schuss();
-                console.log("bumm")
+                console.log("es wurde geschossen")
             }
 
             if (map[32]) {
