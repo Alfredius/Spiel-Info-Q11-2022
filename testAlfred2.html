@@ -45,6 +45,7 @@
             y: 0
         }
         let character = {
+            defaultHight: 100,
             hight: 100,
             breite: 50,
             health: 3,
@@ -52,7 +53,7 @@
         }
 
         let renderedistance = 1000;
-        let intervall = setInterval(ticke, 5); // setzt den tick speed 
+        let intervall = setInterval(ticke, 10); // setzt den tick speed 
 
         let bildArray = [{
             bild: new Image(),
@@ -142,7 +143,7 @@
             health: 1,
             onGround: false,
         }, {
-            xPos: 600,
+            xPos: 400,
             yPos: 500,
             breite: 50,
             höhe: 100,
@@ -207,7 +208,7 @@
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
             hindernisseHinzufuegen();
-            //console.log(hindernisse)
+            console.log(hindernisse)
         }
 
 
@@ -280,10 +281,13 @@
             } else if (geschw.x > 0) {
                 geschw.x = 0;
             }
-            if (map[69]) {
-                character.hight = character.health / 2;
-            } //else if (character.hight)
 
+            // das sit ein Test zum sneaken, allerdings bin ich mir nicht sicher ob das die taste "s" ist 
+            if (map[69]) {
+                character.hight = character.hight / 2;
+            } else if (character.hight <= character.defaultHight) {
+                character.health = character.defaultHight;
+            }
 
             if (map[70]) {
                 schuss();
@@ -431,17 +435,18 @@
 
                 }
 
-                //fallbeschleunigung der Gegner (klappt nicht )
-
-                gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2), gegnerArray[g].yPos + gegnerArray[g].höhe)
-                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround)
+                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert", was eine Kopie von istHindernis ist)
+                /*
+                                gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
+                                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
                 if (gegnerArray[g].onGround == false) {
                     gegnerArray[g].yGeschw -= beschl.y;
                     console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
                     gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
                 } else {
                     gegnerArray[g].yGeschw = 0;
-                }
+                }*/
+
             }
         }
 
