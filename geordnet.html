@@ -456,7 +456,7 @@
                 if (-generalRF.x < gegnerArray[g].xPos) {
                     gegnerArray[g].xGeschw = 1;
                     gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-                } else {
+                } else if (-generalRF.x > gegnerArray[g].xPos) {
                     gegnerArray[g].xGeschw = -1;
                     gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
 
