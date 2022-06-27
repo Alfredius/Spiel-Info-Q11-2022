@@ -19,17 +19,12 @@
     <canvas height="1000" width="1800" id="canvas" onload="test()"></canvas>
     <br>
     <script>
-        //Variablen werden als globale Variablen erstellt
-        //(strichpunkte nach Zeilen sind möglich aber nicht notwendig, aus gewohnheit rutschen sie aber trotzdem rein, sorry dafür)
         let canvas;
         let ctx;
-        //Eine spezielle Form einer Variable. Keine Ahnung ob das in Java auch geht
-        //wie diese Variablen verwendet werden seht ihr weiter unten.
-
 
         //falls der Spieler auf dem Boden ist wird diese Variable true
         let onGround = false;
-        //der Array mit Hindernissen (siehe Discord)
+
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
             //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
@@ -39,10 +34,9 @@
             //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
             hindernisse[i] = [1, -850, -1000]
         }
-        //gibt den Array in die Konsole aus, nicht nötig aber interressant an zu schauen
-        console.log(hindernisse)
-            //weitere Variablen wie Geschwindigkeit, Beschleunigung und Reference Frame werden erstellt, sie bestehen aus einer x
-            //und einer y komponente
+
+        //console.log(hindernisse)
+
         let generalRF = {
             x: -100,
             y: 400
@@ -64,138 +58,134 @@
         let renderedistance = 1100;
 
         let bildArray = [{
-                bild: new Image(),
-                xPos: 0,
-                yPos: 0,
-                breite: 8000,
-                höhe: 1000,
-                hindernis: false,
-                schräge: false
-            }, {
-                bild: new Image(),
-                xPos: 0,
-                yPos: 0,
-                breite: 10000,
-                höhe: 1000,
-                hindernis: false,
-                schräge: false
-            }, {
-                bild: new Image(),
-                xPos: 0,
-                yPos: 0,
-                breite: 10,
-                höhe: 3000,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 0,
-                yPos: 0,
-                breite: 10000,
-                höhe: 1000,
-                hindernis: false,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 2180,
-                yPos: 785,
-                breite: 70,
-                höhe: 50,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 2240,
-                yPos: 705,
-                breite: 570,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 2810,
-                yPos: 650,
-                breite: 180,
-                höhe: 80,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 3070,
-                yPos: 705,
-                breite: 870,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 3100,
-                yPos: 560,
-                breite: 290,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 3140,
-                yPos: 410,
-                breite: 150,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 3515,
-                yPos: 635,
-                breite: 65,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 3930,
-                yPos: 785,
-                breite: 75,
-                höhe: 100,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 4080,
-                yPos: 700,
-                breite: 230,
-                höhe: 10,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 4350,
-                yPos: 605,
-                breite: 230,
-                höhe: 15,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 4650,
-                yPos: 435,
-                breite: 650,
-                höhe: 50,
-                hindernis: true,
-                schräge: false
-            },{
-                bild: new Image(),
-                xPos: 5370,
-                yPos: 435,
-                breite: 660,
-                höhe: 50,
-                hindernis: true,
-                schräge: false
-            }
-
-
-
-        ];
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 8000,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 10000,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 10,
+            höhe: 3000,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 10000,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2180,
+            yPos: 785,
+            breite: 70,
+            höhe: 50,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2240,
+            yPos: 705,
+            breite: 570,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2810,
+            yPos: 650,
+            breite: 180,
+            höhe: 80,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3070,
+            yPos: 705,
+            breite: 870,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3100,
+            yPos: 560,
+            breite: 290,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3140,
+            yPos: 410,
+            breite: 150,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3515,
+            yPos: 635,
+            breite: 65,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3930,
+            yPos: 785,
+            breite: 75,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4080,
+            yPos: 700,
+            breite: 230,
+            höhe: 10,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4350,
+            yPos: 605,
+            breite: 230,
+            höhe: 15,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4650,
+            yPos: 435,
+            breite: 650,
+            höhe: 50,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 5370,
+            yPos: 435,
+            breite: 660,
+            höhe: 50,
+            hindernis: true,
+            schräge: false
+        }];
 
         let schussArray = [{
             xPosition: 0,
@@ -288,27 +278,28 @@
         }
 
         let intervall = setInterval(ticke, 5);
-let currentDate = Date.now()
+        let currentDate = Date.now()
+
         function schuss() {
-            if(currentDate+300 <= Date.now()){
-            if (geschw.x < 0) {
-                geschwitemp = -7;
-            } else {
-                geschwitemp = 7;
+            if (currentDate + 300 <= Date.now()) {
+                if (geschw.x < 0) {
+                    geschwitemp = -7;
+                } else {
+                    geschwitemp = 7;
+                }
+
+                schussArray.push({
+
+                    yPosi: generalRF.y + character.hight / 2,
+                    breite: 20,
+                    höhe: 5,
+                    xGeschw: geschwitemp,
+                    xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
+                })
+
+                //console.log(schussArray)
+                currentDate = Date.now()
             }
-
-            schussArray.push({
-
-                yPosi: generalRF.y + character.hight / 2,
-                breite: 20,
-                höhe: 5,
-                xGeschw: geschwitemp,
-                xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
-            })
-
-            //console.log(schussArray)
-            currentDate = Date.now()
-        }
         }
 
         function bewegeSchuss() {
@@ -316,11 +307,10 @@ let currentDate = Date.now()
 
                 schussArray[i].xPosition -= schussArray[i].xGeschw;
 
-                if (schussArray[i].xPosition - generalRF.x/2 >= renderedistance) {
+                if (schussArray[i].xPosition - generalRF.x / 2 >= renderedistance) {
                     schussArray.splice(i, 1);
-                    
-                }
-                else if (schussArray[i].xPosition - generalRF.x/2 <= -renderedistance) {
+
+                } else if (schussArray[i].xPosition - generalRF.x / 2 <= -renderedistance) {
                     schussArray.splice(i, 1);
                 }
             }
@@ -332,20 +322,20 @@ let currentDate = Date.now()
 
         function ticke() {
             // console.log("tick");
-             console.log(generalRF.x + " " + generalRF.y)
+            console.log(generalRF.x + " " + generalRF.y)
             bewegeSpieler()
             bewegeBild();
- if(generalRF.x < - 900){
-zeichneBild()
-             }else{
+            if (generalRF.x < -900) {
+                zeichneBild()
+            } else {
 
                 zeichneBildStart()
-             }
-            
+            }
+
 
             bewegeSchuss()
-           // bewegeGegner();
-          //  gegnerZeichnen();
+                // bewegeGegner();
+                //  gegnerZeichnen();
         }
 
         function gegnerZeichnen() {
@@ -410,16 +400,17 @@ zeichneBild()
 
         function zeichneBild() {
             //ctx.fillStyle = 'white';
-          //  ctx.fillRect(0, 0, canvas.height, canvas.width);
+            //  ctx.fillRect(0, 0, canvas.height, canvas.width);
 
-            ctx.drawImage(bildArray[0].bild, ((generalRF.x +900)/ 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, ((generalRF.x +900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, ((generalRF.x +900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+            //zeichne Bild Array
+            ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+            ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
-            } 
-           
+            }
+
 
             zeichneCharacter(900, -generalRF.y - character.hight);
 
@@ -434,16 +425,16 @@ zeichneBild()
             }
         }
 
-        function zeichneBildStart(){
-            
-            ctx.drawImage(bildArray[0].bild,  bildArray[0].xPos , bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild,  bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild,  bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-            for (i = 3; i < bildArray.length; i++) {
-                ctx.drawImage(bildArray[i].bild,  bildArray[i].xPos  + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+        function zeichneBildStart() {
 
-            } 
-           
+            ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+            ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+            for (i = 3; i < bildArray.length; i++) {
+                ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+
+            }
+
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
 
@@ -490,12 +481,6 @@ zeichneBild()
             geschw.y = geschw.y + beschl.y;
             let yh;
             //die Koordinaten des characters werden angepasst
-
-
-
-
-
-
 
             onGround = istHindernis(generalRF.x, generalRF.y);
 
