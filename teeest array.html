@@ -43,7 +43,7 @@
         }
         let beschl = {
             x: 0,
-            y: 0.1
+            y: 0.2
         }
         let geschw = {
             x: 0,
@@ -55,7 +55,7 @@
             bild: new Image()
         }
 
-        let renderedistance = 1100;
+        let renderedistance = 1900;
 
         let bildArray = [{
             bild: new Image(),
@@ -277,15 +277,15 @@
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png"
         }
 
-        let intervall = setInterval(ticke, 5);
+        let intervall = setInterval(ticke, 10);
         let currentDate = Date.now()
 
         function schuss() {
             if (currentDate + 300 <= Date.now()) {
                 if (geschw.x < 0) {
-                    geschwitemp = -7;
+                    geschwitemp = -14;
                 } else {
-                    geschwitemp = 7;
+                    geschwitemp = 14;
                 }
 
                 schussArray.push({
@@ -322,7 +322,7 @@
 
         function ticke() {
             // console.log("tick");
-            console.log(generalRF.x + " " + generalRF.y)
+            //console.log(generalRF.x + " " + generalRF.y)
             bewegeSpieler()
             bewegeBild();
             if (generalRF.x < -900) {
@@ -336,6 +336,7 @@
             bewegeSchuss()
                 // bewegeGegner();
                 //  gegnerZeichnen();
+                fps()
         }
 
         function gegnerZeichnen() {
@@ -363,13 +364,13 @@
 
         function bewegeSpieler() {
             if (map[65]) {
-                geschw.x = -3;
+                geschw.x = -6;
             } else {
                 geschw.x = 0;
             }
 
             if (map[68]) {
-                geschw.x = 3;
+                geschw.x = 6;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
             }
@@ -380,7 +381,7 @@
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -6;
+                    geschw.y = -12;
                 }
             }
             if (map[27] && pausiert) {
@@ -406,7 +407,7 @@
             ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
             ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-            for (i = 3; i < bildArray.length; i++) {
+            for (i = 3; i < /*bildArray.length*/4; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
             }
@@ -420,8 +421,10 @@
 
             // Ein ausgemaltes Rechteck malen
             for (i = 1; i < schussArray.length; i++) {
-
+               
                 ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+                
+            
             }
         }
 
@@ -445,7 +448,7 @@
             // Ein ausgemaltes Rechteck malen
             for (i = 1; i < schussArray.length; i++) {
 
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 - generalRF.x , -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
             }
         }
 
@@ -530,6 +533,32 @@
             }
 
 
+        }
+        let ZeitLetzte = Date.now()
+        let ZeitStart = Date.now()
+        let counter = 0;
+        let counterCont = 0;
+        let counterContStart = 0;
+        function fps(){
+            if(counter<1){
+                counter++;
+                counterCont ++;
+               
+            }else{
+               if(counterContStart > 100){
+                console.log("   Avg: "+(1000*counterCont/(Date.now()-ZeitStart)))
+               counterCont ++;
+            }
+               else{
+                ZeitStart = Date.now()
+               }
+            console.log((1000/(Date.now()-ZeitLetzte)))
+             counterContStart ++;
+             
+            ZeitLetzte = Date.now()
+            counter = 1;
+        }
+        
         }
     </script>
 
