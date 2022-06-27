@@ -25,11 +25,12 @@
         let onGround = false;
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
-            //zwischen x-Position 0 und x-Position 1000 ist ein Hindernis auf y -2000 Pixeln
-            hindernisse[i] = [1, -900, -1000];
+            //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
+            hindernisse[i] = [1, -850, -1000];
         }
         for (var i = 1000; i < 20000; i++) {
-            hindernisse[i] = [1, -900, -1000]
+            //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
+            hindernisse[i] = [1, -850, -1000]
         }
         //console.log(hindernisse)
 
@@ -383,7 +384,7 @@
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -15;
+                    geschw.y = -6;
                 }
             }
 
