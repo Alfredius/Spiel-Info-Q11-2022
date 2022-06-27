@@ -18,12 +18,12 @@ ALfred:
 
 
 to Do allgemein
-    korlisionen (oben, links, rechts)
+    
     gegner
         - schießen
         - bewegung 
-    you died
-        - leben 
+        - damage
+ 
     neues level laden?
-        // nur Startbildschirn
+        // nur Startbildschirm
         - Tor (kammera stoppt bewegung)

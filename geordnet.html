@@ -348,6 +348,7 @@
             //nach links laufen auf "s"
             if (map[65]) {
                 geschw.x = -character.defaultSpeed;
+                character.facingRight = false;
             } else {
                 geschw.x = 0;
             }
@@ -355,6 +356,7 @@
             //nach rechts laufen auf "d"
             if (map[68]) {
                 geschw.x = character.defaultSpeed;
+                character.facingRight = true;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
             }
@@ -621,7 +623,7 @@
 
         function schuss() {
             if (character.cooldownAngriff + 300 <= Date.now()) {
-                if (geschw.x < 0) {
+                if (character.facingRight == false) {
                     geschwitemp = -7;
                 } else {
                     geschwitemp = 7;
@@ -641,7 +643,9 @@
 
         //muss noch eingefügt werdcen 
         function schlagen() {
-
+            // richtung des Schlages 
+            // erkennen, ob treffer 
+            // animation
         }
     </script>
 
