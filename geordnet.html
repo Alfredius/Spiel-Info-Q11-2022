@@ -240,7 +240,7 @@
 
 
 
-        // hier stehen die sachen direktbeim laden ausgeführt werden müssen 
+        // hier stehen die Sachen direkt beim laden ausgeführt werden müssen 
 
         // ist der key listener 
         var map = [];
@@ -563,7 +563,7 @@
 
                 }
 
-                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert", was eine Kopie von istHindernis ist)
+                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
                 /*
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
                                 console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
@@ -578,6 +578,7 @@
             }
         }
 
+        //klappt nicht 
         function kolidiert(xPosi, yPosi) {
             for (i = 0; i < hindernisse[-xPosi][0]; i++) {
 
@@ -616,7 +617,7 @@
 
 
 
-        // Aktionen des Characters ?
+        // hier stehen die Aktionen des Characters
 
         function schuss() {
             if (character.cooldownAngriff + 300 <= Date.now()) {
