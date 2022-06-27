@@ -48,15 +48,18 @@
         }
         let character = {
             defaultHight: 100,
+            defaultSpeed: 3,
             hight: 100,
             breite: 50,
             health: 3,
-            bild: new Image()
+            facingRight: true,
+            bild: new Image(),
+            cooldownAngriff: Date.now(),
         }
 
         let renderedistance = 1000;
         let intervall = setInterval(ticke, 10); // setzt den tick speed 
-        let currentDate = Date.now();
+
 
         let bildArray = [{
             bild: new Image(),
@@ -344,14 +347,14 @@
         function bewegeSpieler() {
             //nach links laufen auf "s"
             if (map[65]) {
-                geschw.x = -3;
+                geschw.x = -character.defaultSpeed;
             } else {
                 geschw.x = 0;
             }
 
             //nach rechts laufen auf "d"
             if (map[68]) {
-                geschw.x = 3;
+                geschw.x = character.defaultSpeed;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
             }
@@ -368,7 +371,7 @@
             //sprinten (klappt noch nicht )
             /*
             if (map[16]) {
-                geschw.x = geschw.x * 2;
+                geschw.x = character.defaultSpeed * 2;
             } else if (geschw.x != 0) {
                 geschw.x = geschw.x / 2;
             }
@@ -377,7 +380,13 @@
             //range attack auf "f"
             if (map[70]) {
                 schuss();
-                console.log("es wurde geschossen")
+                console.log("es wurde geschossen");
+            }
+
+            //close Combet attack auf "e"
+            if (map[69]) {
+                schlagen();
+                console.log("es wurde geschlagen");
             }
 
             //springen auf space
@@ -610,7 +619,7 @@
         // Aktionen des Characters ?
 
         function schuss() {
-            if (currentDate + 300 <= Date.now()) {
+            if (character.cooldownAngriff + 300 <= Date.now()) {
                 if (geschw.x < 0) {
                     geschwitemp = -7;
                 } else {
@@ -625,8 +634,13 @@
                         xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
                     })
                     //console.log(schussArray)
-                currentDate = Date.now()
+                character.cooldownAngriff = Date.now()
             }
+        }
+
+        //muss noch eingefügt werdcen 
+        function schlagen() {
+
         }
     </script>
 
