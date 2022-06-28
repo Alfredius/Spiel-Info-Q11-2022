@@ -10,11 +10,10 @@ gemacht hat und was das eingefügte bisschen code tut.
 
 to do 
 Jonas:
-    Korlision; 
+    
 
 ALfred:
-    Gegner;
-    (vielleicht noch "you died");  
+    Gegner; 
 
 
 to Do allgemein
