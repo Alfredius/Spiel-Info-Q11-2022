@@ -23,8 +23,15 @@
         let ctx;
 
         //falls der Spieler auf dem Boden ist wird diese Variable true
-        let onGround = false;
+        let onGround = false; <<
+        << << < Updated upstream
 
+            ===
+            === =
+            let tickerZeit = 5;
+        //der Array mit Hindernissen (siehe Discord)
+        >>>
+        >>> > Stashed changes
         let hindernisse = [];
         for (var i = 0; i < 1000; i++) {
             //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
@@ -57,7 +64,8 @@
 
         let renderedistance = 1900;
 
-        let bildArray = [{
+        let bildArray = [{ <<
+            << << < Updated upstream
             bild: new Image(),
             xPos: 0,
             yPos: 0,
@@ -203,6 +211,95 @@
             xGeschw: 0,
             typ: "melee",
             bild: new Image()
+        }]; ===
+        === =
+        bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 4000,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 10,
+            höhe: 3000,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2800,
+            yPos: 400,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2400,
+            yPos: 200,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3800,
+            yPos: 50,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4000,
+            yPos: 500,
+            breite: 400,
+            höhe: 400,
+            hindernis: false,
+            schräge: true,
+            schrägeStart: 700,
+            schrägeEnd: 500
+        }, {
+            bild: new Image(),
+            xPos: 1500,
+            yPos: 750,
+            breite: 1000,
+            höhe: 250,
+            hindernis: true,
+            schräge: false
+        } >>>
+        >>> > Stashed changes
+
+
+        var map = [];
+        let pausiert = false;
+        document.onkeydown = document.onkeyup = function(e) {
+        e = e || event; // to deal with IE
+        map[e.keyCode] = e.type == 'keydown';
+        // console.log(map);
+        /* insert conditional here */
+
+
+
+        <<
+        << << < Updated upstream
+        }
+
+
+        ===
+        === =
+
+        ];
+
+        let schussArray = [{
+            xPosition: 0,
+            yPosi: 0,
+            breite: 0,
+            höhe: 0,
+            xGeschw: 0
         }];
 
 
@@ -211,7 +308,7 @@
         document.onkeydown = document.onkeyup = function(e) {
             e = e || event; // to deal with IE
             map[e.keyCode] = e.type == 'keydown';
-            // console.log(map);
+            console.log(map);
             /* insert conditional here */
 
 
@@ -219,6 +316,8 @@
         }
 
 
+        >>>
+        >>> > Stashed changes
 
 
 
@@ -274,6 +373,8 @@
             bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
             bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
 
+            <<
+            << << < Updated upstream
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png"
         }
 
@@ -290,12 +391,36 @@
 
                 schussArray.push({
 
+                        yPosi: generalRF.y + character.hight / 2,
+                        breite: 15,
+                        höhe: 5,
+                        xGeschw: geschwitemp,
+                        xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
+                    }) ===
+                    === =
+
+            }
+
+            let intervall = setInterval(ticke, tickerZeit);
+
+            function schuss() {
+                if (geschw.x < 0) {
+                    geschwitemp = -3;
+                } else {
+                    geschwitemp = 3;
+                }
+
+                schussArray.push({
+
                     yPosi: generalRF.y + character.hight / 2,
                     breite: 20,
                     höhe: 5,
                     xGeschw: geschwitemp,
-                    xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
+                    xPosition: generalRF.x / 2
                 })
+
+                console.log(schussArray) >>>
+                    >>> > Stashed changes
 
                 //console.log(schussArray)
                 currentDate = Date.now()
@@ -303,7 +428,8 @@
         }
 
         function bewegeSchuss() {
-            for (i = 1; i < schussArray.length; i++) {
+            for (i = 1; i < schussArray.length; i++) { <<
+                << << < Updated upstream
 
                 schussArray[i].xPosition -= schussArray[i].xGeschw;
 
@@ -312,7 +438,11 @@
 
                 } else if (schussArray[i].xPosition - generalRF.x / 2 <= -renderedistance) {
                     schussArray.splice(i, 1);
-                }
+                } ===
+                === =
+
+                schussArray[i].xPosition += schussArray[i].xGeschw; >>>
+                >>> > Stashed changes
             }
         }
 
@@ -320,9 +450,21 @@
 
         }
 
-        function ticke() {
+        var count = 0;
+        var starttime = new Date().getTime();
+        var durchlaufzeit = 0;
+
+        function ticke() { <<
+            << << < Updated upstream
             // console.log("tick");
             //console.log(generalRF.x + " " + generalRF.y)
+                ===
+                === =
+                count += 1;
+            // console.log("tick");
+            // console.log(generalRF.x + " " + generalRF.y)
+            >>>
+            >>> > Stashed changes
             bewegeSpieler()
             bewegeBild();
             if (generalRF.x < -900) {
@@ -333,7 +475,8 @@
             }
 
 
-            bewegeSchuss()
+            bewegeSchuss() <<
+                << << < Updated upstream
                 // bewegeGegner();
                 //  gegnerZeichnen();
                 //fps()
@@ -364,202 +507,256 @@
 
         function bewegeSpieler() {
             if (map[65]) {
-                geschw.x = -6;
-            } else {
-                geschw.x = 0;
+                geschw.x = -6; ===
+                === =
+                console.log(generalRF.x)
             }
 
-            if (map[68]) {
-                geschw.x = 6;
-            } else if (geschw.x > 0) {
-                geschw.x = 0;
-            }
-            if (map[70]) {
-                schuss();
+            function getDurchlaufzeit() {
+                return Number((new Date().getTime() - starttime) / count);
             }
 
-            if (map[32]) {
-                //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
-                if (onGround) {
-                    geschw.y = -12;
-                }
-            }
-            if (map[27] && pausiert) {
-                intervall = setInterval(ticke, 5);
-                pausiert = false;
-            } else if (map[27] && !pausiert) {
-                clearInterval(intervall);
-                pausiert = true;
-            }
-        }
-
-
-
-        function bewegeBild() {
-            bewege();
-        }
-
-        function zeichneBild() {
-            //ctx.fillStyle = 'white';
-            //  ctx.fillRect(0, 0, canvas.height, canvas.width);
-
-            //zeichne Bild Array
-            ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-            for (i = 3; i < /*bildArray.length*/4; i++) {
-                ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
-
-            }
-
-
-            zeichneCharacter(900, -generalRF.y - character.hight);
-
-            zeichneSchuss();
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-               
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-                
-            
-            }
-        }
-
-        function zeichneBildStart() {
-
-            ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-            for (i = 3; i < bildArray.length; i++) {
-                ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
-
-            }
-
-
-            zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
-
-            zeichneSchuss();
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 - generalRF.x , -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-            }
-        }
-
-
-
-        //Funktion zum Testweise zeichnen eines Rechtecks mit übergabewerten für die x- und y-Koordinate
-        function zeichneCharacter(xPos, yPos) {
-            // fill(Füllfarbe) und stroke(der Rand ausen rum) wird eine Farbe zuweisen
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            // ctx.fillRect(xPos, yPos, 200, 200);
-            // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand)
-            ctx.strokeRect(xPos, yPos, character.breite, character.hight);
-            ctx.drawImage(character.bild, xPos, yPos, character.breite, character.hight);
-        }
-
-
-        function istHindernis(xPosi, yPosi) {
-            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
-
-                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
-                    return true;
-                }
-
-            }
-        }
-
-
-        //Testfunktion zum verändern der Position des Kastens
-        function bewege() {
-            geschw.y = geschw.y + beschl.y;
-            let yh;
-            //die Koordinaten des characters werden angepasst
-
-            onGround = istHindernis(generalRF.x, generalRF.y);
-
-            if (onGround) {
-                yh = hindernisse[-generalRF.x][(i * 2) + 1];
-            }
-
-            if (istHindernis(generalRF.x, (generalRF.y + character.hight))) {
-                console.log("kopf gestoßen");
-                if (geschw.y < 0) {
-                    geschw.y = 0;
-                }
-            }
-
-            if (istHindernis((generalRF.x + character.breite / 2), (generalRF.y + character.hight / 2))) {
-                console.log("links gestoßen");
-                if (geschw.x < 0) {
-                    geschw.x = 0;
-                }
-            }
-
-            if (istHindernis((generalRF.x - character.breite / 2), (generalRF.y + character.hight / 2))) {
-                console.log("rechts gestoßen");
-                if (geschw.x > 0) {
-                    geschw.x = 0;
-                }
-            }
-
-
-
-            if (!onGround) {
-                generalRF.x = generalRF.x - geschw.x;
-
-                generalRF.y = generalRF.y - geschw.y;
-                onGround = false;
-            } else {
-                onGround = true;
-                generalRF.y = yh;
-                if (geschw.y < 0) {
-                    generalRF.y = generalRF.y - geschw.y;
+            function bewegeSpieler() {
+                if (map[65]) {
+                    geschw.x = -10 * getDurchlaufzeit(); >>>
+                    >>> > Stashed changes
                 } else {
-                    geschw.y = 0;
+                    geschw.x = 0;
                 }
 
-                generalRF.x = generalRF.x - geschw.x;
+                if (map[68]) { <<
+                    << << < Updated upstream
+                    geschw.x = 6; ===
+                    === =
+                    geschw.x = 10 * getDurchlaufzeit(); >>>
+                    >>> > Stashed changes
+                } else if (geschw.x > 0) {
+                    geschw.x = 0;
+                }
+                if (map[70]) {
+                    schuss();
+                }
 
+                if (map[32]) {
+                    //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
+                    if (onGround) {
+                        geschw.y = -12;
+                    }
+                }
+                if (map[27] && pausiert) { <<
+                    << << < Updated upstream
+                    intervall = setInterval(ticke, 5); ===
+                    === =
+                    intervall = setInterval(ticke, tickerZeit); >>>
+                    >>> > Stashed changes
+                    pausiert = false;
+                } else if (map[27] && !pausiert) {
+                    clearInterval(intervall);
+                    pausiert = true;
+                }
             }
 
 
-        }
-        let ZeitLetzte = Date.now()
-        let ZeitStart = Date.now()
-        let counter = 0;
-        let counterCont = 0;
-        let counterContStart = 0;
-        function fps(){
-            if(counter<1){
-                counter++;
-                counterCont ++;
-               
-            }else{
-               if(counterContStart > 100){
-                console.log("   Avg: "+(1000*counterCont/(Date.now()-ZeitStart)))
-               counterCont ++;
+
+            function bewegeBild() {
+                bewege();
             }
-               else{
-                ZeitStart = Date.now()
-               }
-            console.log((1000/(Date.now()-ZeitLetzte)))
-             counterContStart ++;
-             
-            ZeitLetzte = Date.now()
-            counter = 1;
-        }
-        
-        }
+
+            function zeichneBild() { <<
+                << << < Updated upstream
+                //ctx.fillStyle = 'white';
+                //  ctx.fillRect(0, 0, canvas.height, canvas.width);
+
+                //zeichne Bild Array
+                ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+                ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+                ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+                for (i = 3; i < /*bildArray.length*/ 4; i++) { ===
+                    === =
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.height, canvas.width);
+
+                    ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+                    ctx.drawImage(bildArray[1].bild, (generalRF.x / 2) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+
+                    for (i = 2; i < bildArray.length; i++) { >>>
+                        >>> > Stashed changes
+                        ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+
+                    }
+
+
+                    zeichneCharacter(900, -generalRF.y - character.hight);
+
+                    zeichneSchuss();
+                    ctx.fillStyle = '#F0DB4F';
+                    ctx.strokeStyle = 'red';
+
+                    // Ein ausgemaltes Rechteck malen
+                    for (i = 1; i < schussArray.length; i++) {
+
+                        <<
+                        << << < Updated upstream
+                        ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+
+
+                    }
+                }
+
+                function zeichneBildStart() {
+
+                    ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+                    ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+                    ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+                    for (i = 3; i < bildArray.length; i++) {
+                        ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+
+                    }
+
+
+                    zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
+
+                    zeichneSchuss();
+                    ctx.fillStyle = '#F0DB4F';
+                    ctx.strokeStyle = 'red';
+
+                    // Ein ausgemaltes Rechteck malen
+                    for (i = 1; i < schussArray.length; i++) {
+
+                        ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 - generalRF.x, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe); ===
+                        === =
+                        ctx.fillRect(schussArray[i].xPosition - generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe); >>>
+                        >>> > Stashed changes
+                    }
+                }
+
+
+
+                //Funktion zum Testweise zeichnen eines Rechtecks mit übergabewerten für die x- und y-Koordinate
+                function zeichneCharacter(xPos, yPos) {
+                    // fill(Füllfarbe) und stroke(der Rand ausen rum) wird eine Farbe zuweisen
+                    ctx.fillStyle = '#F0DB4F';
+                    ctx.strokeStyle = 'red';
+
+                    // Ein ausgemaltes Rechteck malen
+                    // ctx.fillRect(xPos, yPos, 200, 200);
+                    // Ein Rechteck malen, welches nicht gefüllt ist (der rote Rand)
+                    ctx.strokeRect(xPos, yPos, character.breite, character.hight);
+                    ctx.drawImage(character.bild, xPos, yPos, character.breite, character.hight);
+                }
+
+
+                function istHindernis(xPosi, yPosi) {
+                    for (i = 0; i < hindernisse[-xPosi][0]; i++) {
+
+                        if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
+                            return true;
+                        }
+
+                    }
+                }
+
+
+                //Testfunktion zum verändern der Position des Kastens
+                function bewege() {
+                    geschw.y = geschw.y + beschl.y;
+                    let yh;
+                    //die Koordinaten des characters werden angepasst
+
+                    <<
+                    << << < Updated upstream
+                        ===
+                        === =
+
+
+
+
+
+
+                        >>>
+                        >>> > Stashed changes
+                    onGround = istHindernis(generalRF.x, generalRF.y);
+
+                    if (onGround) {
+                        yh = hindernisse[-generalRF.x][(i * 2) + 1];
+                    }
+
+                    if (istHindernis(generalRF.x, (generalRF.y + character.hight))) {
+                        console.log("kopf gestoßen");
+                        if (geschw.y < 0) {
+                            geschw.y = 0;
+                        }
+                    }
+
+                    if (istHindernis((generalRF.x + character.breite / 2), (generalRF.y + character.hight / 2))) {
+                        console.log("links gestoßen");
+                        if (geschw.x < 0) {
+                            geschw.x = 0;
+                        }
+                    }
+
+                    if (istHindernis((generalRF.x - character.breite / 2), (generalRF.y + character.hight / 2))) {
+                        console.log("rechts gestoßen");
+                        if (geschw.x > 0) {
+                            geschw.x = 0;
+                        }
+                    }
+
+
+
+                    if (!onGround) {
+                        generalRF.x = generalRF.x - geschw.x;
+
+                        generalRF.y = generalRF.y - geschw.y;
+                        onGround = false;
+                    } else {
+                        onGround = true;
+                        generalRF.y = yh;
+                        if (geschw.y < 0) {
+                            generalRF.y = generalRF.y - geschw.y;
+                        } else {
+                            geschw.y = 0;
+                        }
+
+                        generalRF.x = generalRF.x - geschw.x;
+
+                    }
+
+                    <<
+                    << << < Updated upstream
+
+                }
+                let ZeitLetzte = Date.now()
+                let ZeitStart = Date.now()
+                let counter = 0;
+                let counterCont = 0;
+                let counterContStart = 0;
+
+                function fps() {
+                    if (counter < 1) {
+                        counter++;
+                        counterCont++;
+
+                    } else {
+                        if (counterContStart > 100) {
+                            console.log("   Avg: " + (1000 * counterCont / (Date.now() - ZeitStart)))
+                            counterCont++;
+                        } else {
+                            ZeitStart = Date.now()
+                        }
+                        console.log((1000 / (Date.now() - ZeitLetzte)))
+                        counterContStart++;
+
+                        ZeitLetzte = Date.now()
+                        counter = 1;
+                    }
+
+                    ===
+                    === =
+
+                    >>>
+                    >>> > Stashed changes
+                }
     </script>
 
 </body>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiel</title>
+
+    <style>
+        canvas {
+            border: 1px solid black
+        }
+    </style>
+</head>
+
+<body onload="starte()">
+
+    <canvas height="1000" width="1800" id="canvas" onload="test()"></canvas>
+    <br>
+    <script>
+        let canvas;
+        let ctx;
+        let onGround = false;
+        let hindernisse = [];
+        for (var i = 0; i < 1000; i++) {
+
+            hindernisse[i] = [1, -900, -1000];
+        }
+        for (var i = 1000; i < 20000; i++) {
+            hindernisse[i] = [1, -900, -1000]
+        }
+        console.log(hindernisse)
+        let generalRF = {
+            x: -100,
+            y: 400
+        }
+        let beschl = {
+            x: 0,
+            y: 0.2
+        }
+        let geschw = {
+            x: 0,
+            y: 0
+        }
+        let character = {
+            hight: 100,
+            breite: 50,
+            bild: new Image()
+        }
+
+        let bildArray = [{
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 4000,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 10,
+            höhe: 3000,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2800,
+            yPos: 400,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 2400,
+            yPos: 200,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 3800,
+            yPos: 50,
+            breite: 400,
+            höhe: 130,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4000,
+            yPos: 500,
+            breite: 400,
+            höhe: 400,
+            hindernis: false,
+            schräge: true,
+            schrägeStart: 700,
+            schrägeEnd: 500
+        }, {
+            bild: new Image(),
+            xPos: 1500,
+            yPos: 750,
+            breite: 1000,
+            höhe: 250,
+            hindernis: true,
+            schräge: false
+        }];
+
+        let schussArray = [{
+            xPosition: 0,
+            yPosi: 0,
+            breite: 0,
+            höhe: 0,
+            xGeschw: 0
+        }];
+
+        let gegnerArray = [{
+            xPosition: 2000,
+            yPosi: -300,
+            breite: 200,
+            höhe: 100,
+            xGeschw: 0,
+            typ: "melee",
+            bild: new Image()
+        }];
+
+        let intervall = setInterval(ticke, 5);
+
+        //ist der key listener 
+        var map = [];
+        let pausiert = false;
+        document.onkeydown = document.onkeyup = function(e) {
+            e = e || event;
+            map[e.keyCode] = e.type == 'keydown';
+        }
+
+        //wird zu beginn ausgeführt dem erray werden bilder zugewisen 
+        function starte() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+
+            bildArray[1].bild.src = "data:image/png;base64,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";
+            bildArray[0].bild.src = "https://img.fotocommunity.com/bregenzerwald-52973ea5-fd88-4ca3-b433-a14a97175315.jpg?height=1080";
+            bildArray[2].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
+            bildArray[3].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
+            bildArray[4].bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_2.png";
+            bildArray[5].bild.src = "./Bilder/Objekte/x10/Schräge mit Pfeiler x10.png";
+            bildArray[6].bild.src = "data:image/png;base64,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";
+            character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
+            hindernisseHinzufuegen()
+        }
+
+        function hindernisseHinzufuegen() {
+
+            for (j = 1; j < bildArray.length; j++) {
+                if (bildArray[j].hindernis) {
+                    addPlatform(bildArray[j].xPos, -bildArray[j].yPos, bildArray[j].breite, bildArray[j].höhe);
+                    console.log("Hinderniss " + j + " hinzugefügt");
+                }
+                if (bildArray[j].schräge) {
+                    addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd, 20);
+                    console.log("schräge hinzugefügt");
+                }
+            }
+        }
+
+        function addPlatform(xKoord, yKoord, br, hgt) {
+            for (i = (0 + xKoord); i < (br + xKoord); i++) {
+
+                hindernisse[i][0] += 1;
+                hindernisse[i].push(yKoord, (yKoord - hgt));
+            }
+        }
+
+        function addPlatformSchräge(xKoord, yKoord, br, schrägeEnd, tiefe) {
+            let tempI = 0;
+            for (i = (0 + xKoord); i < (br + xKoord); i++) {
+                tempI += 1;
+                hindernisse[i][0] += 1;
+                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(yKoord - tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
+            }
+        }
+        console.log(hindernisse)
+
+
+
+
+        function schuss() {
+            if (geschw.x < 0) {
+                geschwitemp = -7;
+            } else {
+                geschwitemp = 7;
+            }
+
+            schussArray.push({
+
+                yPosi: generalRF.y + character.hight / 2,
+                breite: 20,
+                höhe: 5,
+                xGeschw: geschwitemp,
+                xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
+            })
+        }
+
+
+
+        function ticke() {
+            bewegeSpieler()
+            bewegeBild();
+
+            zeichneBild()
+
+            bewegeSchuss();
+            //zeichne schuss();
+            bewegeGegner();
+            gegnerZeichnen();
+        }
+
+
+        function bewegeSpieler() {
+            if (map[65]) {
+                geschw.x = -3;
+            } else {
+                geschw.x = 0;
+            }
+
+            if (map[68]) {
+                geschw.x = 3;
+            } else if (geschw.x > 0) {
+                geschw.x = 0;
+            }
+            if (map[70]) {
+                schuss();
+                console.log("bumm")
+            }
+
+            if (map[32]) {
+                if (onGround) {
+                    geschw.y = -15;
+                }
+            }
+            if (map[27] && pausiert) {
+                intervall = setInterval(ticke, 5);
+                pausiert = false;
+            } else if (map[27] && !pausiert) {
+                clearInterval(intervall);
+                pausiert = true;
+            }
+        }
+
+
+        function bewegeBild() {
+            geschw.y = geschw.y + beschl.y;
+            let yh;
+
+            onGround = istHindernis(generalRF.x, generalRF.y);
+
+            if (onGround) {
+                yh = hindernisse[-generalRF.x][(i * 2) + 1]; //yh ist die y-höhe von dem objekt auf dem man steht 
+            }
+
+            if (istHindernis(generalRF.x, (generalRF.y + character.hight))) {
+                console.log("kopf gestoßen");
+                if (geschw.y < 0) {
+                    geschw.y = 0;
+                }
+            }
+
+            if (istHindernis((generalRF.x + character.breite / 2), (generalRF.y + character.hight / 2))) {
+                console.log("links gestoßen");
+                if (geschw.x < 0) {
+                    geschw.x = 0;
+                }
+            }
+
+            if (istHindernis((generalRF.x - character.breite / 2), (generalRF.y + character.hight / 2))) {
+                console.log("rechts gestoßen");
+                if (geschw.x > 0) {
+                    geschw.x = 0;
+                }
+            }
+
+            if (!onGround) {
+                generalRF.x = generalRF.x - geschw.x;
+
+                generalRF.y = generalRF.y - geschw.y;
+                onGround = false;
+            } else {
+                onGround = true;
+                generalRF.y = yh;
+                if (geschw.y < 0) {
+                    generalRF.y = generalRF.y - geschw.y;
+                } else {
+                    geschw.y = 0;
+                }
+
+                generalRF.x = generalRF.x - geschw.x;
+
+            }
+
+
+        }
+
+        function zeichneBild() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.height, canvas.width);
+
+            ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, (generalRF.x / 2) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+
+            for (i = 2; i < bildArray.length; i++) {
+                ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+
+            }
+
+            zeichneCharacter(900, -generalRF.y - character.hight);
+
+            zeichneSchuss();
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            for (i = 1; i < schussArray.length; i++) {
+
+                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            }
+        }
+
+
+        function zeichneCharacter(xPos, yPos) {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(xPos, yPos, character.breite, character.hight);
+            ctx.drawImage(character.bild, xPos, yPos, character.breite, character.hight);
+        }
+
+
+        function bewegeSchuss() {
+            for (i = 1; i < schussArray.length; i++) {
+
+                schussArray[i].xPosition -= schussArray[i].xGeschw;
+            }
+        }
+
+        function zeichneSchuss() {
+
+        }
+
+
+
+        function gegnerZeichnen() {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            for (i = 0; i < gegnerArray.length; i++) {
+
+                ctx.fillRect(gegnerArray[i].xPosition + generalRF.x + 900, -gegnerArray[i].yPosi, gegnerArray[i].breite, gegnerArray[i].höhe);
+
+            }
+        }
+
+        function bewegeGegner() {
+            if (-generalRF.x < gegnerArray[0].xPosition) {
+                gegnerArray[0].xGeschw = 1;
+            } else {
+                gegnerArray[0].xGeschw = -1;
+            }
+
+            gegnerArray[0].xPosition -= gegnerArray[0].xGeschw
+        }
+
+
+
+        function istHindernis(xPosi, yPosi) {
+            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
+
+                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
+                    return true;
+                }
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>
