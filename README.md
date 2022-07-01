@@ -24,5 +24,7 @@ to Do allgemein
         - damage
  
     neues level laden?
-        // nur Startbildschirm
+        // Startbildschirm
         - Tor (kammera stoppt bewegung)
+
+    - die 1te schräge im Level 1 klappt nicht 
