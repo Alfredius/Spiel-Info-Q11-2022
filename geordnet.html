@@ -290,7 +290,7 @@
             bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
             bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
 
-            overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
+            //overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
 
 
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
@@ -500,7 +500,7 @@
             ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
 
-            ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
+            //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
 
             //Zeichnet den Bild Array 
             for (i = 3; i < bildArray.length; i++) {
@@ -514,11 +514,8 @@
                 ctx.strokeStyle = 'red';
                 ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + 900 + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
-
             zeichneCharacter(900, -generalRF.y - character.hight);
-
             zeichneSchuss();
-
         }
 
         function zeichneBildStart() {
@@ -537,11 +534,8 @@
                 ctx.strokeStyle = 'red';
                 ctx.strokeRect(gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
-
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
-
             zeichneSchussStart();
-
         }
 
 

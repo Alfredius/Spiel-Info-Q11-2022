@@ -4,28 +4,7 @@
 <head>
 </head>
 
-<body onload="starte()">
-
-    <canvas height="1000" width="1800" id="canvas" onload="test()"></canvas>
-    <br>
+<body>
     <script>
-        let canvas;
-        let ctx;
-
-        function starte() {
-            //der Variable canvas wird das Element mit der ID "canvas" zugewiesen (der Canvas der im HTML teil erstellt wurde)
-            canvas = document.getElementById('canvas');
-
-            //ctx ist der canvas, auf ihn wird zugegriffen um zu malen oder bilder einzufügen oder...
-            ctx = canvas.getContext('2d');
-
-            bild = new Image();
-            deathSreen = new Image();
-            bild.src = overlay[1].bild.src = "/Bilder/IO/Health1.gif";
-            deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
-
-            ctx.drawImage(deathSreen, 0, 0, 1800, 1000);
-
-        }
     </script>
 </body>
