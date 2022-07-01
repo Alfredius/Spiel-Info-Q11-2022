@@ -57,7 +57,7 @@
             defaultSpeed: 3,
             hight: 100,
             breite: 50,
-            health: 3,
+            health: 7,
             munition: 10,
             facingRight: true,
             bild: new Image(),
@@ -229,6 +229,23 @@
         }];
 
 
+        let overlay = [{
+            name: Lebensanzeige,
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            briete: 200,
+            höhe: 100,
+        }, {
+            name: Magazinanzeige,
+            bild: new Image(),
+            xPos: 220,
+            yPos: 0,
+            briete: 100,
+            höhe: 100,
+        }];
+
+
 
 
 
@@ -272,6 +289,9 @@
             bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png";
             bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
             bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
+
+            overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
+
 
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
             deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
@@ -334,16 +354,12 @@
             //console.log(generalRF.x + " " + generalRF.y)
             bewegeSpieler()
             bewegeBild();
-
             if (generalRF.x < -900) {
                 zeichneBild()
             } else {
-
                 zeichneBildStart()
             }
-
-            bewegeSchuss();
-            //zeichne schuss
+            bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
             bewegeGegner();
             nochAmLeben();
         }
@@ -484,6 +500,8 @@
             ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
 
+            ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
+
             //Zeichnet den Bild Array 
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
@@ -508,6 +526,7 @@
             ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
             ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
@@ -568,6 +587,7 @@
                 ctx.fillRect(-schussArray[i].xPosition - generalRF.x / 2, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
             }
         }
+
 
         function bewegeGegner() {
             for (g = 0; g < gegnerArray.length; g++) {
