@@ -211,6 +211,7 @@
             höhe: 100,
             xGeschw: 0,
             yGeshwi: 0,
+            defaultGeschwindigkeit: 1,
             typ: "melee",
             bild: new Image(),
             health: 1,
@@ -222,6 +223,7 @@
             höhe: 100,
             xGeschw: 0,
             yGeschw: 0,
+            defaultGeschwindigkeit: 2,
             typ: "melee",
             bild: new Image(),
             health: 1,
@@ -589,12 +591,19 @@
 
                 //gegner laufen dem Spieler hinterher 
                 if (-generalRF.x < gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = 1;
-                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    gegnerArray[g].xGeschw = gegnerArray[g].defaultGeschwindigkeit;
+                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
+                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
+                        gegnerArray[g].xPos = -generalRF.x;
+                    }
                 } else if (-generalRF.x > gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = -1;
-                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-
+                    gegnerArray[g].xGeschw = -gegnerArray[g].defaultGeschwindigkeit;
+                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
+                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
+                        gegnerArray[g].xPos = -generalRF.x;
+                    }
                 }
 
                 //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
@@ -602,7 +611,7 @@
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
                                 console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
                 if (gegnerArray[g].onGround == false) {
-                    gegnerArray[g].yGeschw -= beschl.y;
+                    gegnerArray[g].yGeschw -= 0,5;
                     console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
                     gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
                 } else {
