@@ -513,13 +513,7 @@
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
             }
 
-            //Zeichnet Gegner aus gegnerArray (mit hitboxen)
-            for (i = 0; i < gegnerArray.length; i++) {
-                ctx.drawImage(gegnerArray[i].bild, generalRF.x + gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
-                ctx.fillStyle = '#F0DB4F';
-                ctx.strokeStyle = 'red';
-                ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + 900 + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
-            }
+
 
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
