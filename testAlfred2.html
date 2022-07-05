@@ -24,11 +24,8 @@
         let deathSreen = new Image();
         let onGround = false;
         let hindernisse = [];
-        for (var i = 0; i < 1000; i++) {
-            //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
-            hindernisse[i] = [1, -850, -1000];
-        }
-        for (var i = 1000; i < 20000; i++) {
+
+        for (var i = 0; i < 20000; i++) {
             //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
             hindernisse[i] = [1, -850, -1000]
         }
@@ -148,7 +145,7 @@
             breite: 65,
             höhe: 100,
             hindernis: true,
-            schräge: false
+            schräge: false,
         }, {
             bild: new Image(),
             xPos: 3930,
@@ -342,6 +339,7 @@
             //zeichne schuss
             bewegeGegner();
             nochAmLeben();
+            console.log(generalRF.x + generalRF.y)
         }
 
 
@@ -392,8 +390,8 @@
                 console.log("es wurde geschlagen");
             }
 
-            //springen auf space
-            if (map[32]) {
+            //springen auf space und "w"
+            if (map[32] || map[87]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
                     geschw.y = -6;
@@ -410,9 +408,9 @@
             }
 
             //zum testen die taste "t"
-            //setzt gerade die lebne auf 0 
+            //zieht char 1 Leben ab
             if (map[84]) {
-                character.health = 0;
+                character.health = character.health - 1;
             }
 
         }
@@ -476,8 +474,8 @@
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.height, canvas.width);
 
-            ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, (generalRF.x / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+            ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos + 450, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, (generalRF.x / 1.5) + bildArray[1].xPos + 600, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, (generalRF.x / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
 
             //Zeichnet den Bild Array 
@@ -558,39 +556,48 @@
 
                 //gegner laufen dem Spieler hinterher 
                 if (-generalRF.x < gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = 1;
-                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    gegnerArray[g].xGeschw = gegnerArray[g].defaultGeschwindigkeit;
+                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
+                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
+                        gegnerArray[g].xPos = -generalRF.x;
+                    }
                 } else if (-generalRF.x > gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = -1;
-                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-
+                    gegnerArray[g].xGeschw = -gegnerArray[g].defaultGeschwindigkeit;
+                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
+                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
+                        gegnerArray[g].xPos = -generalRF.x;
+                    }
                 }
 
-                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
+                //fallbes/*chleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
                 /*
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
-                                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
+                                console.log("Gegner " + g + " onGround: " + gegnerArray[g].onGround) 
                 if (gegnerArray[g].onGround == false) {
                     gegnerArray[g].yGeschw -= beschl.y;
                     console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
                     gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
                 } else {
                     gegnerArray[g].yGeschw = 0;
-                }*/
-
+                }
+*/
             }
+
         }
 
         //klappt nicht 
+
         function kolidiert(xPosi, yPosi) {
             for (i = 0; i < hindernisse[-xPosi][0]; i++) {
 
                 if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
                     return true;
                 }
+                return false;
             }
         }
-
 
 
         function nochAmLeben() {
