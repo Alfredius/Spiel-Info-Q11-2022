@@ -8,14 +8,25 @@ Falls sich jemand nicht auskennt mit Github gerne bescheid sagen.
 Falls ihr ein Dokument bearbeitet oder erweitert denkt bitte daran, euern Code zu kommentieren (nicht zu knapp) damit jeder immer versteht was der andere
 gemacht hat und was das eingefügte bisschen code tut. 
 
-to do 
+to do:
+hitboxen (schrägen JONAS)
+gegner 
+    schießen
+    sterben
+    leben
+    (umbringen von gegner)
+ neues Level laden
+(home sccreen)
+
+
 Jonas:
     
 
 ALfred:
-    Gegner; 
-
-
+UI
+    leben
+    munition
+    
 to Do allgemein
     
     gegner
