@@ -45,7 +45,7 @@
         }
         let character = {
             defaultHight: 100,
-            defaultSpeed: 3,
+            defaultSpeed: 7, //normal 3
             hight: 100,
             breite: 50,
             health: 3,
@@ -89,6 +89,30 @@
             breite: 10000,
             höhe: 1000,
             hindernis: false,
+            schräge: false
+        }, {
+            bild: new Image(), //Box 1
+            xPos: 750,
+            yPos: 791,
+            breite: 130,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(), //Box 2
+            xPos: 1283,
+            yPos: 791,
+            breite: 122,
+            höhe: 100,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(), //Box 3
+            xPos: 1300,
+            yPos: 734,
+            breite: 122,
+            höhe: 50,
+            hindernis: true,
             schräge: false
         }, {
             bild: new Image(),
@@ -184,6 +208,14 @@
             yPos: 435,
             breite: 660,
             höhe: 50,
+            hindernis: true,
+            schräge: false
+        }, {
+            bild: new Image(), //Polizeiauto
+            xPos: 5040,
+            yPos: 215,
+            breite: 213,
+            höhe: 200,
             hindernis: true,
             schräge: false
         }];
@@ -394,7 +426,7 @@
             if (map[32] || map[87]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -6;
+                    geschw.y = -8; //normal -6
                 }
             }
 
@@ -511,8 +543,9 @@
             ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
-
             }
+
+
 
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
@@ -571,6 +604,16 @@
                     }
                 }
 
+                /* gegnerArray[g].onGround = istHindernis(gegnerArray[g].xPos, gegnerArray[g].yPos)
+
+                if (!gegnerArray[g].onGround) {
+                    gegnerArray[g].yGeschw = -0, 1;
+                    gegnerArray[g].yPos = gegnerArray[g].yPos - gegnerArray[g].yGeschw;
+                } else {
+                    gegnerArray[g].yPos = yh;
+                    gegnerArray[g].yGeschw = 0;
+                }
+*/
                 //fallbes/*chleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
                 /*
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )

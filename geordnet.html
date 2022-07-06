@@ -23,7 +23,16 @@
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
+        let tickerZeit = 5;
         let hindernisse = [];
+        let renderedistance = 1000;
+        let intervall = setInterval(ticke, tickerZeit); // setzt den tick speed 
+
+        let ZeitLetzte = Date.now()
+        let ZeitStart = Date.now()
+        let counter = 0;
+        let counterCont = 0;
+        let counterContStart = 0;
 
         for (var i = 0; i < 20000; i++) {
             //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
@@ -45,17 +54,16 @@
         }
         let character = {
             defaultHight: 100,
-            defaultSpeed: 7, //normal 3
+            defaultSpeed: 3,
             hight: 100,
             breite: 50,
-            health: 3,
+            health: 7,
+            munition: 10,
             facingRight: true,
             bild: new Image(),
             cooldownAngriff: Date.now(),
         }
 
-        let renderedistance = 1000;
-        let intervall = setInterval(ticke, 10); // setzt den tick speed 
 
 
         let bildArray = [{
@@ -89,30 +97,6 @@
             breite: 10000,
             höhe: 1000,
             hindernis: false,
-            schräge: false
-        }, {
-            bild: new Image(),  //Box 1
-            xPos: 750,
-            yPos: 791,
-            breite: 130,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),  //Box 2
-            xPos: 1283,
-            yPos: 791,
-            breite: 122,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),  //Box 3
-            xPos: 1300,
-            yPos: 734,
-            breite: 122,
-            höhe: 50,
-            hindernis: true,
             schräge: false
         }, {
             bild: new Image(),
@@ -169,7 +153,7 @@
             breite: 65,
             höhe: 100,
             hindernis: true,
-            schräge: false,
+            schräge: false
         }, {
             bild: new Image(),
             xPos: 3930,
@@ -210,14 +194,6 @@
             höhe: 50,
             hindernis: true,
             schräge: false
-        }, {
-            bild: new Image(), //Polizeiauto
-            xPos: 5040,
-            yPos: 215,
-            breite: 213,
-            höhe: 200,
-            hindernis: true,
-            schräge: false
         }];
 
         let schussArray = [{
@@ -235,6 +211,7 @@
             höhe: 100,
             xGeschw: 0,
             yGeshwi: 0,
+            defaultGeschwindigkeit: 1,
             typ: "melee",
             bild: new Image(),
             health: 1,
@@ -246,10 +223,28 @@
             höhe: 100,
             xGeschw: 0,
             yGeschw: 0,
+            defaultGeschwindigkeit: 2,
             typ: "melee",
             bild: new Image(),
             health: 1,
             onGround: false,
+        }];
+
+
+        let overlay = [{
+            name: "Lebensanzeige",
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            briete: 200,
+            höhe: 100,
+        }, {
+            name: "Magazinanzeige",
+            bild: new Image(),
+            xPos: 220,
+            yPos: 0,
+            briete: 100,
+            höhe: 100,
         }];
 
 
@@ -297,6 +292,9 @@
             bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
             bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
 
+            //overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
+
+
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
             deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
 
@@ -334,8 +332,7 @@
             for (i = (0 + xKoord); i < (br + xKoord); i++) {
                 tempI += 1;
                 hindernisse[i][0] += 1;
-                yKoord
-                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(-tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
+                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(yKoord - tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
             }
         }
 
@@ -359,19 +356,14 @@
             //console.log(generalRF.x + " " + generalRF.y)
             bewegeSpieler()
             bewegeBild();
-
             if (generalRF.x < -900) {
                 zeichneBild()
             } else {
-
                 zeichneBildStart()
             }
-
-            bewegeSchuss();
-            //zeichne schuss
+            bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
             bewegeGegner();
             nochAmLeben();
-            console.log(generalRF.x + generalRF.y)
         }
 
 
@@ -383,6 +375,7 @@
             } else {
                 geschw.x = 0;
             }
+
 
             //nach rechts laufen auf "d"
             if (map[68]) {
@@ -422,11 +415,11 @@
                 console.log("es wurde geschlagen");
             }
 
-            //springen auf space und "w"
-            if (map[32] || map[87]) {
+            //springen auf space
+            if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -8; //normal -6
+                    geschw.y = -6;
                 }
             }
 
@@ -440,9 +433,9 @@
             }
 
             //zum testen die taste "t"
-            //zieht char 1 Leben ab
+            //setzt gerade die lebne auf 0 
             if (map[84]) {
-                character.health = character.health - 1;
+                character.health = 0;
             }
 
         }
@@ -506,9 +499,11 @@
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.height, canvas.width);
 
-            ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos + 450, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, (generalRF.x / 1.5) + bildArray[1].xPos + 600, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, (generalRF.x / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+            ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+            ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+
+            //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
 
             //Zeichnet den Bild Array 
             for (i = 3; i < bildArray.length; i++) {
@@ -522,18 +517,8 @@
                 ctx.strokeStyle = 'red';
                 ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + 900 + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
-
             zeichneCharacter(900, -generalRF.y - character.hight);
-
             zeichneSchuss();
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-            }
         }
 
         function zeichneBildStart() {
@@ -541,25 +526,21 @@
             ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
             ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
+
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
+
             }
-
-
-
-
+            for (i = 0; i < gegnerArray.length; i++) {
+                ctx.drawImage(gegnerArray[i].bild, gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
+                ctx.fillStyle = '#F0DB4F';
+                ctx.strokeStyle = 'red';
+                ctx.strokeRect(gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
+            }
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
-
-            zeichneSchuss();
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-            }
+            zeichneSchussStart();
         }
+
 
         function zeichneCharacter(xPos, yPos) {
             ctx.fillStyle = '#F0DB4F';
@@ -582,7 +563,28 @@
             }
         }
 
-        function zeichneSchuss() {}
+        function zeichneSchuss() {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for (i = 1; i < schussArray.length; i++) {
+
+                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            }
+        }
+
+        function zeichneSchussStart() {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for (i = 1; i < schussArray.length; i++) {
+
+                ctx.fillRect(-schussArray[i].xPosition - generalRF.x / 2, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            }
+        }
+
 
         function bewegeGegner() {
             for (g = 0; g < gegnerArray.length; g++) {
@@ -604,43 +606,31 @@
                     }
                 }
 
-               /* gegnerArray[g].onGround = istHindernis(gegnerArray[g].xPos, gegnerArray[g].yPos)
-
-                if (!gegnerArray[g].onGround) {
-                    gegnerArray[g].yGeschw = -0, 1;
-                    gegnerArray[g].yPos = gegnerArray[g].yPos - gegnerArray[g].yGeschw;
-                } else {
-                    gegnerArray[g].yPos = yh;
-                    gegnerArray[g].yGeschw = 0;
-                }
-*/
-                //fallbes/*chleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
+                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
                 /*
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
-                                console.log("Gegner " + g + " onGround: " + gegnerArray[g].onGround) 
+                                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
                 if (gegnerArray[g].onGround == false) {
-                    gegnerArray[g].yGeschw -= beschl.y;
+                    gegnerArray[g].yGeschw -= 0,5;
                     console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
                     gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
                 } else {
                     gegnerArray[g].yGeschw = 0;
-                }
-*/
-            }
+                }*/
 
+            }
         }
 
         //klappt nicht 
-
         function kolidiert(xPosi, yPosi) {
             for (i = 0; i < hindernisse[-xPosi][0]; i++) {
 
                 if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
                     return true;
                 }
-                return false;
             }
         }
+
 
 
         function nochAmLeben() {
@@ -673,22 +663,24 @@
         // hier stehen die Aktionen des Characters
 
         function schuss() {
-            if (character.cooldownAngriff + 300 <= Date.now()) {
+            if (character.cooldownAngriff + 300 <= Date.now() && character.munition > 0) {
                 if (character.facingRight == false) {
-                    geschwitemp = -7;
+                    geschwitemp = -14;
                 } else {
-                    geschwitemp = 7;
+                    geschwitemp = 14;
                 }
                 schussArray.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
 
                         yPosi: generalRF.y + character.hight / 2,
-                        breite: 20,
+                        breite: 15,
                         höhe: 5,
                         xGeschw: geschwitemp,
                         xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
                     })
                     //console.log(schussArray)
                 character.cooldownAngriff = Date.now()
+                character.munition = character.munition - 1;
+                console.log(character.munition + " Schuss übrig");
             }
         }
 
@@ -697,6 +689,32 @@
             // richtung des Schlages 
             // erkennen, ob treffer 
             // animation
+        }
+
+
+
+
+
+
+
+        function fps() {
+            if (counter < 1) {
+                counter++;
+                counterCont++;
+
+            } else {
+                if (counterContStart > 100) {
+                    console.log("   Avg: " + (1000 * counterCont / (Date.now() - ZeitStart)))
+                    counterCont++;
+                } else {
+                    ZeitStart = Date.now()
+                }
+                console.log((1000 / (Date.now() - ZeitLetzte)))
+                counterContStart++;
+
+                ZeitLetzte = Date.now()
+                counter = 1;
+            }
         }
     </script>
 
