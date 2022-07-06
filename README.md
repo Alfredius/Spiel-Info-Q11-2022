@@ -9,7 +9,8 @@ Falls ihr ein Dokument bearbeitet oder erweitert denkt bitte daran, euern Code z
 gemacht hat und was das eingefügte bisschen code tut. 
 
 to do:
-hitboxen (schrägen JONAS)
+hitboxen (schrägen JONAS)  
+Änderungen an Hitboxen nur noch im HITBOXEN file machen, dann können wir die am ende einfach rüberkopieren -Nik
 gegner 
     schießen
     sterben
