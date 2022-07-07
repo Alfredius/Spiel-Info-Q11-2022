@@ -138,15 +138,17 @@
             höhe: 100,
             hindernis: true,
             schräge: false
-        }, {
+        },{
             bild: new Image(),
             xPos: 2810,
-            yPos: 650,
-            breite: 180,
-            höhe: 80,
-            hindernis: true,
-            schräge: false
-        }, {
+            yPos: 620,
+            breite: 170,
+            höhe: 100,
+            schrägeStart:700,
+            schrägeEnd:620,
+            hindernis: false,
+            schräge: true
+        },{
             bild: new Image(),
             xPos: 3070,
             yPos: 705,
@@ -210,6 +212,16 @@
             höhe: 50,
             hindernis: true,
             schräge: false
+        },{
+            bild: new Image(),
+            xPos: 4780,
+            yPos: 220,
+            breite: 270,
+            höhe: 250,
+            schrägeStart:380,
+            schrägeEnd:220,
+            hindernis: false,
+            schräge: true
         }, {
             bild: new Image(),
             xPos: 5370,
@@ -386,7 +398,7 @@
 
         function ticke() {
             // console.log("tick");
-            //console.log(generalRF.x + " " + generalRF.y)
+            console.log(generalRF.x + " " + generalRF.y)
             bewegeSpieler()
             bewegeBild();
             if (generalRF.x < -900) {
