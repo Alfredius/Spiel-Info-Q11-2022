@@ -266,15 +266,15 @@
         let overlayArray = [{
             //Lebensanzeige
             bild: new Image(),
-            xPos: 0,
-            yPos: 0,
-            briete: 200,
-            höhe: 100,
+            xPos: 10,
+            yPos: 940,
+            briete: 100,
+            höhe: 50,
         }, {
             //Magazin
             bild: new Image(),
             xPos: 220,
-            yPos: 0,
+            yPos: 940,
             briete: 100,
             höhe: 100,
         }];
@@ -282,7 +282,8 @@
 
 
 
-        let healthbar = new Image();
+
+
 
 
 
@@ -333,8 +334,8 @@
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
-            overlayArray[0].bild.src = " ./Bilder/IO/HealthStatic7.png ";
-            healthbar.src = " ./Bilder/IO/HealthStatic7.png ";
+            overlayArray[0].bild.src = " ./Bilder/IO/Health7.gif ";
+
 
             //overlayArray[0].Image.src = ""
             hindernisseHinzufuegen();
@@ -555,7 +556,9 @@
                 ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + 900 + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
 
-            ctx.drawImage(overlayArray[0].bild, 100, 100, 500, 300);
+            for (i = 0; i < overlayArray.length; i++) {
+                ctx.drawImage(overlayArray[i].bild, overlayArray[i].xPos, overlayArray[i].yPos, overlayArray[i].briete, overlayArray[i].höhe);
+            }
 
             zeichneCharacter(900, -generalRF.y - character.hight);
             zeichneSchuss();
@@ -578,7 +581,9 @@
                 ctx.strokeRect(gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
 
-            ctx.drawImage(overlayArray[0].bild, 100, 100, 500, 300);
+            for (i = 0; i < overlayArray.length; i++) {
+                ctx.drawImage(overlayArray[i].bild, overlayArray[i].xPos, overlayArray[i].yPos, overlayArray[i].briete, overlayArray[i].höhe);
+            }
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
             zeichneSchussStart();
