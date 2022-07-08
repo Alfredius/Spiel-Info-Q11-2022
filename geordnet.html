@@ -41,7 +41,7 @@
         //console.log(hindernisse)
 
         let generalRF = {
-            x: -100,
+            x: -6000,
             y: 400
         }
         let beschl = {
@@ -238,6 +238,16 @@
             höhe: 200,
             hindernis: true,
             schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 7900,
+            yPos: 590,
+            breite: 300,
+            höhe: 100,
+            schrägeStart: 750,
+            schrägeEnd: 590,
+            hindernis: false,
+            schräge: true
         }];
 
         let schussArray = [{
@@ -483,7 +493,7 @@
             //zum testen die taste "t"
             //setzt gerade die lebne auf 0 
             if (map[84]) {
-                character.health = 0;
+                character.health = character.health - 1 ;
             }
 
         }
