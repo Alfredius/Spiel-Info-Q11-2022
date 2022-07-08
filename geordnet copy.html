@@ -34,15 +34,12 @@
         let counterCont = 0;
         let counterContStart = 0;
 
-        for (var i = 0; i < 20000; i++) {
-            //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
-            hindernisse[i] = [1, -850, -1000]
-        }
+       
         //console.log(hindernisse)
 
         let generalRF = {
-            x: -6000,
-            y: 400
+            x: -100,
+            y: -400
         }
         let beschl = {
             x: 0,
@@ -74,180 +71,6 @@
             höhe: 1000,
             hindernis: false,
             schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 0,
-            yPos: 0,
-            breite: 10000,
-            höhe: 1000,
-            hindernis: false,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 0,
-            yPos: 0,
-            breite: 10,
-            höhe: 3000,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 0,
-            yPos: 0,
-            breite: 10000,
-            höhe: 1000,
-            hindernis: false,
-            schräge: false
-        }, {
-            bild: new Image(), //Box 1
-            xPos: 750,
-            yPos: 791,
-            breite: 130,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Box 2
-            xPos: 1283,
-            yPos: 791,
-            breite: 122,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Box 3
-            xPos: 1300,
-            yPos: 736,
-            breite: 122,
-            höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 2180,
-            yPos: 785,
-            breite: 70,
-            höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 2240,
-            yPos: 705,
-            breite: 570,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 2810,
-            yPos: 620,
-            breite: 170,
-            höhe: 100,
-            schrägeStart: 700,
-            schrägeEnd: 620,
-            hindernis: false,
-            schräge: true
-        }, {
-            bild: new Image(),
-            xPos: 3070,
-            yPos: 705,
-            breite: 870,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 3100,
-            yPos: 560,
-            breite: 290,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 3140,
-            yPos: 410,
-            breite: 150,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 3515,
-            yPos: 635,
-            breite: 65,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 3930,
-            yPos: 785,
-            breite: 75,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 4080,
-            yPos: 700,
-            breite: 230,
-            höhe: 10,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 4350,
-            yPos: 605,
-            breite: 230,
-            höhe: 15,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 4650,
-            yPos: 435,
-            breite: 650,
-            höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 4780,
-            yPos: 220,
-            breite: 270,
-            höhe: 250,
-            schrägeStart: 380,
-            schrägeEnd: 220,
-            hindernis: false,
-            schräge: true
-        }, {
-            bild: new Image(),
-            xPos: 5370,
-            yPos: 435,
-            breite: 660,
-            höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Polizeiauto
-            xPos: 5040,
-            yPos: 215,
-            breite: 213,
-            höhe: 200,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 7900,
-            yPos: 590,
-            breite: 300,
-            höhe: 100,
-            schrägeStart: 750,
-            schrägeEnd: 590,
-            hindernis: false,
-            schräge: true
         }];
 
         let schussArray = [{
@@ -258,31 +81,7 @@
             xGeschw: 0
         }];
 
-        let gegnerArray = [{
-            xPos: 300,
-            yPos: 400,
-            breite: 50,
-            höhe: 100,
-            xGeschw: 0,
-            yGeshwi: 0,
-            defaultGeschwindigkeit: 1,
-            typ: "melee",
-            bild: new Image(),
-            health: 1,
-            onGround: false,
-        }, {
-            xPos: 400,
-            yPos: 500,
-            breite: 50,
-            höhe: 100,
-            xGeschw: 0,
-            yGeschw: 0,
-            defaultGeschwindigkeit: 2,
-            typ: "melee",
-            bild: new Image(),
-            health: 1,
-            onGround: false,
-        }];
+        let gegnerArray = [];
 
 
         let overlayArray = [{
@@ -339,59 +138,17 @@
             //ctx ist der canvas, auf ihn wird zugegriffen um zu malen oder bilder einzufügen oder...
             ctx = canvas.getContext('2d');
 
-            //erstellt eine neue variable, die ein bild mit dieser Adresse ist
-            //bilder.bild = new Image();
-            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png";
-            bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png";
-            bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
-            bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
+       
+            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions.png";
+           
+           
 
-            //overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
-
-
-            character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
-            deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
-
-            gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
-            gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
-
-            overlayArray[0].bild.src = "./Bilder/IO/Health7.gif";
-
-
+            bildArray[0].onload = ctx.drawImage(bildArray[0].bild,0,0)
+           // bildArray[0].bild.crossOrigin = "Anonymous"
+ console.log(bildArray[0].bild)
             
-            hindernisseHinzufuegen();
-            console.log(hindernisse)
-        }
-
-
-        function hindernisseHinzufuegen() {
-
-            for (j = 1; j < bildArray.length; j++) {
-                if (bildArray[j].hindernis) {
-                    addPlatform(bildArray[j].xPos, -bildArray[j].yPos, bildArray[j].breite, bildArray[j].höhe);
-                    console.log("Hinderniss " + j + " hinzugefügt");
-                }
-                if (bildArray[j].schräge) {
-                    addPlatformSchräge(bildArray[j].xPos, bildArray[j].schrägeStart, bildArray[j].breite, bildArray[j].schrägeEnd, 20);
-                    console.log("schräge    " + j + " hinzugefügt");
-                }
-            }
-        }
-
-        function addPlatform(xKoord, yKoord, br, hgt) {
-            for (i = (0 + xKoord); i < (br + xKoord); i++) {
-                hindernisse[i][0] += 1;
-                hindernisse[i].push(yKoord, (yKoord - hgt));
-            }
-        }
-
-        function addPlatformSchräge(xKoord, yKoord, br, schrägeEnd, tiefe) {
-            let tempI = 0;
-            for (i = (0 + xKoord); i < (br + xKoord); i++) {
-                tempI += 1;
-                hindernisse[i][0] += 1;
-                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(yKoord - tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
-            }
+            
+            
         }
 
 
@@ -411,20 +168,25 @@
 
         function ticke() {
             // console.log("tick");
-            
+            //ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+
             // console.log(generalRF.x + " " + generalRF.y);
-            bewegeSpieler();
-            bewegeBild();
+            //ctx.fillStyle = "white"
+            ctx.fillRect(0,0,2000,2000)
+          
+            
             if (generalRF.x < -900) {
                 zeichneBild()
             } else {
                 zeichneBildStart()
             }
             bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
-            bewegeGegner();
+            bewegeBild();
+              bewegeSpieler();
+            //bewegeGegner();
             nochAmLeben();
-            imagedata = ctx.getImageData(1000,800,2,2);
-            console.log(imagedata)
+           // imagedata = ctx.getImageData(1000,800,1,1);
+           // console.log(imagedata.data)
         }
 
 
@@ -503,13 +265,13 @@
 
         function bewegeBild() {
             geschw.y = geschw.y + beschl.y;
-            let yh; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
+            let yh = -200; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
             onGround = istHindernis(generalRF.x, generalRF.y);
-
+/*
             if (onGround) {
                 yh = hindernisse[-generalRF.x][(i * 2) + 1];
             }
-
+            */
             if (istHindernis(generalRF.x, (generalRF.y + character.hight))) {
                 console.log("kopf gestoßen");
                 if (geschw.y < 0) {
@@ -537,7 +299,7 @@
                 onGround = false;
             } else {
                 onGround = true;
-                generalRF.y = yh;
+               // generalRF.y = yh;
                 if (geschw.y < 0) {
                     generalRF.y = generalRF.y - geschw.y;
                 } else {
@@ -548,12 +310,14 @@
         }
 
         function istHindernis(xPosi, yPosi) {
-            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
-
-                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
-                    return true;
-                }
+            imagedata = ctx.getImageData(-xPosi + generalRF.x,-yPosi,1,1)
+            if(imagedata.data[0] == 0 || imagedata.data[1] == 0 || imagedata.data[2] == 0 || imagedata.data[3] == 0){
+                console.log("Schwarz")
+                console.log(imagedata.data)
+                return true;
             }
+            console.log(imagedata.data[1])
+            return false;
         }
 
         function zeichneBild() {
@@ -561,9 +325,7 @@
             ctx.fillRect(0, 0, canvas.height, canvas.width);
 
             ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-
+           
             //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
 
             //Zeichnet den Bild Array 
@@ -590,9 +352,7 @@
         function zeichneBildStart() {
 
             ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-
+           
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
@@ -657,50 +417,7 @@
         }
 
 
-        function bewegeGegner() {
-            for (g = 0; g < gegnerArray.length; g++) {
-
-                //gegner laufen dem Spieler hinterher 
-                if (-generalRF.x < gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = gegnerArray[g].defaultGeschwindigkeit;
-                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
-                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
-                        gegnerArray[g].xPos = -generalRF.x;
-                    }
-                } else if (-generalRF.x > gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = -gegnerArray[g].defaultGeschwindigkeit;
-                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
-                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
-                        gegnerArray[g].xPos = -generalRF.x;
-                    }
-                }
-
-                //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
-                /*
-                                gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
-                                console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
-                if (gegnerArray[g].onGround == false) {
-                    gegnerArray[g].yGeschw -= 0,5;
-                    console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
-                    gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
-                } else {
-                    gegnerArray[g].yGeschw = 0;
-                }*/
-
-            }
-        }
-
-        //klappt nicht 
-        function kolidiert(xPosi, yPosi) {
-            for (i = 0; i < hindernisse[-xPosi][0]; i++) {
-
-                if (yPosi <= hindernisse[-xPosi][(i * 2) + 1] && yPosi >= hindernisse[-xPosi][(i * 2) + 2]) {
-                    return true;
-                }
-            }
-        }
+     
 
 
 

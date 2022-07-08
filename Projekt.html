@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<head Access-Control-Allow-Origin>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="p5.js" type="text/javascript"></script>
     <style>
         canvas {
             border: 1px solid black
@@ -16,15 +14,8 @@
 
 <body onload="test()">
 
-
-    <h1 id="caption">Hallo</h1>
     <script>
-        function keyPressed() {
-            if (keyCode === 0) {
-                document.getElementById("caption").innerHTML = "Tschau";
-                alert("Hallo");
-            }
-        }
+
 
         function test() {
 
@@ -40,18 +31,20 @@
             ctx.strokeRect(50, 50, 150, 100);
 
             let bild1 = new Image();
-            bild1.src = "test.jpg";
+            //bild1.crossOrigin = "";
+            bild1.src = "Health7.gif";
             bild1.onload = function() {
                 ctx.drawImage(bild1, -50, 20, 100, 200);
 
-                /*
-                                var bild2 = new Image();
-                                bild2.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.makeagif.com%2Fmedia%2F5-07-2015%2Ffzyq6Y.gif&f=1&nofb=1";
-                                bild2.onload = function() {
-                                ctx.drawImage(bild2, 150, 20, 100, 200);
-                */
+                console.log(bild1);
+ 
+  imagedata = ctx.getImageData(10,100,1,1);
+            ctx.fillStyle = 'red';
+            console.log(imagedata.data)
+
 
             }
+          
 
         }
     </script>
