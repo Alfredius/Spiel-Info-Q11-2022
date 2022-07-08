@@ -21,6 +21,7 @@ gegner
 
 
 Jonas:
+    Level 2, canvas pixel auslesen
     
 
 ALfred:
