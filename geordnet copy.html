@@ -313,7 +313,6 @@
             imagedata = ctx.getImageData(-xPosi + generalRF.x,-yPosi,1,1)
             if(imagedata.data[0] == 0 || imagedata.data[1] == 0 || imagedata.data[2] == 0 || imagedata.data[3] == 0){
                 console.log("Schwarz")
-                console.log(imagedata.data)
                 return true;
             }
             console.log(imagedata.data[1])
