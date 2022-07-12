@@ -40,6 +40,7 @@
         }
         //console.log(hindernisse)
 
+        //character spornen an: 
         let generalRF = {
             x: -100,
             y: 400
@@ -758,6 +759,7 @@
                 character.health = character.health - 1;
                 character.cooldownDamage = Date.now()
                 console.log("du hast noch " + character.health + " Leben")
+                overlayArray[0].bild.src = " ./Bilder/IO/Health" + character.health + ".gif ";
             }
         }
 
