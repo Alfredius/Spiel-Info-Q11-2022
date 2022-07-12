@@ -12,7 +12,7 @@ to do:
 hitboxen (schrägen JONAS)  
 Änderungen an Hitboxen nur noch im HITBOXEN file machen, dann können wir die am ende einfach rüberkopieren -Nik
 gegner 
-    schießen
+    schießen nik
     sterben
     leben
     (umbringen von gegner)
