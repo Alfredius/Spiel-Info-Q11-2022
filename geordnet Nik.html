@@ -353,7 +353,7 @@
             deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
 
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
-            gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
+            //gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
             overlayArray[0].bild.src = " ./Bilder/IO/Health7.gif ";
 
@@ -712,8 +712,10 @@
 
 
         function aktionGegner() {
-            if (gegnerArray[0].xPos + generalRF.x <= 800 || gegnerArray[0].xPos - generalRF.x >= -800) {
+            if (gegnerArray[0].xPos + generalRF.x <= 800 && gegnerArray[0].xPos + generalRF.x >= -800) {
                 schussGegner(0);
+                bewegeGegnerSchuss();
+                zeichneGegnerSchuss();
             }
         }
 
@@ -721,10 +723,10 @@
             //function schuss()
             if (gegnerArray[z].cooldownAngriff + 300 <= Date.now()) {
                 
-                if (gegnerArray[0].xPos + generalRF.x <= 0) {
-                    geschwitemp = 14;
+                if (gegnerArray[z].xPos + generalRF.x <= 0) {
+                    geschwitempGegner = 14;
                 } else {
-                    geschwitemp = -14;
+                    geschwitempGegner = -14;
                 } 
 
                 schussArrayGegner.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
@@ -732,21 +734,46 @@
                         yPosi: gegnerArray[z].yPos + gegnerArray[z].hight / 2,
                         breite: 15,
                         höhe: 5,
-                        xGeschw: geschwitemp,
-                        xPosition: gegnerArray[z].xPos / 2 - gegnerArray[z].breite / 2 - geschwitemp
+                        xGeschw: geschwitempGegner,
+                        xPosition: gegnerArray[z].xPos / 2 - gegnerArray[z].breite / 2 - geschwitempGegner,
                     })
                     console.log(schussArrayGegner)
                 //gegnerArray.cooldownAngriff = Date.now() 
                             console.log("Peng!!!");
 
+               // bewegeGegnerSchuss(z);
+               // zeichneGegnerSchuss(z);
+
             }
 
         }
 
+        
+        function bewegeGegnerSchuss() {
+            for (i = 1; i < schussArrayGegner.length; i++) {
 
+                schussArrayGegner[i].xPosition -= schussArrayGegner[i].xGeschw;
 
+                if (schussArrayGegner[i].xPosition - generalRF.x / 2 >= renderedistance) {
+                    schussArrayGegner.splice(i, 1);
 
+                } else if (schussArrayGegner[i].xPosition - generalRF.x / 2 <= -renderedistance) {
+                    schussArrayGegner.splice(i, 1);
+                }
+            }
+        }
+        
+        
+        function zeichneGegnerSchuss() {
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
 
+            // Ein ausgemaltes Rechteck malen
+            for (i = 1; i < schussArrayGegner.length; i++) {
+
+                ctx.fillRect(-schussArrayGegner[i].xPosition + generalRF.x / 2 + 900, -schussArrayGegner[i].yPosi, schussArrayGegner[i].breite, schussArrayGegner[i].höhe);
+            }
+        }
 
 
 
