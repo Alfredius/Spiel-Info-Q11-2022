@@ -62,6 +62,7 @@
             facingRight: true,
             bild: new Image(),
             cooldownAngriff: Date.now(),
+            cooldownDamage: Date.now(),
         }
 
 
@@ -238,16 +239,6 @@
             höhe: 200,
             hindernis: true,
             schräge: false
-        }, {
-            bild: new Image(),
-            xPos: 7900,
-            yPos: 590,
-            breite: 300,
-            höhe: 100,
-            schrägeStart: 750,
-            schrägeEnd: 590,
-            hindernis: false,
-            schräge: true
         }];
 
         let schussArray = [{
@@ -296,7 +287,7 @@
             //Magazin
             bild: new Image(),
             xPos: 220,
-            yPos: 0,
+            yPos: 940,
             briete: 100,
             höhe: 100,
         }];
@@ -355,10 +346,11 @@
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
-            overlayArray[0].bild.src = "./Bilder/IO/Health7.gif";
+            overlayArray[0].bild.src = " ./Bilder/IO/Health7.gif ";
 
 
-            
+
+            //overlayArray[0].Image.src = ""
             hindernisseHinzufuegen();
             console.log(hindernisse)
         }
@@ -493,7 +485,8 @@
             //zum testen die taste "t"
             //setzt gerade die lebne auf 0 
             if (map[84]) {
-                character.health = character.health - 1 ;
+                characterSchaden();
+                console.log("du hast schaden erlitten");
             }
 
         }
@@ -757,6 +750,15 @@
             // richtung des Schlages 
             // erkennen, ob treffer 
             // animation
+        }
+
+        function characterSchaden() {
+            if (character.cooldownDamage + 400 <= Date.now()) {
+
+                character.health = character.health - 1;
+                character.cooldownDamage = Date.now()
+                console.log("du hast noch " + character.health + " Leben")
+            }
         }
 
 
