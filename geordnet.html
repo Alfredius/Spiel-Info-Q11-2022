@@ -60,10 +60,13 @@
             breite: 50,
             health: 7,
             munition: 10,
+            munitionInKammer: 4,
+            defaultMunitionInKammer: 4,
             facingRight: true,
             bild: new Image(),
             cooldownAngriff: Date.now(),
             cooldownDamage: Date.now(),
+            relodeTimer: Date.now(),
         }
 
 
@@ -347,7 +350,8 @@
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
-            overlayArray[0].bild.src = " ./Bilder/IO/Health7.gif ";
+            overlayArray[0].bild.src = "./Bilder/IO/Health7.gif ";
+            overlayArray[1].bild.src = "";
 
 
 
@@ -725,7 +729,7 @@
         // hier stehen die Aktionen des Characters
 
         function schuss() {
-            if (character.cooldownAngriff + 300 <= Date.now() && character.munition > 0) {
+            if (character.cooldownAngriff + 300 <= Date.now() && character.munitionInKammer > 0 && character.relodeTimer + 3000 <= Date.now()) {
                 if (character.facingRight == false) {
                     geschwitemp = -14;
                 } else {
@@ -741,7 +745,19 @@
                     })
                     //console.log(schussArray)
                 character.cooldownAngriff = Date.now()
-                character.munition = character.munition - 1;
+                character.munitionInKammer = character.munitionInKammer - 1;
+
+                if (character.munitionInKammer <= 0) {
+                    character.relodeTimer = Date.now();
+                    if (character.munition >= character.defaultMunitionInKammer) {
+                        character.munitionInKammer = character.defaultMunitionInKammer;
+                        character.munition = character.munition - character.defaultMunitionInKammer;
+                    } else {
+                        character.munitionInKammer = character.munition;
+                        character.munition = 0;
+                    }
+
+                }
                 console.log(character.munition + " Schuss übrig");
             }
         }
