@@ -261,6 +261,7 @@
             bild: new Image(),
             health: 1,
             onGround: false,
+            cooldownAngriff: Date.now(),
         }/*, {
             xPos: 400,
             yPos: 500,
@@ -290,6 +291,14 @@
             yPos: 940,
             briete: 100,
             höhe: 100,
+        }];
+
+        let schussArrayGegner = [{
+            xPosition: 0,
+            yPosi: 0,
+            breite: 0,
+            höhe: 0,
+            xGeschw: 0
         }];
 
 
@@ -703,14 +712,35 @@
 
 
         function aktionGegner() {
-            if (gegnerArray[0].xPos + generalRF.x <= 800) {
-                schussGegner();
+            if (gegnerArray[0].xPos + generalRF.x <= 800 || gegnerArray[0].xPos - generalRF.x >= -800) {
+                schussGegner(0);
             }
         }
 
-        function schussGegner() {
-            console.log("Peng!!!");
-            
+        function schussGegner(z) {
+            //function schuss()
+            if (gegnerArray[z].cooldownAngriff + 300 <= Date.now()) {
+                
+                if (gegnerArray[0].xPos + generalRF.x <= 0) {
+                    geschwitemp = 14;
+                } else {
+                    geschwitemp = -14;
+                } 
+
+                schussArrayGegner.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
+
+                        yPosi: gegnerArray[z].yPos + gegnerArray[z].hight / 2,
+                        breite: 15,
+                        höhe: 5,
+                        xGeschw: geschwitemp,
+                        xPosition: gegnerArray[z].xPos / 2 - gegnerArray[z].breite / 2 - geschwitemp
+                    })
+                    console.log(schussArrayGegner)
+                //gegnerArray.cooldownAngriff = Date.now() 
+                            console.log("Peng!!!");
+
+            }
+
         }
 
 
