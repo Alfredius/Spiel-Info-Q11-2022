@@ -10,14 +10,15 @@ gemacht hat und was das eingefügte bisschen code tut.
 
 to do:
 hitboxen (schrägen JONAS)  
+
 Änderungen an Hitboxen nur noch im HITBOXEN file machen, dann können wir die am ende einfach rüberkopieren -Nik
+
 gegner 
     schießen nik
     sterben
     leben
     (umbringen von gegner)
  neues Level laden
-(home sccreen)
 
 
 Jonas:
@@ -38,6 +39,13 @@ to Do allgemein
  
     neues level laden?
         // Startbildschirm
-        - Tor (kammera stoppt bewegung)
+        - Tor (kammera stoppt bewegung
 
-    - die 1te schräge im Level 1 klappt nicht 
+    Grafiken 
+        - spieler 
+            - springen 
+            - laufen 
+            - Stehen 
+            - sneaken 
+            - fallen 
+            - 
