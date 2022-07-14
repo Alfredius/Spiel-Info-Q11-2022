@@ -256,37 +256,38 @@
             }
 
             //zum testen die taste "t"
-            //setzt gerade die lebne auf 0 
+            //setzt gerade die lebne auf 0
             if (map[84]) {
                 character.health = character.health - 1 ;
             }
 
         }
-
+onGround = false;
         function bewegeBild() {
             geschw.y = geschw.y + beschl.y;
-            let yh = -200; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
-            onGround = istHindernis(generalRF.x, generalRF.y);
-/*
+           // let yh = -200; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
+            onGround = istHindernis(-generalRF.x+character.breite/2, -generalRF.y+1);
+            console.log(onGround)
+            /*
             if (onGround) {
                 yh = hindernisse[-generalRF.x][(i * 2) + 1];
             }
             */
-            if (istHindernis(generalRF.x, (generalRF.y + character.hight))) {
+            if (istHindernis(900+character.breite/2, (-generalRF.y - character.hight +1))) {
                 console.log("kopf gestoßen");
                 if (geschw.y < 0) {
                     geschw.y = 0;
                 }
             }
 
-            if (istHindernis((generalRF.x + character.breite / 2), (generalRF.y + character.hight / 2))) {
+            if (istHindernis((900 - character.breite / 2), (-generalRF.y - character.hight / 2 +1))) {
                 console.log("links gestoßen");
                 if (geschw.x < 0) {
                     geschw.x = 0;
                 }
             }
 
-            if (istHindernis((generalRF.x - character.breite / 2), (generalRF.y + character.hight / 2))) {
+            if (istHindernis((900 + character.breite / 2), (-generalRF.y - character.hight / 2 +1))) {
                 console.log("rechts gestoßen");
                 if (geschw.x > 0) {
                     geschw.x = 0;
@@ -296,9 +297,7 @@
             if (!onGround) {
                 generalRF.x = generalRF.x - geschw.x;
                 generalRF.y = generalRF.y - geschw.y;
-                onGround = false;
             } else {
-                onGround = true;
                // generalRF.y = yh;
                 if (geschw.y < 0) {
                     generalRF.y = generalRF.y - geschw.y;
@@ -310,12 +309,11 @@
         }
 
         function istHindernis(xPosi, yPosi) {
-            imagedata = ctx.getImageData(-xPosi + generalRF.x,-yPosi,1,1)
+            imagedata = ctx.getImageData(xPosi,yPosi,1,1)
             if(imagedata.data[0] == 0 || imagedata.data[1] == 0 || imagedata.data[2] == 0 || imagedata.data[3] == 0){
-                console.log("Schwarz")
                 return true;
             }
-            console.log(imagedata.data[1])
+            console.log(-generalRF.y)
             return false;
         }
 
