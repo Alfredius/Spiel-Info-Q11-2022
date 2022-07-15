@@ -177,11 +177,13 @@
             
             if (generalRF.x < -900) {
                 zeichneBild()
+                bewegeBild();
             } else {
                 zeichneBildStart()
+                bewegeBildStart();
             }
             bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
-            bewegeBild();
+            
               bewegeSpieler();
             //bewegeGegner();
             nochAmLeben();
@@ -266,29 +268,66 @@ onGround = false;
         function bewegeBild() {
             geschw.y = geschw.y + beschl.y;
            // let yh = -200; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
-            onGround = istHindernis(-generalRF.x+character.breite/2, -generalRF.y+1);
-            console.log(onGround)
+            onGround = istHindernis(900+character.breite/2, -generalRF.y+1);
             /*
             if (onGround) {
                 yh = hindernisse[-generalRF.x][(i * 2) + 1];
             }
             */
-            if (istHindernis(900+character.breite/2, (-generalRF.y - character.hight +1))) {
-                console.log("kopf gestoßen");
+            if (istHindernis(900+character.breite/2+1, (-generalRF.y - character.hight +1))) {
                 if (geschw.y < 0) {
                     geschw.y = 0;
                 }
             }
 
-            if (istHindernis((900 - character.breite / 2), (-generalRF.y - character.hight / 2 +1))) {
-                console.log("links gestoßen");
+            if (istHindernis((900 -1), (-generalRF.y - character.hight / 2 +1))) {
                 if (geschw.x < 0) {
                     geschw.x = 0;
                 }
             }
 
-            if (istHindernis((900 + character.breite / 2), (-generalRF.y - character.hight / 2 +1))) {
-                console.log("rechts gestoßen");
+            if (istHindernis((900 + character.breite +1), (-generalRF.y - character.hight / 2 +1))) {
+                if (geschw.x > 0) {
+                    geschw.x = 0;
+                }
+            }
+
+            if (!onGround) {
+                generalRF.x = generalRF.x - geschw.x;
+                generalRF.y = generalRF.y - geschw.y;
+            } else {
+               // generalRF.y = yh;
+                if (geschw.y < 0) {
+                    generalRF.y = generalRF.y - geschw.y;
+                } else {
+                    geschw.y = 0;
+                }
+                generalRF.x = generalRF.x - geschw.x;
+            }
+        }
+
+        function bewegeBildStart() {
+            geschw.y = geschw.y + beschl.y;
+           // let yh = -200; // yh ist die y-coordinate, auf der die Oberfläche des objektes ist, auf welcher der Character steht 
+            onGround = istHindernis(-generalRF.x, -generalRF.y+1);
+            /*
+            if (onGround) {
+                yh = hindernisse[-generalRF.x][(i * 2) + 1];
+            }
+            */
+            if (istHindernis(-generalRF.x+character.breite/2+1, (-generalRF.y - character.hight +1))) {
+                if (geschw.y < 0) {
+                    geschw.y = 0;
+                }
+            }
+
+            if (istHindernis((-generalRF.x -1), (-generalRF.y - character.hight / 2 +1))) {
+                if (geschw.x < 0) {
+                    geschw.x = 0;
+                }
+            }
+
+            if (istHindernis((-generalRF.x + character.breite +1), (-generalRF.y - character.hight / 2 +1))) {
                 if (geschw.x > 0) {
                     geschw.x = 0;
                 }
@@ -313,13 +352,12 @@ onGround = false;
             if(imagedata.data[0] == 0 || imagedata.data[1] == 0 || imagedata.data[2] == 0 || imagedata.data[3] == 0){
                 return true;
             }
-            console.log(-generalRF.y)
             return false;
         }
 
         function zeichneBild() {
             ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.height, canvas.width);
+           
 
             ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
            
