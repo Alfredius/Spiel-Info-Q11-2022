@@ -63,6 +63,7 @@
             munitionInKammer: 4,
             defaultMunitionInKammer: 4,
             facingRight: true,
+            sneaked: false,
             bild: new Image(),
             cooldownAngriff: Date.now(),
             cooldownDamage: Date.now(),
@@ -423,9 +424,13 @@
 
 
         function bewegeSpieler() {
-            //nach links laufen auf "s"
+            //nach links laufen auf "a"
             if (map[65]) {
-                geschw.x = -character.defaultSpeed;
+                if (character.sneaked == false) {
+                    geschw.x = -character.defaultSpeed;
+                } else if (character.sneaked == true) {
+                    geschw.x = -character.defaultSpeed / 3;
+                }
                 character.facingRight = false;
             } else {
                 geschw.x = 0;
@@ -434,7 +439,11 @@
 
             //nach rechts laufen auf "d"
             if (map[68]) {
-                geschw.x = character.defaultSpeed;
+                if (character.sneaked == false) {
+                    geschw.x = character.defaultSpeed;
+                } else if (character.sneaked == true) {
+                    geschw.x = character.defaultSpeed / 3;
+                }
                 character.facingRight = true;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
@@ -443,10 +452,12 @@
             // sneaken auf "s" oder "Strg"
             if (map[17] || map[83]) {
                 if (onGround) {
+                    character.sneaked = true;
                     character.hight = character.defaultHight / 2;
                 }
             } else if (character.hight <= character.defaultHight) {
                 character.hight = character.defaultHight;
+                character.sneaked = false;
             }
 
             //sprinten (klappt noch nicht )
@@ -466,7 +477,7 @@
 
             //close Combet attack auf "e"
             if (map[69]) {
-                schlagen();
+                schlagen(); //der schlag fehlt noch 
                 console.log("es wurde geschlagen");
             }
 

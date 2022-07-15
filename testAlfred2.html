@@ -40,6 +40,7 @@
         }
         //console.log(hindernisse)
 
+        //character spornen an: 
         let generalRF = {
             x: -100,
             y: 400
@@ -59,9 +60,14 @@
             breite: 50,
             health: 7,
             munition: 10,
+            munitionInKammer: 4,
+            defaultMunitionInKammer: 4,
             facingRight: true,
+            sneaked: false,
             bild: new Image(),
             cooldownAngriff: Date.now(),
+            cooldownDamage: Date.now(),
+            relodeTimer: Date.now(),
         }
 
 
@@ -141,11 +147,13 @@
         }, {
             bild: new Image(),
             xPos: 2810,
-            yPos: 650,
-            breite: 180,
-            höhe: 80,
-            hindernis: true,
-            schräge: false
+            yPos: 620,
+            breite: 170,
+            höhe: 100,
+            schrägeStart: 700,
+            schrägeEnd: 620,
+            hindernis: false,
+            schräge: true
         }, {
             bild: new Image(),
             xPos: 3070,
@@ -210,6 +218,16 @@
             höhe: 50,
             hindernis: true,
             schräge: false
+        }, {
+            bild: new Image(),
+            xPos: 4780,
+            yPos: 220,
+            breite: 270,
+            höhe: 250,
+            schrägeStart: 380,
+            schrägeEnd: 220,
+            hindernis: false,
+            schräge: true
         }, {
             bild: new Image(),
             xPos: 5370,
@@ -296,7 +314,6 @@
 
 
 
-
         // hier stehen die Sachen direkt beim laden ausgeführt werden müssen 
 
         // ist der key listener 
@@ -334,7 +351,9 @@
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
-            overlayArray[0].bild.src = " ./Bilder/IO/Health7.gif ";
+            overlayArray[0].bild.src = "./Bilder/IO/Health7.gif ";
+            overlayArray[1].bild.src = "";
+
 
 
             //overlayArray[0].Image.src = ""
@@ -389,10 +408,9 @@
         //hier stehen die akktionnen, welche jeden Tick ausgeführt werden 
 
         function ticke() {
-
             // console.log("tick");
-            //console.log(generalRF.x + " " + generalRF.y)
-            bewegeSpieler()
+            // console.log(generalRF.x + " " + generalRF.y);
+            bewegeSpieler();
             bewegeBild();
             if (generalRF.x < -900) {
                 zeichneBild()
@@ -401,14 +419,19 @@
             }
             bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
             bewegeGegner();
+            überprüfeGegnerkontackt();
             nochAmLeben();
         }
 
 
         function bewegeSpieler() {
-            //nach links laufen auf "s"
+            //nach links laufen auf "a"
             if (map[65]) {
-                geschw.x = -character.defaultSpeed;
+                if (character.sneaked == false) {
+                    geschw.x = -character.defaultSpeed;
+                } else if (character.sneaked == true) {
+                    geschw.x = -character.defaultSpeed / 3;
+                }
                 character.facingRight = false;
             } else {
                 geschw.x = 0;
@@ -417,7 +440,11 @@
 
             //nach rechts laufen auf "d"
             if (map[68]) {
-                geschw.x = character.defaultSpeed;
+                if (character.sneaked == false) {
+                    geschw.x = character.defaultSpeed;
+                } else if (character.sneaked == true) {
+                    geschw.x = character.defaultSpeed / 3;
+                }
                 character.facingRight = true;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
@@ -426,10 +453,12 @@
             // sneaken auf "s" oder "Strg"
             if (map[17] || map[83]) {
                 if (onGround) {
+                    character.sneaked = true;
                     character.hight = character.defaultHight / 2;
                 }
             } else if (character.hight <= character.defaultHight) {
                 character.hight = character.defaultHight;
+                character.sneaked = false;
             }
 
             //sprinten (klappt noch nicht )
@@ -449,7 +478,7 @@
 
             //close Combet attack auf "e"
             if (map[69]) {
-                schlagen();
+                schlagen(); //der schlag fehlt noch 
                 console.log("es wurde geschlagen");
             }
 
@@ -473,7 +502,9 @@
             //zum testen die taste "t"
             //setzt gerade die lebne auf 0 
             if (map[84]) {
-                character.health = 0;
+                // characterSchaden();
+                console.log(generalRF.x);
+
             }
 
         }
@@ -679,6 +710,25 @@
             }
         }
 
+        function überprüfeGegnerkontackt() {
+            for (i = 0; i < gegnerArray.length; i++) {
+
+                if (gegnerArray[i].xPos + gegnerArray[i].breite >= generalRF.x &&
+                    gegnerArray[i].xPos <= generalRF.x + character.breite) {
+                    if (gegnerArray[i].yPos >= generalRF.y &&
+                        gegnerArray[i].yPos <= generalRF.y + character.height) {
+                        characterSchaden();
+                    }
+                }
+
+
+
+                ctx.fillStyle = '#FF0000';
+                ctx.strokeStyle = 'red';
+                ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
+
+            }
+        }
 
 
         function nochAmLeben() {
@@ -711,7 +761,7 @@
         // hier stehen die Aktionen des Characters
 
         function schuss() {
-            if (character.cooldownAngriff + 300 <= Date.now() && character.munition > 0) {
+            if (character.cooldownAngriff + 300 <= Date.now() && character.munitionInKammer > 0 && character.relodeTimer + 3000 <= Date.now()) {
                 if (character.facingRight == false) {
                     geschwitemp = -14;
                 } else {
@@ -727,7 +777,19 @@
                     })
                     //console.log(schussArray)
                 character.cooldownAngriff = Date.now()
-                character.munition = character.munition - 1;
+                character.munitionInKammer = character.munitionInKammer - 1;
+
+                if (character.munitionInKammer <= 0) {
+                    character.relodeTimer = Date.now();
+                    if (character.munition >= character.defaultMunitionInKammer) {
+                        character.munitionInKammer = character.defaultMunitionInKammer;
+                        character.munition = character.munition - character.defaultMunitionInKammer;
+                    } else {
+                        character.munitionInKammer = character.munition;
+                        character.munition = 0;
+                    }
+
+                }
                 console.log(character.munition + " Schuss übrig");
             }
         }
@@ -737,6 +799,16 @@
             // richtung des Schlages 
             // erkennen, ob treffer 
             // animation
+        }
+
+        function characterSchaden() {
+            if (character.cooldownDamage + 400 <= Date.now()) {
+
+                character.health = character.health - 1;
+                character.cooldownDamage = Date.now()
+                console.log("du hast noch " + character.health + " Leben")
+                overlayArray[0].bild.src = " ./Bilder/IO/Health" + character.health + ".gif ";
+            }
         }
 
 
