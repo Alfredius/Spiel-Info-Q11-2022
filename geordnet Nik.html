@@ -723,19 +723,20 @@
             //function schuss()
             if (gegnerArray[z].cooldownAngriff + 300 <= Date.now()) {
                 
-                if (gegnerArray[z].xPos + generalRF.x <= 0) {
+                if (gegnerArray[z].xPos + generalRF.x >= 0) {
                     geschwitempGegner = 14;
                 } else {
                     geschwitempGegner = -14;
                 } 
-
+               //tempVY = gegnerArray[z].yPos + gegnerArray[z].hight / 2;
+               
                 schussArrayGegner.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
 
-                        yPosi: gegnerArray[z].yPos + gegnerArray[z].hight / 2,
+                        yPosi: 400,
                         breite: 15,
                         höhe: 5,
                         xGeschw: geschwitempGegner,
-                        xPosition: gegnerArray[z].xPos / 2 - gegnerArray[z].breite / 2 - geschwitempGegner,
+                        xPosition: gegnerArray[z].xPos/2 +900 + gegnerArray[z].breite / 2 ,
                     })
                     console.log(schussArrayGegner)
                 //gegnerArray.cooldownAngriff = Date.now() 
@@ -744,6 +745,8 @@
                // bewegeGegnerSchuss(z);
                // zeichneGegnerSchuss(z);
 
+                    gegnerArray[z].cooldownAngriff = Date.now()
+
             }
 
         }
@@ -751,15 +754,9 @@
         
         function bewegeGegnerSchuss() {
             for (i = 1; i < schussArrayGegner.length; i++) {
-
                 schussArrayGegner[i].xPosition -= schussArrayGegner[i].xGeschw;
 
-                if (schussArrayGegner[i].xPosition - generalRF.x / 2 >= renderedistance) {
-                    schussArrayGegner.splice(i, 1);
-
-                } else if (schussArrayGegner[i].xPosition - generalRF.x / 2 <= -renderedistance) {
-                    schussArrayGegner.splice(i, 1);
-                }
+          
             }
         }
         
@@ -771,7 +768,7 @@
             // Ein ausgemaltes Rechteck malen
             for (i = 1; i < schussArrayGegner.length; i++) {
 
-                ctx.fillRect(-schussArrayGegner[i].xPosition + generalRF.x / 2 + 900, -schussArrayGegner[i].yPosi, schussArrayGegner[i].breite, schussArrayGegner[i].höhe);
+                ctx.fillRect(schussArrayGegner[i].xPosition + generalRF.x / 2, schussArrayGegner[i].yPosi, schussArrayGegner[i].breite, schussArrayGegner[i].höhe);
             }
         }
 
