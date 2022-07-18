@@ -9,7 +9,8 @@
 
     <style>
         canvas {
-            border: 1px solid black
+            border: 1px solid black;
+            image-rendering:crisp-edges
         }
     </style>
 </head>
@@ -67,8 +68,16 @@
             bild: new Image(),
             xPos: 0,
             yPos: 0,
-            breite: 8000,
-            höhe: 1000,
+            breite: 11200,
+            höhe: 1080,
+            hindernis: false,
+            schräge: false
+        },{
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 11200,
+            höhe: 1080,
             hindernis: false,
             schräge: false
         }];
@@ -139,7 +148,8 @@
             ctx = canvas.getContext('2d');
 
        
-            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions.png";
+            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions_kopie-auflösung niedrig.png";
+            bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
            
            
 
@@ -176,11 +186,15 @@
           
             
             if (generalRF.x < -900) {
+                ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) ) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+bewegeBild();
                 zeichneBild()
-                bewegeBild();
+                
             } else {
+                ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+bewegeBildStart();
                 zeichneBildStart()
-                bewegeBildStart();
+                
             }
             bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
             
@@ -244,7 +258,7 @@
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -6;
+                    geschw.y = -10;
                 }
             }
 
@@ -359,12 +373,11 @@ onGround = false;
             ctx.fillStyle = 'white';
            
 
-            ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
            
             //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
 
             //Zeichnet den Bild Array 
-            for (i = 3; i < bildArray.length; i++) {
+            for (i = 1; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
             }
 
@@ -386,9 +399,8 @@ onGround = false;
 
         function zeichneBildStart() {
 
-            ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
            
-            for (i = 3; i < bildArray.length; i++) {
+            for (i = 1; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
             }
