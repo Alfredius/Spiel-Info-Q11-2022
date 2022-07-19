@@ -24,7 +24,7 @@
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
-        let tickerZeit = 0;
+        let tickerZeit = 16;
         let hindernisse = [];
         let renderedistance = 1000;
         let intervall = setInterval(ticke, tickerZeit); // setzt den tick speed 
@@ -44,7 +44,7 @@
         }
         let beschl = {
             x: 0,
-            y: 0.1
+            y: 0.4
         }
         let geschw = {
             x: 0,
@@ -148,7 +148,7 @@
             ctx = canvas.getContext('2d');
 
        
-            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions_kopie-auflösung niedrig.png";
+            bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions.png";
             bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
            
            
@@ -181,7 +181,8 @@
             //ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
 
             // console.log(generalRF.x + " " + generalRF.y);
-            //ctx.fillStyle = "white"
+            ctx.fillStyle = "white"
+            ctx.fillStyle = '#fbfbfb';
             ctx.fillRect(0,0,2000,2000)
           
             
@@ -259,7 +260,7 @@ bewegeBildStart();
             if (map[32]) {
                 //y-Geschwindigkeit wird nach oben gesetzt, wenn der Spieler auf dem Boden ist
                 if (onGround) {
-                    geschw.y = -10;
+                    geschw.y = -15;
                 }
             }
 
@@ -364,7 +365,7 @@ onGround = false;
 
         function istHindernis(xPosi, yPosi) {
             imagedata = ctx.getImageData(xPosi,yPosi,1,1)
-            if(imagedata.data[0] == 0 || imagedata.data[1] == 0 || imagedata.data[2] == 0 || imagedata.data[3] == 0){
+            if(imagedata.data[0] <= 100 || imagedata.data[1] <= 100 || imagedata.data[2] <= 100|| imagedata.data[3] <= 100){
                 return true;
             }
             return false;
@@ -532,8 +533,11 @@ onGround = false;
 
 
 
-
+let zahl = 0;
         function fps() {
+            zahl ++;
+            console.log(zahl)
+            console.log(zahl%10)
             if (counter < 1) {
                 counter++;
                 counterCont++;
@@ -551,6 +555,7 @@ onGround = false;
                 ZeitLetzte = Date.now()
                 counter = 1;
             }
+            
         }
     </script>
 
