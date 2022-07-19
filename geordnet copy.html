@@ -24,7 +24,7 @@
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
-        let tickerZeit = 5;
+        let tickerZeit = 0;
         let hindernisse = [];
         let renderedistance = 1000;
         let intervall = setInterval(ticke, tickerZeit); // setzt den tick speed 
@@ -203,6 +203,7 @@ bewegeBildStart();
             nochAmLeben();
            // imagedata = ctx.getImageData(1000,800,1,1);
            // console.log(imagedata.data)
+           fps();
         }
 
 
