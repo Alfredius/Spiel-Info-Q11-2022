@@ -10,7 +10,7 @@
     <style>
         canvas {
             border: 1px solid black;
-            image-rendering:crisp-edges
+            
         }
     </style>
 </head>
@@ -24,7 +24,7 @@
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
-        let tickerZeit = 16;
+        let tickerZeit = 15;
         let hindernisse = [];
         let renderedistance = 1000;
         let intervall = setInterval(ticke, tickerZeit); // setzt den tick speed 
@@ -52,7 +52,7 @@
         }
         let character = {
             defaultHight: 100,
-            defaultSpeed: 3,
+            defaultSpeed: 6,
             hight: 100,
             breite: 50,
             health: 7,
@@ -66,13 +66,21 @@
 
         let bildArray = [{
             bild: new Image(),
-            xPos: 0,
+            xPos: 30,
             yPos: 0,
             breite: 11200,
             höhe: 1080,
             hindernis: false,
             schräge: false
-        },{
+        }, /*{
+            bild: new Image(),
+            xPos: 0,
+            yPos: 0,
+            breite: 11200,
+            höhe: 1000,
+            hindernis: false,
+            schräge: false
+        },*/{
             bild: new Image(),
             xPos: 0,
             yPos: 0,
@@ -149,6 +157,7 @@
 
        
             bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions.png";
+            //bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png";
             bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
            
            
@@ -181,7 +190,6 @@
             //ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
 
             // console.log(generalRF.x + " " + generalRF.y);
-            ctx.fillStyle = "white"
             ctx.fillStyle = '#fbfbfb';
             ctx.fillRect(0,0,2000,2000)
           
@@ -189,11 +197,15 @@
             if (generalRF.x < -900) {
                 ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) ) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
 bewegeBild();
+ctx.fillStyle = '#fbfbfb';
+            ctx.fillRect(0,0,2000,2000)
                 zeichneBild()
                 
             } else {
                 ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
 bewegeBildStart();
+ctx.fillStyle = '#fbfbfb';
+            ctx.fillRect(0,0,2000,2000)
                 zeichneBildStart()
                 
             }
@@ -204,7 +216,7 @@ bewegeBildStart();
             nochAmLeben();
            // imagedata = ctx.getImageData(1000,800,1,1);
            // console.log(imagedata.data)
-           fps();
+           //fps();
         }
 
 
@@ -312,7 +324,9 @@ onGround = false;
                 generalRF.x = generalRF.x - geschw.x;
                 generalRF.y = generalRF.y - geschw.y;
             } else {
-               // generalRF.y = yh;
+                if(istHindernis(900+character.breite/2, -generalRF.y-5)){
+                    generalRF.y +=5;
+                }
                 if (geschw.y < 0) {
                     generalRF.y = generalRF.y - geschw.y;
                 } else {
@@ -353,7 +367,9 @@ onGround = false;
                 generalRF.x = generalRF.x - geschw.x;
                 generalRF.y = generalRF.y - geschw.y;
             } else {
-               // generalRF.y = yh;
+                if(istHindernis(-generalRF.x, -generalRF.y-5)){
+                    generalRF.y +=5;
+                }
                 if (geschw.y < 0) {
                     generalRF.y = generalRF.y - geschw.y;
                 } else {
@@ -365,7 +381,7 @@ onGround = false;
 
         function istHindernis(xPosi, yPosi) {
             imagedata = ctx.getImageData(xPosi,yPosi,1,1)
-            if(imagedata.data[0] <= 100 || imagedata.data[1] <= 100 || imagedata.data[2] <= 100|| imagedata.data[3] <= 100){
+            if(imagedata.data[0] <= 250 || imagedata.data[1] <= 250 || imagedata.data[2] <= 250|| imagedata.data[3] <= 250){
                 return true;
             }
             return false;
