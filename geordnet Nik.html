@@ -733,7 +733,7 @@
                
                 schussArrayGegner.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
 
-                        yPosi: 400,
+                        yPosi:  400,  //schussArrayGegner[z].yPosi,
                         breite: 15,
                         höhe: 5,
                         xGeschw: geschwitempGegner,
@@ -757,7 +757,12 @@
             for (i = 1; i < schussArrayGegner.length; i++) {
                 schussArrayGegner[i].xPosition -= schussArrayGegner[i].xGeschw;
 
-          
+             /* if (generalRF.y > 400) {
+                    for (i = 1; i < schussArrayGegner.length; i++){
+                        schussArrayGegner[i].yPosi = schussArrayGegner[i].yPosi + 1;   hab ausprobiert den schuss nach unten fliegen zu lassen
+                        console.log("unten");
+                    }
+                } */
             }
         }
         
