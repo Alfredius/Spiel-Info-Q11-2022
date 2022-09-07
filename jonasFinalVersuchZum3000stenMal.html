@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiel</title>
+
+    <style>
+        canvas {
+            border: 1px solid black
+        }
+    </style>
+</head>
+
+<body onload="starte()">
+
+    <canvas height="1000" width="2000" id="canvas" onload="test()"></canvas>
+
+
+<script>
+let canvas;
+let ctx;
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+let bilder = []
+let spieler = {bild:new Image()}
+let x = 0;
+let y = 500;
+let tickerZeit = 100;
+let ticker;
+let boden = 180;
+
+var map = [];
+        let pausiert = false;
+        document.onkeydown = document.onkeyup = function(e) {
+            e = e || event;
+            map[e.keyCode] = e.type == 'keydown';
+        }
+
+
+function starte(){
+    spieler.bild.src = "/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_4.png"
+    bilder =[{ bild:new Image()},{ bild:new Image()},{ bild:new Image()}]
+    
+    bilder[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png"
+    bilder[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png"
+    bilder[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png"
+
+    ticker  = setInterval(ticke, tickerZeit);
+}
+
+function ticke(){
+    zeichneSzene();
+    bewegeSpieler();
+    zeichneSpieler();
+}
+
+function zeichneSzene(){
+
+        ctx.drawImage(bilder[0].bild, -x/4,0);
+        ctx.drawImage(bilder[1].bild, -x/2,0);
+
+    for(i = 2; i<bilder.length;i++){
+        ctx.drawImage(bilder[i].bild, -x,0);
+    }
+
+}
+
+function zeichneSpieler(){
+
+ctx.drawImage(spieler.bild, 200, 1000-y,200,100);
+
+}
+
+function bewegeSpieler(){
+
+
+    if(y>boden){
+        y += -10;
+    }
+    if(map[65]){
+        x += -10;
+    }
+
+    if(map[83]){
+        y += -10;
+    }
+
+    if(map[87]){
+        y += 10;
+    }
+
+    if(map[68]){
+        x += 10;
+    }
+}
+
+
+
+</script>
+
+</body>
+
+</html>
