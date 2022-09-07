@@ -72,7 +72,7 @@
             höhe: 1080,
             hindernis: false,
             schräge: false
-        }, /*{
+        }, {
             bild: new Image(),
             xPos: 0,
             yPos: 0,
@@ -80,7 +80,7 @@
             höhe: 1000,
             hindernis: false,
             schräge: false
-        },*/{
+        },{
             bild: new Image(),
             xPos: 0,
             yPos: 0,
@@ -98,7 +98,9 @@
             xGeschw: 0
         }];
 
-        let gegnerArray = [];
+        let gegnerArray = [
+            {xPos : 500, yPos : 600, bild : new Image(),breite:100,höhe:200}
+        ];
 
 
         let overlayArray = [{
@@ -157,8 +159,8 @@
 
        
             bildArray[0].bild.src = "./Bilder/Level 1/Level1_11200x1080_V1_Collisions.png";
-            //bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png";
-            bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
+            bildArray[1].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png";
+            bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
            
            
 
@@ -388,14 +390,13 @@ onGround = false;
         }
 
         function zeichneBild() {
-            ctx.fillStyle = 'white';
            
 
            
             //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
-
+           // ctx.drawImage(bildArray[1].bild, generalRF.x/2 + bildArray[1].xPos + 900 + character.breite / 2, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             //Zeichnet den Bild Array 
-            for (i = 1; i < bildArray.length; i++) {
+            for (i = 2; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, generalRF.x + bildArray[i].xPos + 900 + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
             }
 
