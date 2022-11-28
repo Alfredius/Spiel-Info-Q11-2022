@@ -27,8 +27,10 @@ let ctx;
 let bilder = []
 let spieler = {bild:new Image()}
 let x = 0;
+let vx = 0;
 let y = 500;
-let tickerZeit = 100;
+let vy = 0;
+let tickerZeit = 1000/50;
 let ticker;
 let boden = 180;
 
@@ -78,23 +80,26 @@ function bewegeSpieler(){
 
 
     if(y>boden){
-        y += -10;
+        vy += -5;
+    }else{vy = 0;
+    y = boden;
     }
     if(map[65]){
         x += -10;
     }
 
     if(map[83]){
-        y += -10;
+        vy = -10;
     }
 
-    if(map[87]){
-        y += 10;
+    if(map[87] && y<=boden){
+        vy += 50;
     }
 
     if(map[68]){
         x += 10;
     }
+    y += vy;
 }
 
 
