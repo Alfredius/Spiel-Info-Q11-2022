@@ -26,7 +26,6 @@
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
             import { getDatabase , ref, set, onValue} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js"; 
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-analytics.js";
-            import { getAuth } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js";
             // Your web app's Firebase configuration
             // For Firebase JS SDK v7.20.0 and later, measurementId is optional
             const firebaseConfig = {
@@ -49,8 +48,8 @@
 
 
 
-              
-                const starCountRef = ref(database, 'test/');
+
+                const starCountRef = ref(database, 'test/');//nur so zum merken, ein call dieser Funktion benötigt etwa 0.18KB
                 onValue(starCountRef, (snapshot) => {
                 const data = snapshot.val();
                 console.log(data);
