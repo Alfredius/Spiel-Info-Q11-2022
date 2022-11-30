@@ -35,15 +35,6 @@ const analytics = getAnalytics(app);
 
 
 
-
-
-
-
-
-
-
-
-
 //Code zum Laden der Daten wenn eine Änderung an ihnen vorgenommen wurde:
 const gesuchterKnoten/*Aus Datenbank*/ = ref(database, 'Json Pfad Knoten 1/', 'Json Pfad Knoten 2...schachtelbar/');
                 onValue(gesuchterKnoten, (snapshot) => {
@@ -51,10 +42,6 @@ const gesuchterKnoten/*Aus Datenbank*/ = ref(database, 'Json Pfad Knoten 1/', 'J
                 //data liefert den gesamten gesuchten Knoten. für den Value: data.GesuchterValue
                 console(data);
             });
-
-
-
-
 
 
 
