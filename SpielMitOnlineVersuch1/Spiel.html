@@ -24,7 +24,7 @@
 
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-            import { getDatabase , ref, set, onValue} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js"; 
+            import { getDatabase , ref, set, onValue, child, push, update} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js"; 
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-analytics.js";
             import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js";
             // Your web app's Firebase configuration
@@ -65,6 +65,10 @@
                     const uid = user.uid;
                     console.log(uid)
                     UserID = uid;
+
+                    const updates = {};
+                        updates['/nutzer/' + uid] = UserID;
+                        update(ref(database), updates);
                      // ...
                       } else {
                       // User is signed out
@@ -120,11 +124,9 @@
         }
 
         function writeUserData(xPosition, yPosition) {
-                set(ref(database, 'test/','userID/','cool/'), {
-                 xPos:xPosition,
-                 yPos:yPosition,
-                 userID:UserID
-                });
+            const updates = {};
+                        updates[UserID] = {yPos:yPosition, xPos:xPosition};
+                        update(ref(database), updates);
             }
 
         function zeichneCharacter(xPos, yPos) { 

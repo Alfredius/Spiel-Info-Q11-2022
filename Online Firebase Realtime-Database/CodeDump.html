@@ -3,7 +3,8 @@
 
 //Importieren von Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-import { getDatabase , ref, set, onValue} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js"; 
+import { getDatabase , ref, set, onValue} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+import { getAuth, signInAnonymously, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js"; 
 //getAnalytics ist optional, verbindet dieses Projekt allerdings mit Google Analytics, nice to have
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-analytics.js";
 // Für Firebase JS SDK v7.20.0 und später, measurementId ist optional
@@ -25,9 +26,30 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 //Initialisieren von Google Analytics
 const analytics = getAnalytics(app);
-
-
-
+//benutzer initialisieren und anonym anmelden
+const auth = getAuth();
+signInAnonymously(auth)
+  .then(() => {
+    // Signed in..
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+//sobald die Anmeldung erfolgreich war, wird AuthStateChanged aufgerufen und der Benutzer user übergeben
+ onAuthStateChanged(auth, (user) => {
+     if (user) {
+       // User is signed in, see docs for a list of available properties
+       // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        console.log(uid)
+        // ...
+        } else {
+        // User is signed out
+        // ...
+       }
+    });
 
 
 
@@ -57,6 +79,13 @@ function writeUserData() {
     });//An Stelle einzelner Werte können meines Wissens auch Objekte übergeben werden, zum Ausprobieren...
 }
 
+
+//um Updates an Kindknoten durchzuführen, ohne alle anderen Kindknoten zu löschen
+const updates = {};
+  updates['/posts/' + newPostKey] = postData;
+  updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+
+  update(ref(db), updates);
 
 
 
