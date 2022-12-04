@@ -68,9 +68,7 @@
                 console.log(uid)
                 UserID = uid;
 
-                const updates = {};
-                updates['/nutzer/' + 1] = uid;
-                update(ref(database), updates);
+                
                 // ...
 
                 const nutzerErfragen = ref(database, 'nutzer/');
@@ -82,7 +80,9 @@
                 });
 
                 let intervall = setInterval(ticke, 200); // setzt den tick speed
-
+                const updates = {};
+                updates['/nutzer/' + alleNutzer.length] = uid;
+                update(ref(database), updates);
                  // Test();
             } else {
                 // User is signed out
