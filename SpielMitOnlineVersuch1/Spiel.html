@@ -81,7 +81,7 @@
                     get_Nutzer_und_Positionen();
                 });
 
-                //let intervall = setInterval(ticke, 200); // setzt den tick speed 
+                let intervall = setInterval(ticke, 200); // setzt den tick speed
 
                  // Test();
             } else {
@@ -153,8 +153,9 @@
             ctx.fillRect(0, 0, 1000, 1000);
 
             console.log(x);
-            writeUserData(x, y);
-            zeichne_alle_anderen();
+           // writeUserData(x, y);
+          //  zeichne_alle_anderen();
+          ticke();
 
         }
 
@@ -191,7 +192,7 @@
         function ticke() {
             writeUserData(x, y);
             zeichne_alle_anderen();
-            zeichneCharacter();
+            zeichneCharacter(x, y);
 
         }
 
