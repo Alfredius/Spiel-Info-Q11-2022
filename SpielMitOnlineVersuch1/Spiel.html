@@ -70,6 +70,8 @@
 
                 
                 // ...
+                
+
 
                 const nutzerErfragen = ref(database, 'nutzer/');
                 onValue(nutzerErfragen, (snapshot) => {
@@ -77,12 +79,27 @@
                     console.log(data);
                     alleNutzer = data;
                     get_Nutzer_und_Positionen();
-                });
 
-                let intervall = setInterval(ticke, 200); // setzt den tick speed
-                const updates = {};
-                updates['/nutzer/' + alleNutzer.length] = uid;
-                update(ref(database), updates);
+                    let SchonReg = false;
+                    for (let i = 1; i < alleNutzer.length; i++) {
+                        if(alleNutzer[i] == UserID){
+                            SchonReg = true;
+                        }
+                    }
+                    if(!SchonReg){
+                        
+                        const updates = {};
+                        updates['/nutzer/' + alleNutzer.length] = UserID;
+                        update(ref(database), updates);
+                    }
+
+
+                })/*.catch((error) => {
+  // The write failed...
+});*/
+
+                let intervall = setInterval(ticke, 20); // setzt den tick speed
+               
                  // Test();
             } else {
                 // User is signed out
@@ -149,8 +166,7 @@
 
             }
 
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, 1000, 1000);
+           
 
             console.log(x);
            // writeUserData(x, y);
@@ -190,6 +206,8 @@
             }
         }
         function ticke() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 1000, 1000);
             writeUserData(x, y);
             zeichne_alle_anderen();
             zeichneCharacter(x, y);
