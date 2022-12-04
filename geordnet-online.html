@@ -142,8 +142,15 @@ for (let i = 1; i < alleNutzer.length; i++) {
 
     }
     else {
-        zeichneCharacter(alleNutzerPositionen[alleNutzer[i]]['xPos'], alleNutzerPositionen[alleNutzer[i]]['yPos']);
-        zeichneCharacter(-alleNutzerPositionen[alleNutzer[i]]['xPos'], -alleNutzerPositionen[alleNutzer[i]]['yPos']);
+        if (generalRF.x < -900) {
+        zeichneCharacter(generalRF.x+alleNutzerPositionen[alleNutzer[i]]['xPos'], alleNutzerPositionen[alleNutzer[i]]['yPos']);
+        console.log(alleNutzer[i] + "  "+(generalRF.x+alleNutzerPositionen[alleNutzer[i]]['xPos'])+" "+alleNutzerPositionen[alleNutzer[i]]['yPos'])
+        }else{
+
+        zeichneCharacter(-900+alleNutzerPositionen[alleNutzer[i]]['xPos'], alleNutzerPositionen[alleNutzer[i]]['yPos']);
+        console.log(alleNutzer[i] + "  "+(-900+alleNutzerPositionen[alleNutzer[i]]['xPos'])+" "+alleNutzerPositionen[alleNutzer[i]]['yPos'])
+
+        }
     }
 }
 }
@@ -179,7 +186,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
-        let tickerZeit = 5; 
+        let tickerZeit = 15; 
         let hindernisse = [];
         let renderedistance = 1000;
         let intervall// = setInterval(ticke, tickerZeit); // setzt den tick speed 
@@ -709,7 +716,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
                 generalRF.x = generalRF.x - geschw.x;
             }
 
-            writeUserData(generalRF.x, generalRF.y);
+            writeUserData(-generalRF.x, -generalRF.y);
         }
 
         function istHindernis(xPosi, yPosi) {
@@ -777,6 +784,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
             zeichneSchussStart();
+            zeichne_alle_anderen();
         }
 
 
