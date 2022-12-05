@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head Access-Control-Allow-Origin>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas {
+            border: 1px solid black
+        }
+    </style>
+</head>
+
+<body onload="test()">
+
+    <script>
+
+
+        function test() {
+
+            let canvas = document.getElementById('test malen');
+            let ctx = canvas.getContext('2d');
+
+            // set fill and stroke styles
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // draw a rectangle with fill and stroke
+            ctx.fillRect(50, 50, 150, 100);
+            ctx.strokeRect(50, 50, 150, 100);
+
+            let bild1 = new Image();
+            //bild1.crossOrigin = "";
+            bild1.src = "Health7.gif";
+            bild1.onload = function() {
+                ctx.drawImage(bild1, -50, 20, 100, 200);
+
+                console.log(bild1);
+ 
+  imagedata = ctx.getImageData(10,100,1,1);
+            ctx.fillStyle = 'red';
+            console.log(imagedata.data)
+
+
+            }
+          
+
+        }
+    </script>
+    <canvas height="200" width="300" id="test malen" onload="test()">
+    </canvas>
+
+
+
+</body>
+
+</html>
