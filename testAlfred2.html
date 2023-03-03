@@ -14,202 +14,26 @@
     </style>
 </head>
 
-<body >
+<body onload="starte()">
 
     <canvas height="1000" width="1800" id="canvas" onload="test()"></canvas>
     <br>
-    <script type = "module">
-
-
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, child, push, update, get } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-analytics.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js";
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyAR_mO2zA2G6cW6mZDgN3IJMvlWtpkG0Bw",
-            authDomain: "multiplayer-demo-1b39f.firebaseapp.com",
-            databaseURL: "https://multiplayer-demo-1b39f-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "multiplayer-demo-1b39f",
-            storageBucket: "multiplayer-demo-1b39f.appspot.com",
-            messagingSenderId: "221766680112",
-            appId: "1:221766680112:web:4e4c079d689b26937577f5",
-            measurementId: "G-HPTQL92EKQ"
-        };
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-
-        // Initialize Realtime Database and get a reference to the service
-        const database = getDatabase(app);
-
-        const analytics = getAnalytics(app);
-        let alleNutzer = {};
-        const auth = getAuth();
-        signInAnonymously(auth)
-            .then(() => {
-
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                alert(errorMessage);
-            });
-        let UserID;
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
-                const uid = user.uid;
-                console.log(uid)
-                UserID = uid;
-
-                
-                // ...
-                
-
-
-                const nutzerErfragen = ref(database, 'nutzer/');
-                onValue(nutzerErfragen, (snapshot) => {
-                    const data = snapshot.val();
-                    console.log(data);
-                    alleNutzer = data;
-                    get_Nutzer_und_Positionen();
-
-                    let SchonReg = false;
-                    for (let i = 1; i < alleNutzer.length; i++) {
-                        if(alleNutzer[i] == UserID){
-                            SchonReg = true;
-                        }
-                    }
-                    if(!SchonReg){
-                        
-                        const updates = {};
-                        updates['/nutzer/' + alleNutzer.length] = UserID;
-                        update(ref(database), updates);
-                    }
-
-                 intervall = setInterval(ticke, tickerZeit);
-                })/*.catch((error) => {
-  // The write failed...
-});*/
-
-               
-                 // Test();
-            } else {
-                // User is signed out
-                // ...
-            }
-        });
-
-
-
-        let alleNutzerPositionen = {}
-        function get_Nutzer_und_Positionen() {
-
-            const dbRef = ref(getDatabase());
-            get(child(dbRef, 'positionen/')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    alleNutzerPositionen = snapshot.val();
-
-                } else {
-                    console.log("No data available von ");
-                }
-            }).catch((error) => {
-                console.error(error);
-            });
-            //console.log(alleNutzerPositionen);
-
-
-
-
-        }
-
-        function writeSchüsse(){
-            const updates = {};
-            updates['schüsse/' + UserID] = { schussArray };
-            update(ref(database), updates);
-        }
-
-        function writeUserData(xPosition, yPosition) {
-            const updates = {};
-            updates['positionen/' + UserID] = { yPos: yPosition, xPos: xPosition };
-            update(ref(database), updates);
-        }
-
-
-        function zeichne_alle_anderen() {
-
-get_Nutzer_und_Positionen();
-for (let i = 1; i < alleNutzer.length; i++) {
-    if (alleNutzer[i] == UserID) {
-
-    }
-    else {
-        if (generalRF.x < -900) {
-        zeichneCharacter(900+generalRF.x+alleNutzerPositionen[alleNutzer[i]]['xPos'], alleNutzerPositionen[alleNutzer[i]]['yPos']);
-        console.log(alleNutzer[i] + "  "+(generalRF.x+alleNutzerPositionen[alleNutzer[i]]['xPos'])+" "+alleNutzerPositionen[alleNutzer[i]]['yPos']-character.hight)
-        }else{
-
-        zeichneCharacter(alleNutzerPositionen[alleNutzer[i]]['xPos'], alleNutzerPositionen[alleNutzer[i]]['yPos']);
-        console.log(alleNutzer[i] + "  "+(900+alleNutzerPositionen[alleNutzer[i]]['xPos'])+" "+alleNutzerPositionen[alleNutzer[i]]['yPos']-character.hight)
-
-        }
-    }
-}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <script>
         let canvas;
         let ctx;
         let deathSreen = new Image();
         let onGround = false;
-        let tickerZeit = 10; 
         let hindernisse = [];
-        let renderedistance = 1000;
-        let intervall// = setInterval(ticke, tickerZeit); // setzt den tick speed 
-
-        let ZeitLetzte = Date.now()
-        let ZeitStart = Date.now()
-        let counter = 0;
-        let counterCont = 0;
-        let counterContStart = 0;
-
-        for (var i = 0; i < 20000; i++) {
+        for (var i = 0; i < 1000; i++) {
+            //zwischen Position 0 und Position 1000 ist ein Hindernis auf -2000 Pixeln
+            hindernisse[i] = [1, -850, -1000];
+        }
+        for (var i = 1000; i < 20000; i++) {
             //zwischen Position 1000 und Position 1800 ist ein Hindernis auf -1800 Pixeln
             hindernisse[i] = [1, -850, -1000]
         }
         //console.log(hindernisse)
 
-        //character spornen an: 
         let generalRF = {
             x: -100,
             y: 400
@@ -227,18 +51,14 @@ for (let i = 1; i < alleNutzer.length; i++) {
             defaultSpeed: 3,
             hight: 100,
             breite: 50,
-            health: 7,
-            munition: 10,
-            munitionInKammer: 4,
-            defaultMunitionInKammer: 4,
+            health: 3,
             facingRight: true,
-            sneaked: false,
             bild: new Image(),
             cooldownAngriff: Date.now(),
-            cooldownDamage: Date.now(),
-            relodeTimer: Date.now(),
         }
 
+        let renderedistance = 1000;
+        let intervall = setInterval(ticke, 10); // setzt den tick speed
 
 
         let bildArray = [{
@@ -274,30 +94,6 @@ for (let i = 1; i < alleNutzer.length; i++) {
             hindernis: false,
             schräge: false
         }, {
-            bild: new Image(), //Box 1
-            xPos: 750,
-            yPos: 791,
-            breite: 130,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Box 2
-            xPos: 1283,
-            yPos: 791,
-            breite: 122,
-            höhe: 100,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Box 3
-            xPos: 1300,
-            yPos: 736,
-            breite: 122,
-            höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
             bild: new Image(),
             xPos: 2180,
             yPos: 785,
@@ -316,13 +112,11 @@ for (let i = 1; i < alleNutzer.length; i++) {
         }, {
             bild: new Image(),
             xPos: 2810,
-            yPos: 620,
-            breite: 170,
-            höhe: 100,
-            schrägeStart: 700,
-            schrägeEnd: 620,
-            hindernis: false,
-            schräge: true
+            yPos: 650,
+            breite: 180,
+            höhe: 80,
+            hindernis: true,
+            schräge: false
         }, {
             bild: new Image(),
             xPos: 3070,
@@ -389,28 +183,10 @@ for (let i = 1; i < alleNutzer.length; i++) {
             schräge: false
         }, {
             bild: new Image(),
-            xPos: 4780,
-            yPos: 220,
-            breite: 270,
-            höhe: 250,
-            schrägeStart: 380,
-            schrägeEnd: 220,
-            hindernis: false,
-            schräge: true
-        }, {
-            bild: new Image(),
             xPos: 5370,
             yPos: 435,
             breite: 660,
             höhe: 50,
-            hindernis: true,
-            schräge: false
-        }, {
-            bild: new Image(), //Polizeiauto
-            xPos: 5040,
-            yPos: 215,
-            breite: 213,
-            höhe: 200,
             hindernis: true,
             schräge: false
         }];
@@ -430,7 +206,6 @@ for (let i = 1; i < alleNutzer.length; i++) {
             höhe: 100,
             xGeschw: 0,
             yGeshwi: 0,
-            defaultGeschwindigkeit: 1,
             typ: "melee",
             bild: new Image(),
             health: 1,
@@ -442,28 +217,10 @@ for (let i = 1; i < alleNutzer.length; i++) {
             höhe: 100,
             xGeschw: 0,
             yGeschw: 0,
-            defaultGeschwindigkeit: 2,
             typ: "melee",
             bild: new Image(),
             health: 1,
             onGround: false,
-        }];
-
-
-        let overlayArray = [{
-            //Lebensanzeige
-            bild: new Image(),
-            xPos: 10,
-            yPos: 940,
-            briete: 100,
-            höhe: 50,
-        }, {
-            //Magazin
-            bild: new Image(),
-            xPos: 220,
-            yPos: 940,
-            briete: 100,
-            höhe: 100,
         }];
 
 
@@ -497,7 +254,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
 
 
         //start() wird ausgeführt sobald die Seite geladen wird
-       // function starte() {
+        function starte() {
             //der Variable canvas wird das Element mit der ID "canvas" zugewiesen (der Canvas der im HTML teil erstellt wurde)
             canvas = document.getElementById('canvas');
 
@@ -511,29 +268,20 @@ for (let i = 1; i < alleNutzer.length; i++) {
             bildArray[2].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
             bildArray[3].bild.src = "./Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png";
 
-            //overlay[1].bild.src = "/Bilder/IO/Health" + character.health + ".gif";
-
-
             character.bild.src = "./Bilder/Objekte/PNG/Foreground/Hindernisse/Car_Side_1.png";
             deathSreen.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fxboxer.sk%2Fwp-content%2Fuploads%2F2018%2F05%2FYou-Died.jpg&f=1&nofb=1";
 
             gegnerArray[0].bild.src = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages4.wikia.nocookie.net%2F__cb20120520175235%2Ffantendo%2Fimages%2F2%2F28%2FMP9_Lakitu_Bust.png&f=1&nofb=1";
             gegnerArray[1].bild.src = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvignette.wikia.nocookie.net%2Fvsbattles%2Fimages%2F3%2F3d%2FNotAMarioFan_pic_7.png%2Frevision%2Flatest%3Fcb%3D20160515161637&f=1&nofb=1";
 
-            overlayArray[0].bild.src = "./Bilder/IO/Health7.gif ";
-            overlayArray[1].bild.src = "";
-
-
-
-            //overlayArray[0].Image.src = ""
             hindernisseHinzufuegen();
             console.log(hindernisse)
-       // }
+        }
 
 
         function hindernisseHinzufuegen() {
 
-            for (let j = 1; j < bildArray.length; j++) {
+            for (j = 1; j < bildArray.length; j++) {
                 if (bildArray[j].hindernis) {
                     addPlatform(bildArray[j].xPos, -bildArray[j].yPos, bildArray[j].breite, bildArray[j].höhe);
                     console.log("Hinderniss " + j + " hinzugefügt");
@@ -557,7 +305,8 @@ for (let i = 1; i < alleNutzer.length; i++) {
             for (i = (0 + xKoord); i < (br + xKoord); i++) {
                 tempI += 1;
                 hindernisse[i][0] += 1;
-                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(yKoord - tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
+                yKoord
+                hindernisse[i].push(-(yKoord - tempI * ((yKoord - schrägeEnd) / br)), -(-tempI * ((yKoord - schrägeEnd) / br)) - tiefe);
             }
         }
 
@@ -578,41 +327,36 @@ for (let i = 1; i < alleNutzer.length; i++) {
 
         function ticke() {
             // console.log("tick");
-            // console.log(generalRF.x + " " + generalRF.y);
-            bewegeSpieler();
+            //console.log(generalRF.x + " " + generalRF.y)
+            bewegeSpieler()
             bewegeBild();
+
             if (generalRF.x < -900) {
                 zeichneBild()
             } else {
+
                 zeichneBildStart()
             }
-            bewegeSchuss(); //ruft auch die Methode zum zeichnen den Schüssen auf 
+
+            bewegeSchuss();
+            //zeichne schuss
             bewegeGegner();
             nochAmLeben();
         }
 
 
         function bewegeSpieler() {
-            //nach links laufen auf "a"
+            //nach links laufen auf "s"
             if (map[65]) {
-                if (character.sneaked == false) {
-                    geschw.x = -character.defaultSpeed;
-                } else if (character.sneaked == true) {
-                    geschw.x = -character.defaultSpeed / 3;
-                }
+                geschw.x = -character.defaultSpeed;
                 character.facingRight = false;
             } else {
                 geschw.x = 0;
             }
 
-
             //nach rechts laufen auf "d"
             if (map[68]) {
-                if (character.sneaked == false) {
-                    geschw.x = character.defaultSpeed;
-                } else if (character.sneaked == true) {
-                    geschw.x = character.defaultSpeed / 3;
-                }
+                geschw.x = character.defaultSpeed;
                 character.facingRight = true;
             } else if (geschw.x > 0) {
                 geschw.x = 0;
@@ -621,12 +365,10 @@ for (let i = 1; i < alleNutzer.length; i++) {
             // sneaken auf "s" oder "Strg"
             if (map[17] || map[83]) {
                 if (onGround) {
-                    character.sneaked = true;
                     character.hight = character.defaultHight / 2;
                 }
             } else if (character.hight <= character.defaultHight) {
                 character.hight = character.defaultHight;
-                character.sneaked = false;
             }
 
             //sprinten (klappt noch nicht )
@@ -646,7 +388,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
 
             //close Combet attack auf "e"
             if (map[69]) {
-                schlagen(); //der schlag fehlt noch 
+                schlagen();
                 console.log("es wurde geschlagen");
             }
 
@@ -668,11 +410,9 @@ for (let i = 1; i < alleNutzer.length; i++) {
             }
 
             //zum testen die taste "t"
-            //setzt gerade die lebne auf 0
+            //setzt gerade die lebne auf 0 
             if (map[84]) {
-                // characterSchaden();
-                console.log(generalRF.x);
-
+                character.health = 0;
             }
 
         }
@@ -721,8 +461,6 @@ for (let i = 1; i < alleNutzer.length; i++) {
                 }
                 generalRF.x = generalRF.x - geschw.x;
             }
-
-            writeUserData(-generalRF.x, -generalRF.y-character.hight);
         }
 
         function istHindernis(xPosi, yPosi) {
@@ -738,11 +476,9 @@ for (let i = 1; i < alleNutzer.length; i++) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.height, canvas.width);
 
-            ctx.drawImage(bildArray[0].bild, ((generalRF.x + 900) / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
-            ctx.drawImage(bildArray[1].bild, ((generalRF.x + 900) / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
-            ctx.drawImage(bildArray[2].bild, ((generalRF.x + 900) / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-
-            //ctx.drawImage(overlay[1].bild, 0, 0, 200, 100);
+            ctx.drawImage(bildArray[0].bild, (generalRF.x / 2) + bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
+            ctx.drawImage(bildArray[1].bild, (generalRF.x / 1.5) + bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
+            ctx.drawImage(bildArray[2].bild, (generalRF.x / 2) + bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
 
             //Zeichnet den Bild Array 
             for (i = 3; i < bildArray.length; i++) {
@@ -757,14 +493,17 @@ for (let i = 1; i < alleNutzer.length; i++) {
                 ctx.strokeRect(generalRF.x + gegnerArray[i].xPos + 900 + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
             }
 
-            for (i = 0; i < overlayArray.length; i++) {
-                ctx.drawImage(overlayArray[i].bild, overlayArray[i].xPos, overlayArray[i].yPos, overlayArray[i].briete, overlayArray[i].höhe);
-            }
-
             zeichneCharacter(900, -generalRF.y - character.hight);
-            zeichneSchuss();
 
-            zeichne_alle_anderen();
+            zeichneSchuss();
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for (i = 1; i < schussArray.length; i++) {
+
+                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            }
         }
 
         function zeichneBildStart() {
@@ -772,27 +511,24 @@ for (let i = 1; i < alleNutzer.length; i++) {
             ctx.drawImage(bildArray[0].bild, bildArray[0].xPos, bildArray[0].yPos, bildArray[0].breite, bildArray[0].höhe);
             ctx.drawImage(bildArray[1].bild, bildArray[1].xPos, bildArray[1].yPos, bildArray[1].breite, bildArray[1].höhe);
             ctx.drawImage(bildArray[2].bild, bildArray[2].xPos, bildArray[2].yPos, bildArray[2].breite, bildArray[2].höhe);
-
             for (i = 3; i < bildArray.length; i++) {
                 ctx.drawImage(bildArray[i].bild, bildArray[i].xPos + character.breite / 2, bildArray[i].yPos, bildArray[i].breite, bildArray[i].höhe);
 
             }
-            for (i = 0; i < gegnerArray.length; i++) {
-                ctx.drawImage(gegnerArray[i].bild, gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
-                ctx.fillStyle = '#F0DB4F';
-                ctx.strokeStyle = 'red';
-                ctx.strokeRect(gegnerArray[i].xPos + character.breite / 2, gegnerArray[i].yPos, gegnerArray[i].breite, gegnerArray[i].höhe);
-            }
 
-            for (i = 0; i < overlayArray.length; i++) {
-                ctx.drawImage(overlayArray[i].bild, overlayArray[i].xPos, overlayArray[i].yPos, overlayArray[i].briete, overlayArray[i].höhe);
-            }
 
             zeichneCharacter(-generalRF.x, -generalRF.y - character.hight);
-            zeichneSchussStart();
-            zeichne_alle_anderen();
-        }
 
+            zeichneSchuss();
+            ctx.fillStyle = '#F0DB4F';
+            ctx.strokeStyle = 'red';
+
+            // Ein ausgemaltes Rechteck malen
+            for (i = 1; i < schussArray.length; i++) {
+
+                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
+            }
+        }
 
         function zeichneCharacter(xPos, yPos) {
             ctx.fillStyle = '#F0DB4F';
@@ -812,62 +548,22 @@ for (let i = 1; i < alleNutzer.length; i++) {
                 } else if (schussArray[i].xPosition - generalRF.x / 2 <= -renderedistance) {
                     schussArray.splice(i, 1);
                 }
-                for (i = 0; i < hindernisse[-schussArray[i].xPosition][0]; i++) {
-
-                if (schussArray[i].yPosi <= hindernisse[-schussArray[i].xPosition][(i * 2) + 1] && schussArray[i].yPosi >= hindernisse[-schussArray[i].xPosition][(i * 2) + 2]) {
-                var hind = true;
-                }
-}
-                if(hind){
-                    schussArray.splice(i, 1);
-                }
-            }
-            if(schussArray.length>1){
-                writeSchüsse();
             }
         }
 
-        function zeichneSchuss() {
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-
-                ctx.fillRect(-schussArray[i].xPosition + generalRF.x / 2 + 900, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-            }
-        }
-
-        function zeichneSchussStart() {
-            ctx.fillStyle = '#F0DB4F';
-            ctx.strokeStyle = 'red';
-
-            // Ein ausgemaltes Rechteck malen
-            for (i = 1; i < schussArray.length; i++) {
-
-                ctx.fillRect(-schussArray[i].xPosition - generalRF.x / 2, -schussArray[i].yPosi, schussArray[i].breite, schussArray[i].höhe);
-            }
-        }
-
+        function zeichneSchuss() {}
 
         function bewegeGegner() {
-            for (let g = 0; g < gegnerArray.length; g++) {
+            for (g = 0; g < gegnerArray.length; g++) {
 
                 //gegner laufen dem Spieler hinterher 
                 if (-generalRF.x < gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = gegnerArray[g].defaultGeschwindigkeit;
-                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
-                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
-                        gegnerArray[g].xPos = -generalRF.x;
-                    }
+                    gegnerArray[g].xGeschw = 1;
+                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
                 } else if (-generalRF.x > gegnerArray[g].xPos) {
-                    gegnerArray[g].xGeschw = -gegnerArray[g].defaultGeschwindigkeit;
-                    if (gegnerArray[g].xPos - gegnerArray[g].xGeschw < -generalRF.x) {
-                        gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
-                    } else if (gegnerArray[g].xPos - gegnerArray[g].xGeschw > -generalRF.x) {
-                        gegnerArray[g].xPos = -generalRF.x;
-                    }
+                    gegnerArray[g].xGeschw = -1;
+                    gegnerArray[g].xPos -= gegnerArray[g].xGeschw;
+
                 }
 
                 //fallbeschleunigung der Gegner (klappt nicht fehler in "kolidiert()", was eine Kopie von "istHindernis()" ist)
@@ -875,7 +571,7 @@ for (let i = 1; i < alleNutzer.length; i++) {
                                 gegnerArray[g].onGround = kolidiert(gegnerArray[g].xPos + (gegnerArray[g].breite / 2) , gegnerArray[g].yPos + gegnerArray[g].höhe )
                                 console.log("Gegner " + i + " onGround: " + gegnerArray[g].onGround) 
                 if (gegnerArray[g].onGround == false) {
-                    gegnerArray[g].yGeschw -= 0,5;
+                    gegnerArray[g].yGeschw -= beschl.y;
                     console.log("Gegner: " + i + "  yPos: " + gegnerArray[g].yPos);
                     gegnerArray[g].yPos -= gegnerArray[g].yGeschw;
                 } else {
@@ -894,6 +590,8 @@ for (let i = 1; i < alleNutzer.length; i++) {
                 }
             }
         }
+
+
 
         function nochAmLeben() {
             if (character.health == 0) {
@@ -925,36 +623,22 @@ for (let i = 1; i < alleNutzer.length; i++) {
         // hier stehen die Aktionen des Characters
 
         function schuss() {
-            if (character.cooldownAngriff + 300 <= Date.now() /*&& character.munitionInKammer > 0 && character.relodeTimer + 3000 <= Date.now()*/) {
+            if (character.cooldownAngriff + 300 <= Date.now()) {
                 if (character.facingRight == false) {
-                   var geschwitemp = -14;
+                    geschwitemp = -7;
                 } else {
-                    var geschwitemp = 14;
+                    geschwitemp = 7;
                 }
                 schussArray.push({ //"array.push" verlängert den array und setzt in das neue "feld" am ender des arrays ein neues Objekt
 
                         yPosi: generalRF.y + character.hight / 2,
-                        breite: 15,
+                        breite: 20,
                         höhe: 5,
                         xGeschw: geschwitemp,
                         xPosition: generalRF.x / 2 - character.breite / 2 - geschwitemp
                     })
                     //console.log(schussArray)
                 character.cooldownAngriff = Date.now()
-                character.munitionInKammer = character.munitionInKammer - 1;
-
-                if (character.munitionInKammer <= 0) {
-                    character.relodeTimer = Date.now();
-                    if (character.munition >= character.defaultMunitionInKammer) {
-                        character.munitionInKammer = character.defaultMunitionInKammer;
-                        character.munition = character.munition - character.defaultMunitionInKammer;
-                    } else {
-                        character.munitionInKammer = character.munition;
-                        character.munition = 0;
-                    }
-
-                }
-                console.log(character.munition + " Schuss übrig");
             }
         }
 
@@ -963,42 +647,6 @@ for (let i = 1; i < alleNutzer.length; i++) {
             // richtung des Schlages 
             // erkennen, ob treffer 
             // animation
-        }
-
-        function characterSchaden() {
-            if (character.cooldownDamage + 400 <= Date.now()) {
-
-                character.health = character.health - 1;
-                character.cooldownDamage = Date.now()
-                console.log("du hast noch " + character.health + " Leben")
-                overlayArray[0].bild.src = " ./Bilder/IO/Health" + character.health + ".gif ";
-            }
-        }
-
-
-
-
-
-
-
-        function fps() {
-            if (counter < 1) {
-                counter++;
-                counterCont++;
-
-            } else {
-                if (counterContStart > 100) {
-                    console.log("   Avg: " + (1000 * counterCont / (Date.now() - ZeitStart)))
-                    counterCont++;
-                } else {
-                    ZeitStart = Date.now()
-                }
-                console.log((1000 / (Date.now() - ZeitLetzte)))
-                counterContStart++;
-
-                ZeitLetzte = Date.now()
-                counter = 1;
-            }
         }
     </script>
 
