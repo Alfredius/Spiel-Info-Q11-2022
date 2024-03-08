@@ -20,6 +20,23 @@ background = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2
 background_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
 background_middle_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
+level1_enemys_positiones = [(1000,250)]
+
+class enemy:
+    enemies = []
+    def __init__(self,coordinates) -> None:
+        enemy.enemies.append(self)
+        self.coordinates = coordinates
+        self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (200, 400))
+
+
+    def draw(self, surface:pygame.surface):
+        surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
+
+for e in level1_enemys_positiones:
+    enemy(e)
+
 class GameState:
     def __init__(self):
         self.running = True
@@ -75,6 +92,24 @@ class ObstacleMap:
                 pass
         return False
     
+    def collides(self, rect:pygame.Rect):
+        for y in range(rect.y, rect.y + rect.h):
+            try:
+                if self.image.get_at((rect.x, y)) != (0, 0, 0, 0):
+                    return True
+
+            except IndexError:
+                pass
+
+        for x in range(rect.x, rect.x + rect.w):
+            try: 
+                if self.image.get_at((x, rect.y)) != (0, 0, 0, 0):
+                    return True
+            except IndexError:
+                pass
+
+        return False
+    
 obstacle_map = ObstacleMap("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V1_Collisions_kopie-auflösung niedrig.png")
 
 class World:
@@ -112,6 +147,7 @@ class Player:
         self.jump_height = 12
         self.scale = 0.15
         self.animation_frames = self.load_gif("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+        self.animation_frames_jumping_up = self.load_gif("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
         self.animation_frames.pop(0)
         self.current_frame = 0
         self.rect = self.animation_frames[0].get_rect()
@@ -139,6 +175,10 @@ class Player:
 
     def draw(self, surface):
         image = self.animation_frames[int(self.current_frame)]
+        if self.dy < 0:
+            image = self.animation_frames_jumping_up[1]
+            image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
+            image.set_colorkey((255,255,255))
         current_width, current_height = image.get_size()
         if self.walking_left:
             image = pygame.transform.flip(image, True, False)
@@ -215,7 +255,9 @@ class shot:
         self.coordinates[0] += self.velocity[0]
         self.coordinates[1] += self.velocity[1]
 
-        test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
+        test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
+        if obstacle_map.collides(test_rect):
+            shot.shots_list.remove(self)
 
 
         
@@ -290,6 +332,9 @@ while gs.running:
     for shots in shot.shots_list:
         shots.move()
         shots.draw(display)
+    
+    for e in enemy.enemies:
+        e.draw(display)
 
     pygame.display.flip()
     gs.dt_last_frame = FPS.tick()/17
