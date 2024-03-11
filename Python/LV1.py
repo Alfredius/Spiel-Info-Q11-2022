@@ -20,22 +20,22 @@ background = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2
 background_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
 background_middle_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
-level1_enemys_positiones = [(1000,250)]
+level1_enemys_positiones = [[(1000,250),(100,200)]]
 
 class enemy:
     enemies = []
-    def __init__(self,coordinates) -> None:
+    def __init__(self,coordinates,size) -> None:
         enemy.enemies.append(self)
         self.coordinates = coordinates
         self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (200, 400))
+        self.image = pygame.transform.scale(self.image, size)
 
 
     def draw(self, surface:pygame.surface):
         surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
 
 for e in level1_enemys_positiones:
-    enemy(e)
+    enemy(e[0],e[1])
 
 class GameState:
     def __init__(self):
