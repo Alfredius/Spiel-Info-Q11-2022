@@ -5,10 +5,8 @@ import time
 import math
 import os
 
+
 pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
-pygame.mixer.music.play(-1,0.0)
 # pygame.mouse.set_visible(False)
 info_object = pygame.display.Info()
 screen_size = (info_object.current_w, info_object.current_h)
@@ -74,7 +72,7 @@ for e in level1_enemys_positiones:
 
 class GameState:
     def __init__(self):
-        self.running = True
+        self.running = False
         self.dt_last_frame = 1
         self.dead = False
 
@@ -414,74 +412,74 @@ gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
 
-dev_var_damage = time.time()
-while gs.running:
-    display.fill((0,0,0))
+def main():
+    pygame.mixer.init()
+    pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
+    pygame.mixer.music.play(-1,0.0)
+    gs.running = True
+    while gs.running:
+        display.fill((0,0,0))
 
-    events = pygame.event.get()
-    keys = pygame.key.get_pressed()
-    for event in events:
-        if event.type == pygame.QUIT:
-            gs.running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+        events = pygame.event.get()
+        keys = pygame.key.get_pressed()
+        for event in events:
+            if event.type == pygame.QUIT:
                 gs.running = False
-                pygame.quit()
-                sys.exit()
-        if event.type == pygame.MOUSEBUTTONUP:
-            cords = pygame.mouse.get_pos()
-            shot([cords[0] - world.x, cords[1]],[player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],True)
-    # In the game loop
-    if keys[pygame.K_SPACE]:
-        if not player.dy < 0:
-            player.jump()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gs.running = False
 
-    if keys[pygame.K_d]:
-            test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
-            if not obstacle_map.collides_horizontally_right(test_rect):
-                world.move(-SPEED_LATERAL)
-                player.walking_right = True
-    else:
-        player.walking_right = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                cords = pygame.mouse.get_pos()
+                shot([cords[0] - world.x, cords[1]],[player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],True)
+        # In the game loop
+        if keys[pygame.K_SPACE]:
+            if not player.dy < 0:
+                player.jump()
 
-    if keys[pygame.K_a]:
+        if keys[pygame.K_d]:
+                test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
+                if not obstacle_map.collides_horizontally_right(test_rect):
+                    world.move(-SPEED_LATERAL)
+                    player.walking_right = True
+        else:
+            player.walking_right = False
 
-            test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
-            if not obstacle_map.collides_horizontally_left(test_rect):
-                world.move(SPEED_LATERAL)
-                player.walking_left = True
-    else:
-        player.walking_left = False
+        if keys[pygame.K_a]:
 
-    if keys[pygame.K_LSHIFT]:
-        player.crouch = True
-        player.jump_enabled = False
-    elif player.crouch == True:
-        player.jump_enabled = True
-        player.y -= player.rect.size[1]
-        player.crouch = False
+                test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
+                if not obstacle_map.collides_horizontally_left(test_rect):
+                    world.move(SPEED_LATERAL)
+                    player.walking_left = True
+        else:
+            player.walking_left = False
+
+        if keys[pygame.K_LSHIFT]:
+            player.crouch = True
+            player.jump_enabled = False
+        elif player.crouch == True:
+            player.jump_enabled = True
+            player.y -= player.rect.size[1]
+            player.crouch = False
 
 
-    if keys[pygame.K_t]:
-        if time.time() - dev_var_damage > 0.2:
-            player.damage(1)
-            dev_var_damage = time.time()
+        player.update()
+        world.draw(display)
+        player.draw(display)
+        shot.display_magazine(display)
+        player.display_health(display)
+        for shots in shot.shots_list:
+            shots.move()
+            shots.draw(display)
+        
+        for e in enemy.enemies:
+            e.fire_shot()
+            e.draw(display)
 
-    player.update()
-    world.draw(display)
-    player.draw(display)
-    shot.display_magazine(display)
-    player.display_health(display)
-    for shots in shot.shots_list:
-        shots.move()
-        shots.draw(display)
-    
-    for e in enemy.enemies:
-        e.fire_shot()
-        e.draw(display)
+        pygame.display.flip()
+        gs.dt_last_frame = FPS.tick()/17
+    pygame.mixer.pause()
 
-    pygame.display.flip()
-    gs.dt_last_frame = FPS.tick()/17
-
-pygame.quit()
-sys.exit()
+if __name__ == "__main__":
+    gs.running = True
+    main()
