@@ -24,21 +24,25 @@ background = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2
 background_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
 background_middle_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
-level1_enemys_positiones = [[(1000,250),(100,200)]]
+level1_enemys_positiones = [[(1000,250),(100,200),1,2],[(1500,250),(100,200),2,1],[(2000,250),(100,200),5,0.5]]
 
 class enemy:
     enemies = []
-    def __init__(self,coordinates,size) -> None:
+    def __init__(self,coordinates,size, hp, shots_per_seconds) -> None:
         enemy.enemies.append(self)
+        self.last_shot_fired = 0
+        self.shots_per_seconds = shots_per_seconds
         self.coordinates = coordinates
         self.x, self.y = coordinates
-        self.health = 1
+        self.max_health = hp
+        self.health = hp
         self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
 
 
     def draw(self, surface:pygame.surface):
-        surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
+       surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
+       self.display_health_bar()
 
     def check_for_hit(self, coordinates) -> bool:
         x,y = coordinates
@@ -49,10 +53,24 @@ class enemy:
 
     
     def is_hit(self):
-        enemy.enemies.remove(self)
+        self.health -= 1
+        if self.health <= 0:
+            enemy.enemies.remove(self)
+
+    def display_health_bar(self):
+        color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
+        pygame.draw.rect(display, color,pygame.Rect(self.coordinates[0] + world.x,self.coordinates[1]-25,100,20),3)
+        pygame.draw.rect(display, color,pygame.Rect(self.coordinates[0] + world.x,self.coordinates[1]-25,100*(self.health/self.max_health),20))
+
+    def fire_shot(self):
+        if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
+            dx = player.x - (self.coordinates[0] + world.x)
+            dy = player.y - self.coordinates[1]
+            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
+            self.last_shot_fired = time.time()
 
 for e in level1_enemys_positiones:
-    enemy(e[0],e[1])
+    enemy(*e) 
 
 class GameState:
     def __init__(self):
@@ -128,7 +146,7 @@ class ObstacleMap:
 
         return False
     
-obstacle_map = ObstacleMap("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V1_Collisions_kopie-auflösung niedrig.png")
+obstacle_map = ObstacleMap("Bilder/Level 1/Level1_11200x1080_V1_Collisions.png")
 
 class World:
     def __init__(self):
@@ -223,9 +241,13 @@ class Player:
 
     def damage(self, damage):
         self.health -= damage
+        pygame.draw.rect(display, (255,0,0),pygame.Rect(0,0,screen_size[0],screen_size[1]),4)
         if self.health < 0:
             self.health = 0
             gs.dead = True
+            world.__init__()
+            gs.dead = False
+            self.health = 7
 
     def display_health(self, surface):
         if self.health == 7:
@@ -248,19 +270,26 @@ class Player:
                 gif.pop(0)
                 all_gifs.append(gif)
         return all_gifs
+    
+    def check_for_hit(self, coordinates) -> bool:
+        image = self.animation_frames[1]
+        x,y = coordinates
+        if x > self.x-world.x and x < self.x - world.x + image.get_width():
+            if y > self.y and y < self.y + image.get_height():
+                return True
+        return False
                 
 
     def update(self):
         self.prev_x, self.prev_y = self.x, self.y  # Remember previous position
-       # Inside Player.update() method before applying gravity
         self.dy += self.gravity
-        test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(0, self.dy)
+        test_rect = pygame.Rect(self.x - world.x, self.y, self.rect.w, self.rect.h).move(0, self.dy)
         
         if obstacle_map.collides_vertically_top(test_rect) and self.dy < 0:
             self.dy = 0
 
         if not obstacle_map.collides_vertically_bottom(test_rect):
-            self.y += self.dy
+            self.y += self.dy 
         elif not self.dy < 0:
             self.dy = 0
 
@@ -300,17 +329,27 @@ class shot:
     animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
     current_frame = 0
     last_frame_time = 0
-    def __init__(self):
-        if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0:
+    def __init__(self, cords_target, coordinates_origin, shot_by_player):
+        if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player:
             shot.shots_list.append(self)
+            self.shot_by_player = shot_by_player
             self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
             self.image = pygame.transform.scale(self.image, (50,10))
-            self.velocity = self.set_velocities()
+            self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
             self.image = pygame.transform.rotate(self.image,v)
-            self.coordinates = [player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2]
+            self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
+        elif not shot_by_player:
+            shot.shots_list.append(self)
+            self.shot_by_player = shot_by_player
+            self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            self.image = pygame.transform.scale(self.image, (50,10))
+            self.velocity = self.set_velocities(cords_target, coordinates_origin)
+            v = -get_rotation_angle(self.velocity)
+            self.image = pygame.transform.rotate(self.image,v)
+            self.coordinates = coordinates_origin
         elif shot.shots_left <= 0 and shot.is_reloading == False and (time.time() - shot.last_shot_fired) > 0.2:
             shot.is_reloading = True
     
@@ -320,12 +359,15 @@ class shot:
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
-            if enem.check_for_hit(self.coordinates):
+            if enem.check_for_hit(self.coordinates) and self.shot_by_player:
                 shot.shots_list.remove(self)
                 enem.is_hit()
         if obstacle_map.collides(test_rect):
             shot.shots_list.remove(self)
         if abs(self.coordinates[1]) > 1080:
+            shot.shots_list.remove(self)
+        if player.check_for_hit(self.coordinates) and not self.shot_by_player:
+            player.damage(1)
             shot.shots_list.remove(self)
 
     def reload_animation(surface):
@@ -348,15 +390,22 @@ class shot:
             shot.reload_animation(surface)
 
 
-    def set_velocities(self) -> list:
+    def set_velocities_mouse(self) -> list:
         x,y = pygame.mouse.get_pos()
         v = [x - (player.x + player.rect.w/2), y - (player.y + player.rect.h/2)]
         v_l = math.sqrt(v[0]**2 + v[1]**2)
         v = [(i/v_l)*10 for i in v]
         return v
     
+    def set_velocities(self, coords_origin, cords_target) -> list:
+        x,y = coords_origin
+        v = [x - cords_target[0], y - cords_target[1]]
+        v_l = math.sqrt(v[0]**2 + v[1]**2)
+        v = [(i/v_l)*10 for i in v]
+        return v
+    
     def draw(self,surface):
-        surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))  
+        surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
 
 
 
@@ -380,7 +429,8 @@ while gs.running:
                 pygame.quit()
                 sys.exit()
         if event.type == pygame.MOUSEBUTTONUP:
-            shot()
+            cords = pygame.mouse.get_pos()
+            shot([cords[0] - world.x, cords[1]],[player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],True)
     # In the game loop
     if keys[pygame.K_SPACE]:
         if not player.dy < 0:
@@ -389,7 +439,7 @@ while gs.running:
     if keys[pygame.K_d]:
             test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
             if not obstacle_map.collides_horizontally_right(test_rect):
-                world.move(-SPEED_LATERAL*gs.dt_last_frame)
+                world.move(-SPEED_LATERAL)
                 player.walking_right = True
     else:
         player.walking_right = False
@@ -398,7 +448,7 @@ while gs.running:
 
             test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
             if not obstacle_map.collides_horizontally_left(test_rect):
-                world.move(SPEED_LATERAL*gs.dt_last_frame)
+                world.move(SPEED_LATERAL)
                 player.walking_left = True
     else:
         player.walking_left = False
@@ -427,6 +477,7 @@ while gs.running:
         shots.draw(display)
     
     for e in enemy.enemies:
+        e.fire_shot()
         e.draw(display)
 
     pygame.display.flip()
