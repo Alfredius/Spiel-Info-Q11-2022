@@ -15,7 +15,7 @@ display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED
 class gamestate:
     def __init__(self):
         self.running = False
-        self.level = 0
+        self.level = "exit"
 
 
 class PulsatingText:
@@ -56,45 +56,79 @@ class Startmenu():
 
         display: instance of the display to draw on."""
         self.display = display
-        self.font_size = 15
+        self.font_size = 18
         self.font = pygame.font.SysFont(None, self.font_size) 
         self.color_l = (0,0,0)
         self.color_r = (0,0,0)
         y = 200
-        PulsatingText(display, "Wähle dein Level", (screen_size[0]//2, 100), 36)
+        x = screen_size[0]//2
+        PulsatingText(display, "Wähle dein Level", (x, 100), 36)
+
+        Level(1, x-100, y,enebled=True)
+        Level(2,x,y)
         
 
 
     def draw(self):
         """draws the startmenue to the display"""
-        x = screen_size[0]//2
-        y = 200
 
+        pygame.draw.rect(self.display, (150, 0, 0), (screen_size[0]-150, 70, 70, 30), 0)
+        text = self.font.render(f"Beenden", True, (200, 200, 200))
+        self.display.blit(text, (screen_size[0]-145, 80))
 
-        text = self.font.render(f"Level: {1}", True, (255, 255, 255))
-        self.display.blit(text, (x-15, y+100))
-
-
-        pygame.draw.rect(self.display, (255, 0, 0), (x-85, y-30, 40, 70), 0)
+        for level in Level.levels:
+            level.draw(self.display)
         
 
         
     def check_input(self, events):
         """checks input to the startmenue.
         events: pygame.event"""
-        x = screen_size[0]//2
-        y = 200
+        for level in Level.levels:
+            level.check_input(events)
+
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if pygame.Rect(x-85, y-30, 40, 70).collidepoint(mouse_pos): 
+                if pygame.Rect(screen_size[0]-150, 70, 70, 30).collidepoint(mouse_pos): 
                     print('click')
-                    gs.level = 1
+                    gs.level = "exit"
                     gs.running = False
 
 
-        
+class Level():
+    levels = []
+    def __init__(self, level_id, x, y, font_size=18,enebled=False):
+        self.font_size = font_size
+        self.font = pygame.font.SysFont(None, self.font_size) 
+        self.x = x
+        self.y = y
+        self.level_id = level_id
+        self.enebled = enebled
+
+        Level.levels.append(self)
+
+    def draw(self, surface):
+        if self.enebled:
+            pygame.draw.rect(surface, (100, 255, 0), (self.x-35, self.y-30, 70, 60), 4)
+        else:
+            pygame.draw.rect(surface, (255, 0, 0), (self.x-35, self.y-30, 70, 60), 0)
+        text = self.font.render(f"Level: {self.level_id}", True, (255, 255, 255))
+        surface.blit(text, (self.x-25, self.y-5))
+    
+    def check_input(self, events):
+        """checks input to the startmenue.
+        events: pygame.event"""
+        if self.enebled:
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+
+                    if pygame.Rect(self.x-35, self.y-30, 70, 60).collidepoint(mouse_pos): 
+                        print('click')
+                        gs.level = self.level_id
+                        gs.running = False
 
 
 start_menu = Startmenu(display)
@@ -118,6 +152,7 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     gs.running = False
+                    gs.level = "exit"
 
         start_menu.check_input(events)
         for texts in PulsatingText.Texts:
@@ -126,6 +161,8 @@ def main():
         start_menu.draw()
         pygame.display.flip()
     pygame.mixer.pause()
+    if not gs.level == "exit" and gs.level < len(Level.levels):
+        Level.levels[gs.level].enebled = True
     return gs.level
 
 if __name__ == '__main__':

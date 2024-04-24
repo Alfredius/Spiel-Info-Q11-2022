@@ -1,12 +1,14 @@
-import LV1
+import LV1, LV2
 import start_menu
-import pygame
 
+levels = [LV1, LV2]
 
+while True: # sollte irgendwann durch tatsächliche Logik gemacht werden
+    selected_level = start_menu.main()
+    if selected_level == "exit":
+        break
+    print(selected_level)
 
-selected_level = start_menu.main()
-print(selected_level)
+    levels[selected_level-1].main()
 
-if selected_level == 1:
-    LV1.main()
 
