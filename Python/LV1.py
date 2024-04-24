@@ -55,6 +55,7 @@ class enemy:
         self.health -= 1
         if self.health <= 0:
             enemy.enemies.remove(self)
+            Collectable(self.x+self.image.get_width()//2, self.y+ self.image.get_height()//2)
 
     def display_health_bar(self):
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
@@ -99,6 +100,39 @@ class DialogBox:
                                                (bubble_rect.bottomleft[0]-5, bubble_rect.bottomleft[1] + 5),
                                                (bubble_rect.bottomleft[0]+10, bubble_rect.bottomleft[1])])  # Little triangle
         win.blit(text_surface, text_rect)  # Text
+
+class Collectable:
+    collectables = []
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.img_frames = []
+        self.load("coins")
+        self.current_frame = 0
+        self.last_frame_time = time.time()
+        Collectable.collectables.append(self)
+
+    def draw(self, surface):
+        surface.blit(self.img_frames[self.current_frame], (self.x + world.x - self.img_frames[self.current_frame].get_width()//2,self.y))
+        if time.time() - self.last_frame_time > 0.1:
+            self.current_frame = (self.current_frame + 1)%len(self.img_frames)
+            self.last_frame_time = time.time()
+    
+    def load(self, path):
+        filenames = sorted(os.listdir(path))
+        print(filenames)
+        for filename in filenames:
+            filepath = os.path.join(path, filename)
+            if filepath.endswith((".png")):
+                # Lädt das Bild und fügt es zur Liste hinzu
+                self.img_frames.append(pygame.image.load(filepath))
+
+    def collision_with_player(self):
+        if self.x > -world.x + player.x and self.x < -world.x + + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
+            Collectable.collectables.remove(self)
+            player.coin_count += 1
+                
+
 
 class GameState:
     def __init__(self):
@@ -222,6 +256,8 @@ class Player:
         self.jumping_sound.set_volume(0.8)
         self.last_jump = time.time()
 
+        self.inventory = []
+        self.coin_count = 0
         self.health = 7
         self.health_bar_current_frame = 0
         self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
@@ -502,6 +538,9 @@ def main():
         shot.display_magazine(display)
         player.display_health(display)
         dialog.draw(display)
+        for item in Collectable.collectables:
+            item.collision_with_player()
+            item.draw(display)
         for shots in shot.shots_list:
             shots.move()
             shots.draw(display)
