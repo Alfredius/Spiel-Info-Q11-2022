@@ -15,6 +15,7 @@ SPEED_LATERAL = 10
 
 UI_X = 30
 UI_Y = 850
+MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
 
@@ -70,11 +71,42 @@ class enemy:
 for e in level1_enemys_positiones:
     enemy(*e) 
 
+class DialogBox:
+    def __init__(self, messages, cords, font=pygame.font.SysFont('Comic Sans MS', 30), color=(255, 255, 255)):
+        self.coordinates = cords
+        self.messages = messages
+        self.current_message = 0
+        self.font = font
+        self.color = color
+        self.text_surfaces = [font.render(msg, False, self.color) for msg in messages]
+
+    def next_message(self):
+        # No need to check bounds here, the draw method handles the case where we are out of bounds
+        self.current_message += 1
+
+    def draw(self, win):
+        # If we are out of messages, don't draw anything
+        if self.current_message >= len(self.messages):
+            gs.shooting_enebled = True
+            gs.movement_enebled  = True
+            return
+
+        text_surface = self.text_surfaces[self.current_message]
+        text_rect = text_surface.get_rect(center=self.coordinates)
+        bubble_rect = text_rect.inflate(2*MARGIN, MARGIN)
+        pygame.draw.rect(win, self.color, bubble_rect, 2)  # Speech bubble
+        pygame.draw.polygon(win, self.color, [(bubble_rect.bottomleft[0], bubble_rect.bottomleft[1]-10),
+                                               (bubble_rect.bottomleft[0]-5, bubble_rect.bottomleft[1] + 5),
+                                               (bubble_rect.bottomleft[0]+10, bubble_rect.bottomleft[1])])  # Little triangle
+        win.blit(text_surface, text_rect)  # Text
+
 class GameState:
     def __init__(self):
         self.running = False
         self.dt_last_frame = 1
         self.dead = False
+        self.shooting_enebled = False
+        self.movement_enebled = False
 
 class ObstacleMap:
     def __init__(self, image_path):
@@ -169,8 +201,6 @@ class World:
             self.background_middle_foreground_rect = self.background_middle_foreground_rect.move(dx/2,0)
             self.background_rect = self.background_rect.move(dx/4,0)
 
-
-        
 
 class Player:
     def __init__(self):
@@ -328,7 +358,7 @@ class shot:
     current_frame = 0
     last_frame_time = 0
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
-        if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player:
+        if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
             self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
@@ -339,7 +369,7 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
-        elif not shot_by_player:
+        elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
             self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
@@ -411,6 +441,7 @@ world = World()
 gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
+dialog = DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
 
 def main():
     pygame.mixer.init()
@@ -428,16 +459,18 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     gs.running = False
+                if event.key == pygame.K_SPACE:
+                    dialog.next_message()
 
             if event.type == pygame.MOUSEBUTTONUP:
                 cords = pygame.mouse.get_pos()
                 shot([cords[0] - world.x, cords[1]],[player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],True)
         # In the game loop
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] and gs.movement_enebled:
             if not player.dy < 0:
                 player.jump()
 
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] and gs.movement_enebled:
                 test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
                 if not obstacle_map.collides_horizontally_right(test_rect):
                     world.move(-SPEED_LATERAL)
@@ -445,7 +478,7 @@ def main():
         else:
             player.walking_right = False
 
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] and gs.movement_enebled:
 
                 test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
                 if not obstacle_map.collides_horizontally_left(test_rect):
@@ -454,7 +487,7 @@ def main():
         else:
             player.walking_left = False
 
-        if keys[pygame.K_LSHIFT]:
+        if keys[pygame.K_LSHIFT] and gs.movement_enebled:
             player.crouch = True
             player.jump_enabled = False
         elif player.crouch == True:
@@ -468,6 +501,7 @@ def main():
         player.draw(display)
         shot.display_magazine(display)
         player.display_health(display)
+        dialog.draw(display)
         for shots in shot.shots_list:
             shots.move()
             shots.draw(display)
