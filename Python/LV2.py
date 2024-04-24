@@ -496,7 +496,7 @@ world = World()
 gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
+DialogBox(["Ready!", "Set!", "Good Luck!"], (screen_size[0]//2 + 200,500))
 
 def main():
     pygame.mixer.init()
