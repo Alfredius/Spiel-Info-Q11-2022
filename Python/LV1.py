@@ -73,6 +73,7 @@ for e in level1_enemys_positiones:
     enemy(*e) 
 
 class DialogBox:
+    boxes = []
     def __init__(self, messages, cords, font=pygame.font.SysFont('Comic Sans MS', 30), color=(255, 255, 255)):
         self.coordinates = cords
         self.messages = messages
@@ -80,6 +81,7 @@ class DialogBox:
         self.font = font
         self.color = color
         self.text_surfaces = [font.render(msg, False, self.color) for msg in messages]
+        DialogBox.boxes.append(self)
 
     def next_message(self):
         # No need to check bounds here, the draw method handles the case where we are out of bounds
@@ -90,6 +92,9 @@ class DialogBox:
         if self.current_message >= len(self.messages):
             gs.shooting_enebled = True
             gs.movement_enebled  = True
+            DialogBox.boxes.remove(self)
+            if gs.end_of_game:
+                gs.running = False
             return
 
         text_surface = self.text_surfaces[self.current_message]
@@ -141,6 +146,7 @@ class GameState:
         self.dead = False
         self.shooting_enebled = False
         self.movement_enebled = False
+        self.end_of_game = False
 
 class ObstacleMap:
     def __init__(self, image_path):
@@ -227,6 +233,10 @@ class World:
         surface.blit(self.background, self.background_rect)
         surface.blit(self.background_middle_foreground, self.background_middle_foreground_rect)
         surface.blit(self.background_foreground, self.background_foreground_rect)
+
+        # self.font = pygame.font.SysFont(None, 18) 
+        # text = self.font.render(f"Wo bin ich? {self.x}", True, (200, 200, 200))
+        # display.blit(text, (screen_size[0]-145, 80))
 
     def move(self, dx):
         if(self.x <= 0 or dx < 0):
@@ -363,6 +373,11 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
+        if -world.x + player.x >= 10800:
+            gs.movement_enebled = False
+            if DialogBox.boxes == []:
+                gs.end_of_game = True
+                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
 
 def get_rotation_angle(velocity):
     # velocity[0] is horizontal speed
@@ -477,7 +492,7 @@ world = World()
 gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
-dialog = DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
+DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
 
 def main():
     pygame.mixer.init()
@@ -537,7 +552,8 @@ def main():
         player.draw(display)
         shot.display_magazine(display)
         player.display_health(display)
-        dialog.draw(display)
+        for dialog in DialogBox.boxes:
+            dialog.draw(display)
         for item in Collectable.collectables:
             item.collision_with_player()
             item.draw(display)
