@@ -3,7 +3,7 @@ import start_menu
 
 levels = [LV1, LV2]
 
-while True: # sollte irgendwann durch tatsächliche Logik gemacht werden
+while True:
     selected_level = start_menu.main()
     if selected_level == "exit":
         break

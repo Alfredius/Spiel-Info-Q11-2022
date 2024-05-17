@@ -15,6 +15,7 @@ SPEED_LATERAL = 10
 
 UI_X = 30
 UI_Y = 850
+
 MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
@@ -64,8 +65,6 @@ class enemy:
 
     def fire_shot(self):
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
-            dx = player.x - (self.coordinates[0] + world.x)
-            dy = player.y - self.coordinates[1]
             shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
             self.last_shot_fired = time.time()
 
@@ -107,6 +106,7 @@ class DialogBox:
         win.blit(text_surface, text_rect)  # Text
 
 class Collectable:
+    # das ist ein Beispiel für ein collectable. Am ende sollten wahrscheinlich mehr sachen collectable sein als Münzen, und münzen werden wahrscheinlich keine collectables bleiben, aber als poc sind die wahrscheinlich ganz gut
     collectables = []
     def __init__(self, x, y):
         self.x = x
@@ -140,6 +140,7 @@ class Collectable:
 
 
 class GameState:
+    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
     def __init__(self):
         self.running = False
         self.dt_last_frame = 1
@@ -149,6 +150,7 @@ class GameState:
         self.end_of_game = False
 
 class ObstacleMap:
+    # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (11200, 1080))
