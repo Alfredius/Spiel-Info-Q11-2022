@@ -4,7 +4,7 @@ from PIL import Image
 import time
 import math
 import os
-
+import ctypes
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -13,12 +13,45 @@ screen_size = (info_object.current_w, info_object.current_h)
 
 SPEED_LATERAL = 10
 
+RUN_SPEED = 60
 UI_X = 30
 UI_Y = 850
 
 MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
+
+# Get the number of displays
+num_displays = pygame.display.get_num_displays()
+print(f"Number of displays: {num_displays}")
+
+# Load SDL2 shared library
+sdl = ctypes.CDLL(None)
+
+# Define SDL2 structure
+class SDL_DisplayMode(ctypes.Structure):
+    _fields_ = [("format", ctypes.c_uint),
+                ("w", ctypes.c_int),
+                ("h", ctypes.c_int),
+                ("refresh_rate", ctypes.c_int),
+                ("driverdata", ctypes.c_void_p)]
+
+# Define SDL2 functions
+SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
+SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
+SDL_GetDisplayMode.restype = ctypes.c_int
+
+# Iterate over each display and get its refresh rate
+for display_index in range(num_displays):
+    mode = SDL_DisplayMode()
+    if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
+        print(f"Could not get display mode for display {display_index}")
+        continue
+    
+    print(f"Display {display_index}:")
+    print(f"  Resolution: {mode.w}x{mode.h}")
+    print(f"  Refresh rate: {mode.refresh_rate} Hz")
+    RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
 background = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
 background_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
@@ -133,7 +166,7 @@ class Collectable:
                 self.img_frames.append(pygame.image.load(filepath))
 
     def collision_with_player(self):
-        if self.x > -world.x + player.x and self.x < -world.x + + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
+        if self.x > -world.x + player.x and self.x < -world.x + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
             Collectable.collectables.remove(self)
             player.coin_count += 1
                 
@@ -375,7 +408,7 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + player.x >= 10800:
+        if -world.x + self.x >= 10800:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
@@ -435,8 +468,8 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
-        self.coordinates[0] += self.velocity[0]
-        self.coordinates[1] += self.velocity[1]
+        self.coordinates[0] += self.velocity[0]*gs.dt_last_frame
+        self.coordinates[1] += self.velocity[1]*gs.dt_last_frame
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
@@ -524,9 +557,9 @@ def main():
                 player.jump()
 
         if keys[pygame.K_d] and gs.movement_enebled:
-                test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
+                test_rect = pygame.Rect((player.x - world.x), player.y, player.rect.w, player.rect.h).move(1, 0)
                 if not obstacle_map.collides_horizontally_right(test_rect):
-                    world.move(-SPEED_LATERAL)
+                    world.move(-SPEED_LATERAL*RUN_SPEED)
                     player.walking_right = True
         else:
             player.walking_right = False
@@ -535,7 +568,7 @@ def main():
 
                 test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
                 if not obstacle_map.collides_horizontally_left(test_rect):
-                    world.move(SPEED_LATERAL)
+                    world.move(SPEED_LATERAL*RUN_SPEED)
                     player.walking_left = True
         else:
             player.walking_left = False
@@ -572,5 +605,4 @@ def main():
     pygame.mixer.pause()
 
 if __name__ == "__main__":
-    gs.running = True
     main()
