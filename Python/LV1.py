@@ -53,11 +53,11 @@ for display_index in range(num_displays):
     print(f"  Refresh rate: {mode.refresh_rate} Hz")
     RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
-background = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-background_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
-background_middle_foreground = pygame.image.load('/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
+background_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
+background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
-level1_enemys_positiones = [[(1000,250),(100,200),1,2],[(1500,250),(100,200),2,1],[(2000,250),(100,200),5,0.5]]
+level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
 class enemy:
     enemies = []
@@ -69,8 +69,10 @@ class enemy:
         self.x, self.y = coordinates
         self.max_health = hp
         self.health = hp
-        self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
+        self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
+        self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+        self.is_hit_sound.set_volume(0.8)
 
 
     def draw(self, surface:pygame.surface):
@@ -90,6 +92,7 @@ class enemy:
         if self.health <= 0:
             enemy.enemies.remove(self)
             Collectable(self.x+self.image.get_width()//2, self.y+ self.image.get_height()//2)
+        self.is_hit_sound.play()
 
     def display_health_bar(self):
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
@@ -101,7 +104,7 @@ class enemy:
             shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
             self.last_shot_fired = time.time()
 
-for e in level1_enemys_positiones:
+for e in level1_enemies_positiones:
     enemy(*e) 
 
 class DialogBox:
@@ -289,15 +292,15 @@ class Player:
         self.gravity = 0.5
         self.jump_height = 17
         self.scale = 0.15
-        self.animation_frames = self.load_gif("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
-        self.animation_frames_jumping_up = self.load_gif("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+        self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+        self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
         self.animation_frames.pop(0)
         self.current_frame = 0
         self.rect = self.animation_frames[0].get_rect()
         self.walking_right = False
         self.walking_left = False
         self.crouch = False
-        self.jumping_sound = pygame.mixer.Sound("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Player/399095__plasterbrain__8bit-jump.flac")
+        self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
         self.jumping_sound.set_volume(0.8)
         self.last_jump = time.time()
 
@@ -367,6 +370,17 @@ class Player:
             surface.blit(self.haelth_bar_gifs[self.health][int(self.health_bar_current_frame)], (UI_X+170, UI_Y+50))
             self.health_bar_current_frame = (self.health_bar_current_frame + 0.25) % 7
     
+    def display_coins(self, surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
+        img = pygame.image.load("coins/coin_01.png")
+        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+        surface.blit(img, (screen_size[0]-190, 50))
+        text_surface = font.render("X", False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
+        surface.blit(text_surface, text_rect)
+        text_surface = font.render(str(self.coin_count), False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(screen_size[0]-80, 70))
+        surface.blit(text_surface, text_rect)
+       
     def load_gifs(self, path):
         all_gifs = []
         filenames = sorted(os.listdir(path))
@@ -443,11 +457,14 @@ class shot:
     animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
     current_frame = 0
     last_frame_time = 0
+    reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+    reloading_sound.set_volume(0.2)
+        
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
             self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -455,10 +472,13 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
+            self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
+            self.shot_sound.set_volume(0.8)
+            self.shot_sound.play()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            self.image = pygame.image.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
             self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -488,6 +508,8 @@ class shot:
         surface.blit(shot.animation_frames[shot.current_frame], (UI_X, UI_Y))
         if time.time() - shot.last_frame_time > 0.2:
             shot.current_frame = (shot.current_frame + 1)%len(shot.animation_frames)
+            if shot.current_frame % 3 == 0:
+                shot.reloading_sound.play()
             if shot.current_frame % len(shot.animation_frames) == 0:
                 shot.is_reloading = False
                 shot.shots_left = 4
@@ -531,7 +553,7 @@ DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700
 
 def main():
     pygame.mixer.init()
-    pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
+    pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
     pygame.mixer.music.play(-1,0.0)
     gs.running = True
     while gs.running:
@@ -587,6 +609,7 @@ def main():
         player.draw(display)
         shot.display_magazine(display)
         player.display_health(display)
+        player.display_coins(display)
         for dialog in DialogBox.boxes:
             dialog.draw(display)
         for item in Collectable.collectables:
