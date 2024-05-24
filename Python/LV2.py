@@ -431,7 +431,7 @@ class Player:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
-                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
+                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit für neue Wege?"],(player.x+100, 700))
 
 def get_rotation_angle(velocity):
     # velocity[0] is horizontal speed
@@ -554,7 +554,7 @@ world = World()
 gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
+DialogBox(["Willkommen zurück Held!", "Viel Glück!"], (screen_size[0]//2 + 300,470))
 
 def main():
     pygame.mixer.init()

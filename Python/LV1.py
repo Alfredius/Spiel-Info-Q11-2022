@@ -6,6 +6,7 @@ import math
 import os
 import ctypes
 
+
 pygame.init()
 # pygame.mouse.set_visible(False)
 info_object = pygame.display.Info()
@@ -59,6 +60,22 @@ background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x10
 
 level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
+class GameState:
+    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
+    def __init__(self):
+        self.running = False
+        self.dt_last_frame = 1
+        self.dead = False
+        self.shooting_enebled = False
+        self.movement_enebled = False
+        self.end_of_game = False
+        self.Options_prototype = {
+            "master volume":1,
+            "jump volume":1,
+            "shot volume":1,
+        }
+
+gs = GameState()
 class enemy:
     enemies = []
     def __init__(self,coordinates,size, hp, shots_per_seconds) -> None:
@@ -72,7 +89,7 @@ class enemy:
         self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
         self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
-        self.is_hit_sound.set_volume(0.8)
+        self.is_hit_sound.set_volume(0.8*gs.Options_prototype["master volume"])
 
 
     def draw(self, surface:pygame.surface):
@@ -174,16 +191,6 @@ class Collectable:
             player.coin_count += 1
                 
 
-
-class GameState:
-    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
-    def __init__(self):
-        self.running = False
-        self.dt_last_frame = 1
-        self.dead = False
-        self.shooting_enebled = False
-        self.movement_enebled = False
-        self.end_of_game = False
 
 class ObstacleMap:
     # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
@@ -301,7 +308,7 @@ class Player:
         self.walking_left = False
         self.crouch = False
         self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
-        self.jumping_sound.set_volume(0.8)
+        self.jumping_sound.set_volume(0.8*gs.Options_prototype["master volume"]*gs.Options_prototype["jump volume"])
         self.last_jump = time.time()
 
         self.inventory = []
@@ -458,7 +465,7 @@ class shot:
     current_frame = 0
     last_frame_time = 0
     reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
-    reloading_sound.set_volume(0.2)
+    reloading_sound.set_volume(0.2*gs.Options_prototype["master volume"]*gs.Options_prototype["shot volume"])
         
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
@@ -546,14 +553,14 @@ class shot:
 
 
 world = World()
-gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
 DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
 
-def main():
+def main(optionen):
+    gs.Options_prototype = optionen
     pygame.mixer.init()
-    pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
+    pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
     pygame.mixer.music.play(-1,0.0)
     gs.running = True
     while gs.running:
@@ -629,4 +636,4 @@ def main():
     return (player.coin_count)
 
 if __name__ == "__main__":
-    main()
+    main(gs.Options_prototype)

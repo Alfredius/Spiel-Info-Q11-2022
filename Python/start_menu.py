@@ -4,6 +4,9 @@ from PIL import Image
 import time
 import math
 import os
+import optionen
+
+
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -17,6 +20,11 @@ class gamestate:
         self.running = False
         self.level = "exit"
         coin_count = 0
+        gs.Options_prototype = {
+            "master volume":1,
+            "jump volume":1,
+            "shot volume":1,
+        }
 
 
 class PulsatingText:
@@ -88,6 +96,8 @@ class Startmenu():
         for level in Level.levels:
             level.check_input(events)
 
+        options.check_input(events)
+
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -98,9 +108,35 @@ class Startmenu():
                     gs.running = False
 
 
+class Options():
+    def __init__(self) -> None:
+        self.x = screen_size[0] - 100
+        self.y = screen_size[1] - 100
+        self.w = 90
+        self.h = 35
+        self.font_size = 24
+        self.font = pygame.font.SysFont(None, self.font_size) 
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, (255, 0, 0), (self.x, self.y, self.w, self.h))
+        text = self.font.render(f"Optionen", True, (255, 255, 255))
+        surface.blit(text, (self.x+10, self.y+10))
+
+    def check_input(self, events):
+        """checks input to the startmenue.
+        events: pygame.event"""
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+
+                if pygame.Rect(self.x-5, self.y-5, self.w+10, self.h+10).collidepoint(mouse_pos): 
+                    print('click')
+                    optionen.main(gs.Options_prototype)
+                    
+
 class Level():
     levels = []
-    def __init__(self, level_id, x, y, font_size=18,enebled=False):
+    def __init__(self, level_id, x, y, font_size=24,enebled=False):
         self.font_size = font_size
         self.font = pygame.font.SysFont(None, self.font_size) 
         self.x = x
@@ -116,7 +152,7 @@ class Level():
         else:
             pygame.draw.rect(surface, (255, 0, 0), (self.x-35, self.y-30, 70, 60), 0)
         text = self.font.render(f"Level: {self.level_id}", True, (255, 255, 255))
-        surface.blit(text, (self.x-25, self.y-5))
+        surface.blit(text, (self.x-30, self.y-5))
     
     def check_input(self, events):
         """checks input to the startmenue.
@@ -131,11 +167,10 @@ class Level():
                         gs.level = self.level_id
                         gs.running = False
 
-
+coin_img = pygame.image.load("coins/coin_01.png")
 def display_coins(surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
         COIN_X = 300
-        img = pygame.image.load("coins/coin_01.png")
-        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+        img = pygame.transform.scale(coin_img, (coin_img.get_width(), coin_img.get_height()))
         surface.blit(img, (COIN_X-190, 50))
         text_surface = font.render("X", False, (255,255,255))
         text_rect = text_surface.get_rect(center=(COIN_X-120, 70))
@@ -146,11 +181,12 @@ def display_coins(surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
 
 
 start_menu = Startmenu(display)
-
+options = Options()
 
 
 gs = gamestate
-def main(coins):
+def main(coins,game_options):
+    gs.Options_prototype = game_options
     gs.coin_count = coins
     pygame.mixer.init()
     pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
@@ -168,7 +204,7 @@ def main(coins):
                 if event.key == pygame.K_ESCAPE:
                     gs.running = False
                     gs.level = "exit"
-
+        options.draw(display)
         start_menu.check_input(events)
         for texts in PulsatingText.Texts:
             texts.update()
@@ -179,7 +215,7 @@ def main(coins):
     pygame.mixer.pause()
     if not gs.level == "exit" and gs.level < len(Level.levels):
         Level.levels[gs.level].enebled = True
-    return gs.level
+    return (gs.level,gs.Options_prototype)
 
 if __name__ == '__main__':
-    main(0)
+    main(0,gs.Options_prototype)
