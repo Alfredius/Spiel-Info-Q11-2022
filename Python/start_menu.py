@@ -16,6 +16,7 @@ class gamestate:
     def __init__(self):
         self.running = False
         self.level = "exit"
+        coin_count = 0
 
 
 class PulsatingText:
@@ -131,12 +132,26 @@ class Level():
                         gs.running = False
 
 
+def display_coins(surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
+        COIN_X = 300
+        img = pygame.image.load("coins/coin_01.png")
+        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+        surface.blit(img, (COIN_X-190, 50))
+        text_surface = font.render("X", False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(COIN_X-120, 70))
+        surface.blit(text_surface, text_rect)
+        text_surface = font.render(str(gs.coin_count), False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(COIN_X-80, 70))
+        surface.blit(text_surface, text_rect)
+
+
 start_menu = Startmenu(display)
 
 
 
 gs = gamestate
-def main():
+def main(coins):
+    gs.coin_count = coins
     pygame.mixer.init()
     pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
     pygame.mixer.music.play(-1,0.0)
@@ -159,6 +174,7 @@ def main():
             texts.update()
             texts.draw()
         start_menu.draw()
+        display_coins(display)
         pygame.display.flip()
     pygame.mixer.pause()
     if not gs.level == "exit" and gs.level < len(Level.levels):
@@ -166,4 +182,4 @@ def main():
     return gs.level
 
 if __name__ == '__main__':
-    main()
+    main(0)

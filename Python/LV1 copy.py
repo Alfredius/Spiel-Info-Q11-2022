@@ -54,7 +54,8 @@ for display_index in range(num_displays):
     RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
 background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-background_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
+background_foreground_1 = pygame.image.load('Bilder/Level 2/Level2_NotOverlay.png').convert_alpha()
+background_foreground_2 = pygame.image.load('Bilder/Level 2/Level2_Overlay.png').convert_alpha()
 background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
 level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
@@ -254,23 +255,26 @@ class ObstacleMap:
 
         return False
     
-obstacle_map = ObstacleMap("Bilder/Level 1/Level1_11200x1080_V1_Collisions.png")
+obstacle_map = ObstacleMap("Bilder/Level 2/Level2_Collisions.png")
 
 class World:
     def __init__(self):
         self.x = 0
         self.y = 0
         self.background_rect = background.get_rect()
-        self.background_foreground_rect = background_foreground.get_rect()
+        self.background_foreground_1_rect = background_foreground_1.get_rect()
+        self.background_foreground_2_rect = background_foreground_2.get_rect()
         self.background_middle_foreground_rect = background_middle_foreground.get_rect()
         self.background = background
-        self.background_foreground = background_foreground
+        self.background_foreground_1 = background_foreground_1
+        self.background_foreground_2 = background_foreground_2
         self.background_middle_foreground = background_middle_foreground
 
     def draw(self, surface):
         surface.blit(self.background, self.background_rect)
         surface.blit(self.background_middle_foreground, self.background_middle_foreground_rect)
-        surface.blit(self.background_foreground, self.background_foreground_rect)
+        surface.blit(self.background_foreground_1, self.background_foreground_1_rect)
+        surface.blit(self.background_foreground_2, self.background_foreground_2_rect)
 
         # self.font = pygame.font.SysFont(None, 18) 
         # text = self.font.render(f"Wo bin ich? {self.x}", True, (200, 200, 200))
@@ -279,7 +283,8 @@ class World:
     def move(self, dx):
         if(self.x <= 0 or dx < 0):
             self.x += dx
-            self.background_foreground_rect = self.background_foreground_rect.move(dx,0)
+            self.background_foreground_1_rect = self.background_foreground_1_rect.move(dx,0)
+            self.background_foreground_2_rect = self.background_foreground_2_rect.move(dx,0)
             self.background_middle_foreground_rect = self.background_middle_foreground_rect.move(dx/2,0)
             self.background_rect = self.background_rect.move(dx/4,0)
 
