@@ -29,33 +29,34 @@ display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED
 num_displays = pygame.display.get_num_displays()
 print(f"Number of displays: {num_displays}")
 
-# Load SDL2 shared library
-sdl = ctypes.CDLL(None)
+if platform == "darwin":
+    # Load SDL2 shared library
+    sdl = ctypes.CDLL(None)
 
-# Define SDL2 structure
-class SDL_DisplayMode(ctypes.Structure):
-    _fields_ = [("format", ctypes.c_uint),
-                ("w", ctypes.c_int),
-                ("h", ctypes.c_int),
-                ("refresh_rate", ctypes.c_int),
-                ("driverdata", ctypes.c_void_p)]
+    # Define SDL2 structure
+    class SDL_DisplayMode(ctypes.Structure):
+        _fields_ = [("format", ctypes.c_uint),
+                    ("w", ctypes.c_int),
+                    ("h", ctypes.c_int),
+                    ("refresh_rate", ctypes.c_int),
+                    ("driverdata", ctypes.c_void_p)]
 
-# Define SDL2 functions
-SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
-SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
-SDL_GetDisplayMode.restype = ctypes.c_int
+    # Define SDL2 functions
+    SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
+    SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
+    SDL_GetDisplayMode.restype = ctypes.c_int
 
-# Iterate over each display and get its refresh rate
-for display_index in range(num_displays):
-    mode = SDL_DisplayMode()
-    if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
-        print(f"Could not get display mode for display {display_index}")
-        continue
-    
-    print(f"Display {display_index}:")
-    print(f"  Resolution: {mode.w}x{mode.h}")
-    print(f"  Refresh rate: {mode.refresh_rate} Hz")
-    RUN_SPEED = RUN_SPEED/mode.refresh_rate
+    # Iterate over each display and get its refresh rate
+    for display_index in range(num_displays):
+        mode = SDL_DisplayMode()
+        if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
+            print(f"Could not get display mode for display {display_index}")
+            continue
+        
+        print(f"Display {display_index}:")
+        print(f"  Resolution: {mode.w}x{mode.h}")
+        print(f"  Refresh rate: {mode.refresh_rate} Hz")
+        RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
 if platform == "linux" or platform == "linux2":
     pass
@@ -67,10 +68,24 @@ elif platform == "darwin":
     pass
 elif platform == "win32":
     background = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.1_hintergrund_1.png').convert()
+    background = pygame.transform.scale(background, (screen_size[1]*11200//1080, screen_size[1]))
     background_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
+    background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*11200//1080, screen_size[1]))
     background_middle_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+    background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*11200//1080, screen_size[1]))
+    import win32api
+
+    device = win32api.EnumDisplayDevices()
+    print((device.DeviceName, device.DeviceString))
+    settings = win32api.EnumDisplaySettings(device.DeviceName, -1)
+    for varName in ['Color', 'BitsPerPel', 'DisplayFrequency']:
+        print("%s: %s"%(varName, getattr(settings, varName)))
+        if varName == 'DisplayFrequency':
+            RUN_SPEED = RUN_SPEED/getattr(settings, varName)
 
 
+
+print(RUN_SPEED)
 
 level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
@@ -216,7 +231,7 @@ class ObstacleMap:
     # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (11200, 1080))
+        self.image = pygame.transform.scale(self.image, (screen_size[1]*11200/1080, screen_size[1]))
 
     def collides_horizontally_right(self, rect:pygame.Rect):
         for y in range(rect.y+25, rect.y + rect.h-25):
@@ -323,8 +338,8 @@ class Player:
         self.x, self.y = screen_size[0] // 2, screen_size[1] // 2
         self.dy = 0
         self.jump_enabled = True
-        self.gravity = 0.5
-        self.jump_height = 17
+        self.gravity = RUN_SPEED
+        self.jump_height = 25
         self.scale = 0.15
         if platform == "linux" or platform == "linux2":
             pass
@@ -466,7 +481,7 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + self.x >= 10800:
+        if -world.x + self.x >= screen_size[1]*11200/1080 - 500:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
@@ -540,6 +555,7 @@ class shot:
                 self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
             elif platform == "win32":
                 self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
+            self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
             self.image = pygame.transform.rotate(self.image,v)
@@ -548,8 +564,8 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
-        self.coordinates[0] += self.velocity[0]*gs.dt_last_frame
-        self.coordinates[1] += self.velocity[1]*gs.dt_last_frame
+        self.coordinates[0] += self.velocity[0]*RUN_SPEED
+        self.coordinates[1] += self.velocity[1]*RUN_SPEED
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
@@ -558,7 +574,7 @@ class shot:
                 enem.is_hit()
         if obstacle_map.collides(test_rect):
             shot.shots_list.remove(self)
-        if abs(self.coordinates[1]) > 1080:
+        if abs(self.coordinates[1]) > screen_size[1]:
             shot.shots_list.remove(self)
         if player.check_for_hit(self.coordinates) and not self.shot_by_player:
             player.damage(1)
