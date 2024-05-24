@@ -4,7 +4,7 @@ from PIL import Image
 import time
 import math
 import os
-
+import ctypes
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -13,18 +13,52 @@ screen_size = (info_object.current_w, info_object.current_h)
 
 SPEED_LATERAL = 10
 
+RUN_SPEED = 60
 UI_X = 30
 UI_Y = 850
+
 MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
+
+# Get the number of displays
+num_displays = pygame.display.get_num_displays()
+print(f"Number of displays: {num_displays}")
+
+# Load SDL2 shared library
+sdl = ctypes.CDLL(None)
+
+# Define SDL2 structure
+class SDL_DisplayMode(ctypes.Structure):
+    _fields_ = [("format", ctypes.c_uint),
+                ("w", ctypes.c_int),
+                ("h", ctypes.c_int),
+                ("refresh_rate", ctypes.c_int),
+                ("driverdata", ctypes.c_void_p)]
+
+# Define SDL2 functions
+SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
+SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
+SDL_GetDisplayMode.restype = ctypes.c_int
+
+# Iterate over each display and get its refresh rate
+for display_index in range(num_displays):
+    mode = SDL_DisplayMode()
+    if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
+        print(f"Could not get display mode for display {display_index}")
+        continue
+    
+    print(f"Display {display_index}:")
+    print(f"  Resolution: {mode.w}x{mode.h}")
+    print(f"  Refresh rate: {mode.refresh_rate} Hz")
+    RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
 background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
 background_foreground_1 = pygame.image.load('Bilder/Level 2/Level2_NotOverlay.png').convert_alpha()
 background_foreground_2 = pygame.image.load('Bilder/Level 2/Level2_Overlay.png').convert_alpha()
 background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
-level1_enemys_positiones = [[(1000,250),(100,200),1,2],[(1500,250),(100,200),2,1],[(2000,250),(100,200),5,0.5]]
+level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
 class enemy:
     enemies = []
@@ -38,6 +72,8 @@ class enemy:
         self.health = hp
         self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
+        self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+        self.is_hit_sound.set_volume(0.8)
 
 
     def draw(self, surface:pygame.surface):
@@ -57,6 +93,7 @@ class enemy:
         if self.health <= 0:
             enemy.enemies.remove(self)
             Collectable(self.x+self.image.get_width()//2, self.y+ self.image.get_height()//2)
+        self.is_hit_sound.play()
 
     def display_health_bar(self):
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
@@ -65,12 +102,10 @@ class enemy:
 
     def fire_shot(self):
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
-            dx = player.x - (self.coordinates[0] + world.x)
-            dy = player.y - self.coordinates[1]
             shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
             self.last_shot_fired = time.time()
 
-for e in level1_enemys_positiones:
+for e in level1_enemies_positiones:
     enemy(*e) 
 
 class DialogBox:
@@ -107,8 +142,8 @@ class DialogBox:
                                                (bubble_rect.bottomleft[0]+10, bubble_rect.bottomleft[1])])  # Little triangle
         win.blit(text_surface, text_rect)  # Text
 
-
 class Collectable:
+    # das ist ein Beispiel für ein collectable. Am ende sollten wahrscheinlich mehr sachen collectable sein als Münzen, und münzen werden wahrscheinlich keine collectables bleiben, aber als poc sind die wahrscheinlich ganz gut
     collectables = []
     def __init__(self, x, y):
         self.x = x
@@ -135,13 +170,14 @@ class Collectable:
                 self.img_frames.append(pygame.image.load(filepath))
 
     def collision_with_player(self):
-        if self.x > -world.x + player.x and self.x < -world.x + + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
+        if self.x > -world.x + player.x and self.x < -world.x + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
             Collectable.collectables.remove(self)
             player.coin_count += 1
                 
 
 
 class GameState:
+    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
     def __init__(self):
         self.running = False
         self.dt_last_frame = 1
@@ -151,6 +187,7 @@ class GameState:
         self.end_of_game = False
 
 class ObstacleMap:
+    # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (11200, 1080))
@@ -225,8 +262,8 @@ class World:
         self.x = 0
         self.y = 0
         self.background_rect = background.get_rect()
-        self.background_foreground_rect_1 = background_foreground_1.get_rect()
-        self.background_foreground_rect_2 = background_foreground_2.get_rect()
+        self.background_foreground_1_rect = background_foreground_1.get_rect()
+        self.background_foreground_2_rect = background_foreground_2.get_rect()
         self.background_middle_foreground_rect = background_middle_foreground.get_rect()
         self.background = background
         self.background_foreground_1 = background_foreground_1
@@ -236,19 +273,21 @@ class World:
     def draw(self, surface):
         surface.blit(self.background, self.background_rect)
         surface.blit(self.background_middle_foreground, self.background_middle_foreground_rect)
-        surface.blit(self.background_foreground_1, self.background_foreground_rect_1)
-        surface.blit(self.background_foreground_2, self.background_foreground_rect_2)
+        surface.blit(self.background_foreground_1, self.background_foreground_1_rect)
+        surface.blit(self.background_foreground_2, self.background_foreground_2_rect)
+
+        # self.font = pygame.font.SysFont(None, 18) 
+        # text = self.font.render(f"Wo bin ich? {self.x}", True, (200, 200, 200))
+        # display.blit(text, (screen_size[0]-145, 80))
 
     def move(self, dx):
         if(self.x <= 0 or dx < 0):
             self.x += dx
-            self.background_foreground_rect_1 = self.background_foreground_rect_1.move(dx,0)
-            self.background_foreground_rect_2 = self.background_foreground_rect_2.move(dx,0)
+            self.background_foreground_1_rect = self.background_foreground_1_rect.move(dx,0)
+            self.background_foreground_2_rect = self.background_foreground_2_rect.move(dx,0)
             self.background_middle_foreground_rect = self.background_middle_foreground_rect.move(dx/2,0)
             self.background_rect = self.background_rect.move(dx/4,0)
 
-
-        
 
 class Player:
     def __init__(self):
@@ -257,7 +296,7 @@ class Player:
         self.jump_enabled = True
         self.gravity = 0.5
         self.jump_height = 17
-        self.scale = 0.13
+        self.scale = 0.15
         self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
         self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
         self.animation_frames.pop(0)
@@ -336,6 +375,17 @@ class Player:
             surface.blit(self.haelth_bar_gifs[self.health][int(self.health_bar_current_frame)], (UI_X+170, UI_Y+50))
             self.health_bar_current_frame = (self.health_bar_current_frame + 0.25) % 7
     
+    def display_coins(self, surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
+        img = pygame.image.load("coins/coin_01.png")
+        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+        surface.blit(img, (screen_size[0]-190, 50))
+        text_surface = font.render("X", False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
+        surface.blit(text_surface, text_rect)
+        text_surface = font.render(str(self.coin_count), False, (255,255,255))
+        text_rect = text_surface.get_rect(center=(screen_size[0]-80, 70))
+        surface.blit(text_surface, text_rect)
+       
     def load_gifs(self, path):
         all_gifs = []
         filenames = sorted(os.listdir(path))
@@ -377,7 +427,7 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + player.x >= 10800:
+        if -world.x + self.x >= 10800:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
@@ -412,6 +462,9 @@ class shot:
     animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
     current_frame = 0
     last_frame_time = 0
+    reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+    reloading_sound.set_volume(0.2)
+        
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
@@ -424,6 +477,9 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
+            self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
+            self.shot_sound.set_volume(0.8)
+            self.shot_sound.play()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
@@ -437,8 +493,8 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
-        self.coordinates[0] += self.velocity[0]
-        self.coordinates[1] += self.velocity[1]
+        self.coordinates[0] += self.velocity[0]*gs.dt_last_frame
+        self.coordinates[1] += self.velocity[1]*gs.dt_last_frame
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
@@ -457,6 +513,8 @@ class shot:
         surface.blit(shot.animation_frames[shot.current_frame], (UI_X, UI_Y))
         if time.time() - shot.last_frame_time > 0.2:
             shot.current_frame = (shot.current_frame + 1)%len(shot.animation_frames)
+            if shot.current_frame % 3 == 0:
+                shot.reloading_sound.play()
             if shot.current_frame % len(shot.animation_frames) == 0:
                 shot.is_reloading = False
                 shot.shots_left = 4
@@ -496,7 +554,7 @@ world = World()
 gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Ready!", "Set!", "Good Luck!"], (screen_size[0]//2 + 200,500))
+DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
 
 def main():
     pygame.mixer.init()
@@ -526,9 +584,9 @@ def main():
                 player.jump()
 
         if keys[pygame.K_d] and gs.movement_enebled:
-                test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(1, 0)
+                test_rect = pygame.Rect((player.x - world.x), player.y, player.rect.w, player.rect.h).move(1, 0)
                 if not obstacle_map.collides_horizontally_right(test_rect):
-                    world.move(-SPEED_LATERAL)
+                    world.move(-SPEED_LATERAL*RUN_SPEED)
                     player.walking_right = True
         else:
             player.walking_right = False
@@ -537,7 +595,7 @@ def main():
 
                 test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(-1, 0)
                 if not obstacle_map.collides_horizontally_left(test_rect):
-                    world.move(SPEED_LATERAL)
+                    world.move(SPEED_LATERAL*RUN_SPEED)
                     player.walking_left = True
         else:
             player.walking_left = False
@@ -556,6 +614,7 @@ def main():
         player.draw(display)
         shot.display_magazine(display)
         player.display_health(display)
+        player.display_coins(display)
         for dialog in DialogBox.boxes:
             dialog.draw(display)
         for item in Collectable.collectables:
@@ -572,7 +631,7 @@ def main():
         pygame.display.flip()
         gs.dt_last_frame = FPS.tick()/17
     pygame.mixer.pause()
+    return (player.coin_count)
 
 if __name__ == "__main__":
-    gs.running = True
     main()
