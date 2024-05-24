@@ -6,6 +6,8 @@ import math
 import os
 import optionen
 
+from sys import platform
+
 
 
 pygame.init()
@@ -166,8 +168,12 @@ class Level():
                         print('click')
                         gs.level = self.level_id
                         gs.running = False
-
-coin_img = pygame.image.load("coins/coin_01.png")
+if platform == "linux" or platform == "linux2":
+    pass
+elif platform == "darwin":
+    coin_img = pygame.image.load("coins/coin_01.png")
+elif platform == "win32":
+    coin_img = pygame.image.load("coins\\coin_01.png")
 def display_coins(surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
         COIN_X = 300
         img = pygame.transform.scale(coin_img, (coin_img.get_width(), coin_img.get_height()))
@@ -189,7 +195,12 @@ def main(coins,game_options):
     gs.Options_prototype = game_options
     gs.coin_count = coins
     pygame.mixer.init()
-    pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
+    if platform == "linux" or platform == "linux2":
+        pass
+    elif platform == "darwin":
+        pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
+    elif platform == "win32":
+        pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
     pygame.mixer.music.play(-1,0.0)
     gs.running = True
     while gs.running:

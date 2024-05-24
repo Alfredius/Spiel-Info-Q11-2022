@@ -7,6 +7,9 @@ import os
 import ctypes
 
 
+from sys import platform
+
+
 pygame.init()
 # pygame.mouse.set_visible(False)
 info_object = pygame.display.Info()
@@ -54,9 +57,20 @@ for display_index in range(num_displays):
     print(f"  Refresh rate: {mode.refresh_rate} Hz")
     RUN_SPEED = RUN_SPEED/mode.refresh_rate
 
-background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-background_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
-background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+if platform == "linux" or platform == "linux2":
+    pass
+elif platform == "darwin":
+    background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
+    background_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
+    background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+
+    pass
+elif platform == "win32":
+    background = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.1_hintergrund_1.png').convert()
+    background_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
+    background_middle_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+
+
 
 level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
@@ -86,9 +100,15 @@ class enemy:
         self.x, self.y = coordinates
         self.max_health = hp
         self.health = hp
-        self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
+        if platform == "linux" or platform == "linux2":
+            pass
+        elif platform == "darwin":
+            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
+            self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+        elif platform == "win32":
+            self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground/Hindernisse\\Container_Side_1.png").convert_alpha()
+            self.is_hit_sound = pygame.mixer.Sound("Sounds\\Player/143610__dwoboyle__weapons-synth-blast-02.wav")
         self.image = pygame.transform.scale(self.image, size)
-        self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
         self.is_hit_sound.set_volume(0.8*gs.Options_prototype["master volume"])
 
 
@@ -261,7 +281,14 @@ class ObstacleMap:
 
         return False
     
-obstacle_map = ObstacleMap("Bilder/Level 1/Level1_11200x1080_V1_Collisions.png")
+if platform == "linux" or platform == "linux2":
+    pass
+elif platform == "darwin":
+    obstacle_map = ObstacleMap("Bilder/Level 1/Level1_11200x1080_V1_Collisions.png")
+
+elif platform == "win32":
+    obstacle_map = ObstacleMap("Bilder\\Level 1\\Level1_11200x1080_V1_Collisions.png")
+
 
 class World:
     def __init__(self):
@@ -299,23 +326,37 @@ class Player:
         self.gravity = 0.5
         self.jump_height = 17
         self.scale = 0.15
-        self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
-        self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+        if platform == "linux" or platform == "linux2":
+            pass
+        elif platform == "darwin":
+            self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+            self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+            self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
+            self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
+            self.img_health = pygame.image.load("Bilder/IO/Health_gifs/Health8.png")
+            self.coin_img = pygame.image.load("coins/coin_01.png")
+        elif platform == "win32":
+            self.animation_frames = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
+            self.animation_frames_jumping_up = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
+            self.jumping_sound = pygame.mixer.Sound("Sounds\\Player\\399095__plasterbrain__8bit-jump.flac")
+            self.health_bar_gif_folder_path = "Bilder\\IO\\Health_gifs"
+            self.img_health = pygame.image.load("Bilder\\IO\\Health_gifs\\Health8.png")
+            self.coin_img = pygame.image.load("coins\\coin_01.png")
+        self.coin_img = pygame.transform.scale(self.coin_img, (self.coin_img.get_width(), self.coin_img.get_height()))
+        self.img_health = pygame.transform.scale(self.img_health, (self.img_health.get_width() * 2, self.img_health.get_height() * 2))
+        self.jumping_sound.set_volume(0.8*gs.Options_prototype["master volume"]*gs.Options_prototype["jump volume"])
         self.animation_frames.pop(0)
         self.current_frame = 0
         self.rect = self.animation_frames[0].get_rect()
         self.walking_right = False
         self.walking_left = False
         self.crouch = False
-        self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
-        self.jumping_sound.set_volume(0.8*gs.Options_prototype["master volume"]*gs.Options_prototype["jump volume"])
         self.last_jump = time.time()
 
         self.inventory = []
         self.coin_count = 0
         self.health = 7
         self.health_bar_current_frame = 0
-        self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
         self.haelth_bar_gifs = self.load_gifs(self.health_bar_gif_folder_path)
 
     @staticmethod
@@ -370,17 +411,13 @@ class Player:
 
     def display_health(self, surface):
         if self.health == 7:
-            img = pygame.image.load("Bilder/IO/Health_gifs/Health8.png")
-            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
-            surface.blit(img, (UI_X+170, UI_Y+50))
+            surface.blit(self.img_health, (UI_X+170, UI_Y+50))
         else: 
             surface.blit(self.haelth_bar_gifs[self.health][int(self.health_bar_current_frame)], (UI_X+170, UI_Y+50))
             self.health_bar_current_frame = (self.health_bar_current_frame + 0.25) % 7
     
     def display_coins(self, surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
-        img = pygame.image.load("coins/coin_01.png")
-        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
-        surface.blit(img, (screen_size[0]-190, 50))
+        surface.blit(self.coin_img, (screen_size[0]-190, 50))
         text_surface = font.render("X", False, (255,255,255))
         text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
         surface.blit(text_surface, text_rect)
@@ -461,17 +498,30 @@ class shot:
     last_shot_fired = 0
     shots_left = 4
     is_reloading = False
-    animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
+    if platform == "linux" or platform == "linux2":
+        pass
+    elif platform == "darwin":
+        animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
+        reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+    elif platform == "win32":
+        animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
+        reloading_sound = pygame.mixer.Sound("Sounds\\Player\\143610__dwoboyle__weapons-synth-blast-02.wav")
     current_frame = 0
     last_frame_time = 0
-    reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
     reloading_sound.set_volume(0.2*gs.Options_prototype["master volume"]*gs.Options_prototype["shot volume"])
         
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            if platform == "linux" or platform == "linux2":
+                pass
+            elif platform == "darwin":
+                self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+                self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
+            elif platform == "win32":
+                self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
+                self.shot_sound = pygame.mixer.Sound("Sounds\\Player\\170161__timgormly__8-bit-laser.aiff")
             self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -479,14 +529,17 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
-            self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
             self.shot_sound.set_volume(0.8)
             self.shot_sound.play()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
-            self.image = pygame.transform.scale(self.image, (50,10))
+            if platform == "linux" or platform == "linux2":
+                pass
+            elif platform == "darwin":
+                self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            elif platform == "win32":
+                self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
             self.image = pygame.transform.rotate(self.image,v)
@@ -560,7 +613,12 @@ DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700
 def main(optionen):
     gs.Options_prototype = optionen
     pygame.mixer.init()
-    pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
+    if platform == "linux" or platform == "linux2":
+        pass
+    elif platform == "darwin":
+        pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
+    elif platform == "win32":
+        pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
     pygame.mixer.music.play(-1,0.0)
     gs.running = True
     while gs.running:
