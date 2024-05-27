@@ -502,7 +502,10 @@ class shot:
                 shot.shots_list.remove(self)
                 enem.is_hit()
         if obstacle_map.collides(test_rect):
-            shot.shots_list.remove(self)
+            try:
+                shot.shots_list.remove(self)
+            except ValueError:
+                pass
         if abs(self.coordinates[1]) > 1080:
             shot.shots_list.remove(self)
         if player.check_for_hit(self.coordinates) and not self.shot_by_player:
@@ -530,7 +533,6 @@ class shot:
         else:
             shot.reload_animation(surface)
 
-
     def set_velocities_mouse(self) -> list:
         x,y = pygame.mouse.get_pos()
         v = [x - (player.x + player.rect.w/2), y - (player.y + player.rect.h/2)]
@@ -544,11 +546,9 @@ class shot:
         v_l = math.sqrt(v[0]**2 + v[1]**2)
         v = [(i/v_l)*10 for i in v]
         return v
-    
+
     def draw(self,surface):
         surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
-
-
 
 world = World()
 gs = GameState()
@@ -556,10 +556,7 @@ player = Player()
 FPS = pygame.time.Clock()
 DialogBox(["Willkommen zurück Held!", "Viel Glück!"], (screen_size[0]//2 + 300,470))
 
-def main():
-    pygame.mixer.init()
-    pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
-    pygame.mixer.music.play(-1,0.0)
+def main(Options_prototype):
     gs.running = True
     while gs.running:
         display.fill((0,0,0))
@@ -630,8 +627,7 @@ def main():
 
         pygame.display.flip()
         gs.dt_last_frame = FPS.tick()/17
-    pygame.mixer.pause()
     return (player.coin_count)
 
 if __name__ == "__main__":
-    main()
+    main({"stuff":"stuff"})

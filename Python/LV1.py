@@ -1,5 +1,4 @@
 import pygame
-import sys
 from PIL import Image
 import time
 import math
@@ -68,11 +67,8 @@ elif platform == "darwin":
     pass
 elif platform == "win32":
     background = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-    background = pygame.transform.scale(background, (screen_size[1]*11200//1080, screen_size[1]))
     background_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
-    background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*11200//1080, screen_size[1]))
     background_middle_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
-    background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*11200//1080, screen_size[1]))
     import win32api
 
     device = win32api.EnumDisplayDevices()
@@ -83,7 +79,9 @@ elif platform == "win32":
         if varName == 'DisplayFrequency':
             RUN_SPEED = RUN_SPEED/getattr(settings, varName)
 
-
+background = pygame.transform.scale(background, (screen_size[1]*11200//1080, screen_size[1]))
+background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*11200//1080, screen_size[1]))
+background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*11200//1080, screen_size[1]))
 
 print(RUN_SPEED)
 
@@ -232,6 +230,7 @@ class ObstacleMap:
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (screen_size[1]*11200/1080, screen_size[1]))
+        print((screen_size[1]*11200/1080, screen_size[1]))
 
     def collides_horizontally_right(self, rect:pygame.Rect):
         for y in range(rect.y+25, rect.y + rect.h-25):
@@ -339,7 +338,7 @@ class Player:
         self.dy = 0
         self.jump_enabled = True
         self.gravity = RUN_SPEED
-        self.jump_height = 25
+        self.jump_height = 22
         self.scale = 0.15
         if platform == "linux" or platform == "linux2":
             pass
@@ -518,9 +517,14 @@ class shot:
     elif platform == "darwin":
         animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
         reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+        image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+        shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
     elif platform == "win32":
         animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
         reloading_sound = pygame.mixer.Sound("Sounds\\Player\\143610__dwoboyle__weapons-synth-blast-02.wav")
+        image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
+        shot_sound = pygame.mixer.Sound("Sounds\\Player\\170161__timgormly__8-bit-laser.aiff")
+    shot_sound.set_volume(0.8)
     current_frame = 0
     last_frame_time = 0
     reloading_sound.set_volume(0.2*gs.Options_prototype["master volume"]*gs.Options_prototype["shot volume"])
@@ -529,14 +533,6 @@ class shot:
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            if platform == "linux" or platform == "linux2":
-                pass
-            elif platform == "darwin":
-                self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
-                self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
-            elif platform == "win32":
-                self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
-                self.shot_sound = pygame.mixer.Sound("Sounds\\Player\\170161__timgormly__8-bit-laser.aiff")
             self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -544,8 +540,7 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
-            self.shot_sound.set_volume(0.8)
-            self.shot_sound.play()
+            shot.shot_sound.play()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
@@ -613,7 +608,10 @@ class shot:
         x,y = coords_origin
         v = [x - cords_target[0], y - cords_target[1]]
         v_l = math.sqrt(v[0]**2 + v[1]**2)
-        v = [(i/v_l)*10 for i in v]
+        if self.shot_by_player:
+            v = [(i/v_l)*15 for i in v]
+        else:
+            v = [(i/v_l)*10 for i in v]
         return v
     
     def draw(self,surface):
@@ -624,19 +622,17 @@ class shot:
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,700))
+DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,580))
 
 def main(optionen):
     gs.Options_prototype = optionen
-    pygame.mixer.init()
-    if platform == "linux" or platform == "linux2":
-        pass
-    elif platform == "darwin":
-        pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
-    elif platform == "win32":
-        pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
-    pygame.mixer.music.play(-1,0.0)
     gs.running = True
+    player.jumping_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["jump volume"]))
+    shot.shot_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
+    shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
+    for enem in enemy.enemies:
+        enem.is_hit_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
+
     while gs.running:
         display.fill((0,0,0))
 
@@ -706,7 +702,6 @@ def main(optionen):
 
         pygame.display.flip()
         gs.dt_last_frame = FPS.tick()/17
-    pygame.mixer.pause()
     return (player.coin_count)
 
 if __name__ == "__main__":

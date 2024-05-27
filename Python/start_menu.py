@@ -1,9 +1,5 @@
 import pygame
-import sys
-from PIL import Image
-import time
 import math
-import os
 import optionen
 
 from sys import platform
@@ -21,7 +17,7 @@ class gamestate:
     def __init__(self):
         self.running = False
         self.level = "exit"
-        coin_count = 0
+        self.coin_count = 0
         gs.Options_prototype = {
             "master volume":1,
             "jump volume":1,
@@ -194,14 +190,6 @@ gs = gamestate
 def main(coins,game_options):
     gs.Options_prototype = game_options
     gs.coin_count = coins
-    pygame.mixer.init()
-    if platform == "linux" or platform == "linux2":
-        pass
-    elif platform == "darwin":
-        pygame.mixer.music.load("Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
-    elif platform == "win32":
-        pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
-    pygame.mixer.music.play(-1,0.0)
     gs.running = True
     while gs.running:
         display.fill((0,0,0))
@@ -223,7 +211,6 @@ def main(coins,game_options):
         start_menu.draw()
         display_coins(display)
         pygame.display.flip()
-    pygame.mixer.pause()
     if not gs.level == "exit" and gs.level < len(Level.levels):
         Level.levels[gs.level].enebled = True
     return (gs.level,gs.Options_prototype)

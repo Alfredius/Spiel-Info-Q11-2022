@@ -1,9 +1,6 @@
 import pygame
-import sys
-from PIL import Image
-import time
 import math
-import os
+import main as main_script
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -206,9 +203,10 @@ options = Options()
 gs = gamestate()
 def main(optionen):
     gs.Options_prototype = optionen
-    start_menu.s1.current_val = optionen["master volume"]*100
-    start_menu.s2.current_val = optionen["jump volume"]*100
-    start_menu.s3.current_val = optionen["shot volume"]*100
+    print(optionen)
+    start_menu.s1.current_val = int(optionen["master volume"]*100)
+    start_menu.s2.current_val = int(optionen["jump volume"]*100)
+    start_menu.s3.current_val = int(optionen["shot volume"]*100)
 
     # pygame.mixer.init()
     # pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
@@ -233,7 +231,7 @@ def main(optionen):
             texts.draw()
         start_menu.draw()
         pygame.display.flip()
-    # pygame.mixer.pause()
+        main_script.set_master_volume(gs.Options_prototype["master volume"])
     return gs.Options_prototype
 
 if __name__ == '__main__':
