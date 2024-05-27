@@ -20,6 +20,10 @@ RUN_SPEED = 60
 UI_X = 30
 UI_Y = 850
 
+ASPECT_RATIO = 11200//1080
+LEVEL_WIDTH = screen_size[1]*ASPECT_RATIO
+print(ASPECT_RATIO)
+
 MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
@@ -79,13 +83,13 @@ elif platform == "win32":
         if varName == 'DisplayFrequency':
             RUN_SPEED = RUN_SPEED/getattr(settings, varName)
 
-background = pygame.transform.scale(background, (screen_size[1]*11200//1080, screen_size[1]))
-background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*11200//1080, screen_size[1]))
-background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*11200//1080, screen_size[1]))
+background = pygame.transform.scale(background, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
+background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
+background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
 
 print(RUN_SPEED)
 
-level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
+level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.65*screen_size[1]),(100,200),1,0.5],[(LEVEL_WIDTH*0.25,0.505*screen_size[1]),(100,200),2,1],[(LEVEL_WIDTH*0.316,0.205*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.023),(100,200),5,2],[(LEVEL_WIDTH*0.55,screen_size[1]*0.634),(100,200),5,1],[(LEVEL_WIDTH*0.625,0.15*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.65),(100,200),5,1]]
 
 class GameState:
     # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
@@ -229,8 +233,8 @@ class ObstacleMap:
     # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (screen_size[1]*11200/1080, screen_size[1]))
-        print((screen_size[1]*11200/1080, screen_size[1]))
+        self.image = pygame.transform.scale(self.image, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
+        print((screen_size[1]*ASPECT_RATIO, screen_size[1]))
 
     def collides_horizontally_right(self, rect:pygame.Rect):
         for y in range(rect.y+25, rect.y + rect.h-25):
