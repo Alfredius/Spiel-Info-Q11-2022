@@ -89,7 +89,7 @@ background_middle_foreground = pygame.transform.scale(background_middle_foregrou
 
 print(RUN_SPEED)
 
-level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.65*screen_size[1]),(100,200),1,0.5],[(LEVEL_WIDTH*0.25,0.505*screen_size[1]),(100,200),2,1],[(LEVEL_WIDTH*0.316,0.205*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.023),(100,200),5,2],[(LEVEL_WIDTH*0.55,screen_size[1]*0.634),(100,200),5,1],[(LEVEL_WIDTH*0.625,0.15*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.65),(100,200),5,1]]
+level1_enemies_positiones = []
 
 class GameState:
     # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
@@ -484,11 +484,11 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + self.x >= screen_size[1]*11200/1080 - 700:
-            gs.movement_enebled = False
-            if DialogBox.boxes == []:
-                gs.end_of_game = True
-                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
+        # if -world.x + self.x >= screen_size[1]*11200/1080 - 700:
+        #     gs.movement_enebled = False
+        #     if DialogBox.boxes == []:
+        #         gs.end_of_game = True
+        #         DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
 
 def get_rotation_angle(velocity):
     # velocity[0] is horizontal speed
@@ -621,12 +621,12 @@ class shot:
     def draw(self,surface):
         surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
 
-
+ 
 
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,580))
+DialogBox(["Press Space to start!"], (screen_size[0]//2 + 200,580))
 
 def main(optionen):
     gs.Options_prototype = optionen
