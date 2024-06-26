@@ -643,7 +643,7 @@ def main(optionen):
     gs.Options_prototype = optionen
     gs.running = True
     last_update_time = time.time()
-    update_interval = 1  # Update every second
+    update_interval = 0.035  # Update every second
     player.jumping_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["jump volume"]))
     shot.shot_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
     shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
