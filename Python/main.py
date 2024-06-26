@@ -6,6 +6,8 @@ from sys import platform
 
 pygame.mixer.init()
 if platform == "linux" or platform == "linux2":
+    print("ERROR: Linux ist aktuell nicht supported.")
+    print("Bitte kontaktiere mich über https://ich.jonas-giessler.de/kontakt.html damit ich dieses Feature umsetzten kann.")
     pass
 elif platform == "darwin":
     shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
@@ -20,7 +22,6 @@ elif platform == "win32":
     is_hit_sound = pygame.mixer.Sound("Sounds\\Player/143610__dwoboyle__weapons-synth-blast-02.wav")
     pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
 pygame.mixer.music.play(-1,0.0)
-shot_sound.set_volume(0.8)
 
 
 def sound_hit():
@@ -37,6 +38,11 @@ def sound_shot():
 
 
 
+def set_volumes(Options_prototype):
+    is_hit_sound.set_volume(0.8*Options_prototype["master volume"])
+    jumping_sound.set_volume(0.8*Options_prototype["master volume"]*Options_prototype["jump volume"])
+    reloading_sound.set_volume(0.2*Options_prototype["master volume"]*Options_prototype["shot volume"])
+    shot_sound.set_volume(0.8*Options_prototype["master volume"]*Options_prototype["shot volume"])
 
 
 def main():
@@ -57,7 +63,12 @@ def main():
     while True:
         selected_level, options = start_menu.main(coin_count,Options_prototype)
         Options_prototype = options
+        # set_volumes(Options_prototype)
         pygame.mixer.music.set_volume(float(options["master volume"]))
+        is_hit_sound.set_volume(0.8*Options_prototype["master volume"])
+        jumping_sound.set_volume(0.8*Options_prototype["master volume"]*Options_prototype["jump volume"])
+        reloading_sound.set_volume(0.2*Options_prototype["master volume"]*Options_prototype["shot volume"])
+        shot_sound.set_volume(0.8*Options_prototype["master volume"]*Options_prototype["shot volume"])
         if selected_level == "exit":
             break
         print(selected_level)

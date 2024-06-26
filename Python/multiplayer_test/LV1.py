@@ -6,10 +6,13 @@ import os
 import ctypes
 import server_client
 import requests
+import json
 
 
 
 from sys import platform
+
+client=server_client.server_client()
 
 
 pygame.init()
@@ -344,6 +347,9 @@ class Player:
         self.gravity = RUN_SPEED
         self.jump_height = 22
         self.scale = 0.15
+        api_get = client.get()
+        self.id = len(api_get['stored_data'])
+        client.post(self.id, [world.x, world.y], [self.x, self.y], [])
         if platform == "linux" or platform == "linux2":
             pass
         elif platform == "darwin":
@@ -621,12 +627,16 @@ class shot:
     def draw(self,surface):
         surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
 
+def draw_other_player(surface, other_player):
+        image = player.animation_frames[int(1)]
+        coords = (-int(other_player['position_w'][0])+int(other_player['position_p'][0])+world.x,-int(other_player['position_w'][1])+int(other_player['position_p'][1]))
+        surface.blit(image, coords)  
+        print(coords)
  
 
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
-client=server_client.server_client
 DialogBox(["Press Space to start!"], (screen_size[0]//2 + 200,580))
 
 def main(optionen):
@@ -637,7 +647,6 @@ def main(optionen):
     shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
     for enem in enemy.enemies:
         enem.is_hit_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
-
     while gs.running:
         display.fill((0,0,0))
 
@@ -705,14 +714,14 @@ def main(optionen):
             e.fire_shot()
             e.draw(display)
 
+        api_get = client.post(player.id, [world.x, world.y],[player.x, player.y],[])
+        print(api_get)
+        for p in api_get['stored_data']:
+            if p['id'] != player.id:
+                draw_other_player(display, p)
+            # print(p['position_w'][0])
+
         pygame.display.flip()
-        data={
-            'id':'001',
-            'position_w':(world.x,world.y),
-            'position_p':(player.x,player.y),
-            'shots':shot.shots_list
-        }
-        print(client.post(url,data))
 
         gs.dt_last_frame = FPS.tick()/17
     return (player.coin_count)

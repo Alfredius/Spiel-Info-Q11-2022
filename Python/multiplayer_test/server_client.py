@@ -1,6 +1,5 @@
 import requests
-import time
-import json
+
 
 class server_client:
 
@@ -15,7 +14,15 @@ class server_client:
 
     # Data to be sent in the POST request
 
-    def post(url, data):
+    def post(self, id, position_w, position_p, shots=[]):
         # Sending a POST request
-        response_post = requests.post(url, json=data)
+        data = {
+            'id':id,
+            'name': 'Jonas',
+            'position_w':position_w,
+            'position_p':position_p,
+            'shots':shots
+        }
+        
+        response_post = requests.post(self.url, json=data)
         return response_post.json()
