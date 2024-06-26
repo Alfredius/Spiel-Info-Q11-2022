@@ -4,6 +4,9 @@ import time
 import math
 import os
 import ctypes
+import server_client
+import requests
+
 
 
 from sys import platform
@@ -19,6 +22,8 @@ SPEED_LATERAL = 10
 RUN_SPEED = 60
 UI_X = 30
 UI_Y = 850
+
+url = 'http://localhost:8008'
 
 ASPECT_RATIO = 11200//1080
 LEVEL_WIDTH = screen_size[1]*ASPECT_RATIO
@@ -111,12 +116,7 @@ class enemy:
     enemies = []
     def __init__(self,coordinates,size, hp, shots_per_seconds) -> None:
         enemy.enemies.append(self)
-        self.last_shot_fired = 0
-        self.shots_per_seconds = shots_per_seconds
-        self.coordinates = coordinates
         self.x, self.y = coordinates
-        self.max_health = hp
-        self.health = hp
         if platform == "linux" or platform == "linux2":
             pass
         elif platform == "darwin":
@@ -626,6 +626,7 @@ class shot:
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
+client=server_client.server_client
 DialogBox(["Press Space to start!"], (screen_size[0]//2 + 200,580))
 
 def main(optionen):
@@ -705,6 +706,14 @@ def main(optionen):
             e.draw(display)
 
         pygame.display.flip()
+        data={
+            'id':'001',
+            'position_w':(world.x,world.y),
+            'position_p':(player.x,player.y),
+            'shots':shot.shots_list
+        }
+        print(client.post(url,data))
+
         gs.dt_last_frame = FPS.tick()/17
     return (player.coin_count)
 

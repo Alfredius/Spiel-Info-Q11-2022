@@ -3,7 +3,7 @@ import json
 import cgi
 
 # In-Memory storage for received data
-stored_data = {}
+stored_data = []
 
 class Server(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -38,8 +38,13 @@ class Server(BaseHTTPRequestHandler):
         message['received'] = 'ok'
         
         # store the message
-        stored_data.update({message['id']:{'shots':message['shots'],'name':message['name']}})
-
+        is_in = False
+        for d,index in enumerate(stored_data):
+            if d['id']==message['id']:
+                d=message
+                is_in=True
+        if not is_in:
+            stored_data.append(message)
         
         # send the message back
         self._set_headers()

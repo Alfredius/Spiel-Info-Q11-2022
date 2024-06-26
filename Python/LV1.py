@@ -4,7 +4,7 @@ import time
 import math
 import os
 import ctypes
-
+import main as main_script
 
 from sys import platform
 
@@ -121,12 +121,9 @@ class enemy:
             pass
         elif platform == "darwin":
             self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
-            self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
         elif platform == "win32":
             self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground/Hindernisse\\Container_Side_1.png").convert_alpha()
-            self.is_hit_sound = pygame.mixer.Sound("Sounds\\Player/143610__dwoboyle__weapons-synth-blast-02.wav")
         self.image = pygame.transform.scale(self.image, size)
-        self.is_hit_sound.set_volume(0.8*gs.Options_prototype["master volume"])
 
 
     def draw(self, surface:pygame.surface):
@@ -146,7 +143,7 @@ class enemy:
         if self.health <= 0:
             enemy.enemies.remove(self)
             Collectable(self.x+self.image.get_width()//2, self.y+ self.image.get_height()//2)
-        self.is_hit_sound.play()
+        main_script.sound_hit()
 
     def display_health_bar(self):
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
@@ -349,20 +346,17 @@ class Player:
         elif platform == "darwin":
             self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
             self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
-            self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
             self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
             self.img_health = pygame.image.load("Bilder/IO/Health_gifs/Health8.png")
             self.coin_img = pygame.image.load("coins/coin_01.png")
         elif platform == "win32":
             self.animation_frames = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
             self.animation_frames_jumping_up = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
-            self.jumping_sound = pygame.mixer.Sound("Sounds\\Player\\399095__plasterbrain__8bit-jump.flac")
             self.health_bar_gif_folder_path = "Bilder\\IO\\Health_gifs"
             self.img_health = pygame.image.load("Bilder\\IO\\Health_gifs\\Health8.png")
             self.coin_img = pygame.image.load("coins\\coin_01.png")
         self.coin_img = pygame.transform.scale(self.coin_img, (self.coin_img.get_width(), self.coin_img.get_height()))
         self.img_health = pygame.transform.scale(self.img_health, (self.img_health.get_width() * 2, self.img_health.get_height() * 2))
-        self.jumping_sound.set_volume(0.8*gs.Options_prototype["master volume"]*gs.Options_prototype["jump volume"])
         self.animation_frames.pop(0)
         self.current_frame = 0
         self.rect = self.animation_frames[0].get_rect()
@@ -415,7 +409,7 @@ class Player:
             self.dy -= self.jump_height
             if (time.time() - self.last_jump) > 0.3:
                 self.last_jump = time.time()
-                pygame.mixer.Sound.play(self.jumping_sound)
+                main_script.sound_jump()
 
     def damage(self, damage):
         self.health -= damage
@@ -520,18 +514,12 @@ class shot:
         pass
     elif platform == "darwin":
         animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
-        reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
         image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
-        shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
     elif platform == "win32":
         animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
-        reloading_sound = pygame.mixer.Sound("Sounds\\Player\\143610__dwoboyle__weapons-synth-blast-02.wav")
         image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
-        shot_sound = pygame.mixer.Sound("Sounds\\Player\\170161__timgormly__8-bit-laser.aiff")
-    shot_sound.set_volume(0.8)
     current_frame = 0
     last_frame_time = 0
-    reloading_sound.set_volume(0.2*gs.Options_prototype["master volume"]*gs.Options_prototype["shot volume"])
         
     def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
@@ -544,7 +532,7 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
-            shot.shot_sound.play()
+            main_script.sound_shot()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
@@ -584,7 +572,7 @@ class shot:
         if time.time() - shot.last_frame_time > 0.2:
             shot.current_frame = (shot.current_frame + 1)%len(shot.animation_frames)
             if shot.current_frame % 3 == 0:
-                shot.reloading_sound.play()
+                main_script.sound_reloading
             if shot.current_frame % len(shot.animation_frames) == 0:
                 shot.is_reloading = False
                 shot.shots_left = 4
@@ -631,12 +619,6 @@ DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,580
 def main(optionen):
     gs.Options_prototype = optionen
     gs.running = True
-    player.jumping_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["jump volume"]))
-    shot.shot_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
-    shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
-    for enem in enemy.enemies:
-        enem.is_hit_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
-
     while gs.running:
         display.fill((0,0,0))
 
