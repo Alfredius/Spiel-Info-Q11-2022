@@ -642,11 +642,14 @@ DialogBox(["Press Space to start!"], (screen_size[0]//2 + 200,580))
 def main(optionen):
     gs.Options_prototype = optionen
     gs.running = True
+    last_update_time = time.time()
+    update_interval = 1  # Update every second
     player.jumping_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["jump volume"]))
     shot.shot_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
     shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
     for enem in enemy.enemies:
         enem.is_hit_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
+    api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
     while gs.running:
         display.fill((0,0,0))
 
@@ -714,8 +717,12 @@ def main(optionen):
             e.fire_shot()
             e.draw(display)
 
-        api_get = client.post(player.id, [world.x, world.y],[player.x, player.y],[])
-        print(api_get)
+        current_time = time.time()
+        if current_time - last_update_time > update_interval:
+            api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
+            last_update_time = current_time
+
+        # Process server response and update other players
         for p in api_get['stored_data']:
             if p['id'] != player.id:
                 draw_other_player(display, p)

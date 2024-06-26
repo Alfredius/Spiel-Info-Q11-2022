@@ -4,7 +4,7 @@ import requests
 class server_client:
 
     def __init__(self) -> None:
-        self.url = 'http://localhost:8008'
+        self.url = 'http://192.168.178.23:8008'
     # URL of the server
     
     def get(self):
