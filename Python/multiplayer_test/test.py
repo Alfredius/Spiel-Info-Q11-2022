@@ -3,7 +3,7 @@ import time
 import json
 
 # URL of the server
-url = 'http://localhost:8008'
+url = 'http://localhost:8009'
 
 # Data to be sent in the POST request
 data = {
@@ -18,4 +18,9 @@ data = {
 start = time.time()
 response_post = requests.post(url, json=data)
 print('POST response:', (time.time() - start) * 1000)
+print(response_post.json())
+
+
+
+response_post = requests.delete(url, json=data)
 print(response_post.json())

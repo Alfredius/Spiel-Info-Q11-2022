@@ -12,7 +12,7 @@ display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED
 class gamestate:
     def __init__(self):
         self.running = False
-        self.level = "exit"
+        self.level = 0
         self.Options_prototype = {
             "master volume":1,
             "jump volume":1,
@@ -156,9 +156,9 @@ class Startmenu():
         self.s1.check_input(events)
         self.s2.check_input(events)
         self.s3.check_input(events)
-        gs.Options_prototype["master volume"] = self.s1.current_val/100
-        gs.Options_prototype["jump volume"] = self.s2.current_val/100
-        gs.Options_prototype["shot volume"] = self.s3.current_val/100
+        gs_optionen.Options_prototype["master volume"] = self.s1.current_val/100
+        gs_optionen.Options_prototype["jump volume"] = self.s2.current_val/100
+        gs_optionen.Options_prototype["shot volume"] = self.s3.current_val/100
 
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -166,8 +166,8 @@ class Startmenu():
 
                 if pygame.Rect(screen_size[0]-150, 70, 70, 30).collidepoint(mouse_pos): 
                     print('click')
-                    gs.level = "exit"
-                    gs.running = False
+                    gs_optionen.level = "exit"
+                    gs_optionen.running = False
 
 
 class Options():
@@ -180,9 +180,10 @@ class Options():
         self.font = pygame.font.SysFont(None, self.font_size) 
 
     def draw(self, surface):
-        pygame.draw.rect(surface, (255, 0, 0), (self.x, self.y, self.w, self.h))
-        text = self.font.render(f"Zurück", True, (255, 255, 255))
-        surface.blit(text, (self.x+10, self.y+10))
+        # pygame.draw.rect(surface, (255, 0, 0), (self.x, self.y, self.w, self.h))
+        # text = self.font.render(f"Zurück", True, (255, 255, 255))
+        # surface.blit(text, (self.x+10, self.y+10))
+        pass
 
     def check_input(self, events):
         """checks input to the startmenue.
@@ -193,16 +194,16 @@ class Options():
 
                 if pygame.Rect(self.x-5, self.y-5, self.w+10, self.h+10).collidepoint(mouse_pos): 
                     print('click')
-                    gs.running = False
+                    gs_optionen.running = False
                     
 
 start_menu = Startmenu(display)
 options = Options()
 
 
-gs = gamestate()
+gs_optionen = gamestate()
 def main(optionen):
-    gs.Options_prototype = optionen
+    gs_optionen.Options_prototype = optionen
     print(optionen)
     start_menu.s1.current_val = int(optionen["master volume"]*100)
     start_menu.s2.current_val = int(optionen["jump volume"]*100)
@@ -211,19 +212,19 @@ def main(optionen):
     # pygame.mixer.init()
     # pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
     # pygame.mixer.music.play(-1,0.0)
-    gs.running = True
-    while gs.running:
+    gs_optionen.running = True
+    while gs_optionen.running:
         display.fill((0,0,0))
 
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
         for event in events:
             if event.type == pygame.QUIT:
-                gs.running = False
+                gs_optionen.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    gs.running = False
-                    gs.level = "exit"
+                    gs_optionen.running = False
+                    #gs_optionen.level = "exit"
         options.draw(display)
         start_menu.check_input(events)
         for texts in PulsatingText.Texts:
@@ -231,8 +232,8 @@ def main(optionen):
             texts.draw()
         start_menu.draw()
         pygame.display.flip()
-        main_script.set_master_volume(gs.Options_prototype["master volume"])
-    return gs.Options_prototype
+        main_script.set_master_volume(gs_optionen.Options_prototype["master volume"])
+    return gs_optionen.Options_prototype
 
 if __name__ == '__main__':
-    main(gs.Options_prototype)
+    main(gs_optionen.Options_prototype)

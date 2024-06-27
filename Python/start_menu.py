@@ -187,7 +187,14 @@ options = Options()
 
 
 gs = gamestate
-def main(coins,game_options):
+def main(coins,game_options,level_count):
+
+    for index, l in enumerate(Level.levels):
+        if index <= level_count:
+            l.enebled = True
+        else:
+            l.enebled = False
+
     gs.Options_prototype = game_options
     gs.coin_count = coins
     gs.running = True

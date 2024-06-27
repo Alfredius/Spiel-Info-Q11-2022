@@ -5,6 +5,7 @@ import math
 import os
 import ctypes
 import main as main_script
+import optionen as optionen_screen
 
 from sys import platform
 
@@ -629,7 +630,9 @@ def main(optionen):
                 gs.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    gs.running = False
+                    optionen = optionen_screen.main(optionen)
+                    if optionen_screen.gs_optionen.level == 'exit':
+                        gs.running = False
                 if event.key == pygame.K_SPACE:
                     dialog.next_message()
 
@@ -688,7 +691,7 @@ def main(optionen):
 
         pygame.display.flip()
         gs.dt_last_frame = FPS.tick()/17
-    return (player.coin_count)
+    return (player.coin_count, gs.end_of_game)
 
 if __name__ == "__main__":
     main(gs.Options_prototype)
