@@ -90,7 +90,7 @@ background_middle_foreground = pygame.transform.scale(background_middle_foregrou
 
 print(RUN_SPEED)
 
-level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.65*screen_size[1]),(100,200),1,0.5],[(LEVEL_WIDTH*0.25,0.505*screen_size[1]),(100,200),2,1],[(LEVEL_WIDTH*0.316,0.205*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.023),(100,200),5,2],[(LEVEL_WIDTH*0.55,screen_size[1]*0.634),(100,200),5,1],[(LEVEL_WIDTH*0.625,0.15*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.65),(100,200),5,1]]
+level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.65*screen_size[1]),(100,200),1,0.5,1],[(LEVEL_WIDTH*0.25,0.505*screen_size[1]),(100,200),2,1,0.5],[(LEVEL_WIDTH*0.316,0.205*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.023),(100,200),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.634),(100,200),5,1],[(LEVEL_WIDTH*0.625,0.15*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.65),(100,200),5,1]]
 
 class GameState:
     # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
@@ -110,7 +110,7 @@ class GameState:
 gs = GameState()
 class enemy:
     enemies = []
-    def __init__(self,coordinates,size, hp, shots_per_seconds) -> None:
+    def __init__(self,coordinates,size, hp, shots_per_seconds,shot_speed=1) -> None:
         enemy.enemies.append(self)
         self.last_shot_fired = 0
         self.shots_per_seconds = shots_per_seconds
@@ -118,6 +118,7 @@ class enemy:
         self.x, self.y = coordinates
         self.max_health = hp
         self.health = hp
+        self.shot_speed = shot_speed
         if platform == "linux" or platform == "linux2":
             pass
         elif platform == "darwin":
@@ -153,7 +154,7 @@ class enemy:
 
     def fire_shot(self):
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
-            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
+            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False,self.shot_speed)
             self.last_shot_fired = time.time()
 
 for e in level1_enemies_positiones:
@@ -515,14 +516,15 @@ class shot:
         pass
     elif platform == "darwin":
         animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
-        image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+        image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
     elif platform == "win32":
         animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
         image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
     current_frame = 0
     last_frame_time = 0
         
-    def __init__(self, cords_target, coordinates_origin, shot_by_player):
+    def __init__(self, cords_target, coordinates_origin, shot_by_player, shot_speed=1):
+        self.shot_speed = shot_speed
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
@@ -540,10 +542,10 @@ class shot:
             if platform == "linux" or platform == "linux2":
                 pass
             elif platform == "darwin":
-                self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+                self.image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
             elif platform == "win32":
                 self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
-            self.image = pygame.transform.scale(self.image, (50,10))
+            self.image = pygame.transform.scale(self.image, (35,20))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
             self.image = pygame.transform.rotate(self.image,v)
@@ -552,8 +554,8 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
-        self.coordinates[0] += self.velocity[0]*RUN_SPEED
-        self.coordinates[1] += self.velocity[1]*RUN_SPEED
+        self.coordinates[0] += self.velocity[0]*RUN_SPEED*self.shot_speed
+        self.coordinates[1] += self.velocity[1]*RUN_SPEED*self.shot_speed
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
@@ -621,7 +623,6 @@ def main(optionen):
     gs.Options_prototype = optionen
     gs.running = True
     while gs.running:
-        display.fill((0,0,0))
 
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
@@ -670,6 +671,7 @@ def main(optionen):
             player.crouch = False
 
 
+        display.fill((0,0,0))
         player.update()
         world.draw(display)
         player.draw(display)

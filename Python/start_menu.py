@@ -129,7 +129,7 @@ class Options():
 
                 if pygame.Rect(self.x-5, self.y-5, self.w+10, self.h+10).collidepoint(mouse_pos): 
                     print('click')
-                    optionen.main(gs.Options_prototype)
+                    optionen.main([gs.Options_prototype])
                     
 
 class Level():

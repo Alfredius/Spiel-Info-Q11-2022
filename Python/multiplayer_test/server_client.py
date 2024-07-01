@@ -2,7 +2,7 @@ import requests
 
 class server_client:
 
-    def __init__(self, host='localhost', port=8009) -> None:
+    def __init__(self, host='192.168.178.23', port=8009) -> None:
         self.url = f'http://{host}:{port}'
         # URL of the server
     

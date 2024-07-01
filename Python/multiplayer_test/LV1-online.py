@@ -6,6 +6,10 @@ import os
 import ctypes
 import server_client
 
+import threading
+import requests
+import json
+
 
 
 from sys import platform
@@ -632,6 +636,25 @@ def draw_other_player(surface, other_player):
         print(coords)
  
 
+def update_other_players():
+    global api_get  # Make sure to use the global variable for shared state
+    update_interval = 0.02
+    while gs.running:
+        current_time = time.time()
+        if current_time - last_update_time > update_interval:
+            api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
+            last_update_time = current_time
+            print(api_get)
+
+            # Process server response and update other players
+            for p in api_get['stored_data']:
+                print(p['id'])
+                if p['id'] != player.id:
+                    draw_other_player(display, p)
+                # print(p['position_w'][0])
+        time.sleep(0.02)  # Slight delay to prevent excessive CPU usage
+
+
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
@@ -650,6 +673,11 @@ def main(optionen):
     api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
     if api_get['num_of_players']>1:
         world.move(-3000)
+
+     # Start the thread for updating other players
+    update_thread = threading.Thread(target=update_other_players)
+    update_thread.start()
+    
     while gs.running:
         display.fill((0,0,0))
 
@@ -716,19 +744,6 @@ def main(optionen):
         for e in enemy.enemies:
             e.fire_shot()
             e.draw(display)
-
-        current_time = time.time()
-        if current_time - last_update_time > update_interval:
-            api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
-            last_update_time = current_time
-            print(api_get)
-
-        # Process server response and update other players
-        for p in api_get['stored_data']:
-            print(p['id'])
-            if p['id'] != player.id:
-                draw_other_player(display, p)
-            # print(p['position_w'][0])
 
         pygame.display.flip()
 

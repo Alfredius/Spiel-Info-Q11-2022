@@ -52,7 +52,7 @@ class PulsatingText:
 
 
 class Slider():
-    def __init__(self, display, x, y, width, height, color, min_val, max_val, start_val):
+    def __init__(self, display, x, y, width, height, color, min_val, max_val, start_val, update_function):
         """defines an instance of a Slider. 
         
          display: pygame instance of the display to draw on.
@@ -77,6 +77,7 @@ class Slider():
         self.rect = pygame.Rect(x, y, width, height)
         self.dragging = False
         self.dragging_pos = 0
+        self.update_function = update_function
     
     def draw(self):
         """draws the paddle."""
@@ -104,12 +105,23 @@ class Slider():
                     # pygame.mixer.Sound.play(gs.click_sound)
                     pass
                 self.dragging = False
+                self.update_function(self.current_val/100)
             elif event.type == pygame.MOUSEMOTION:
                 if self.dragging:
                     mouse_pos = pygame.mouse.get_pos()
                     self.current_val = (mouse_pos[0] - self.x) / self.width * self.max_val
                     self.current_val = int(max(self.min_val, min(self.current_val, self.max_val)))
 
+
+
+def set_master_volume(volume):
+    main_script.set_master_volume(volume)
+
+def set_shot_volume(volume):
+    main_script.set_shot_volume(volume)
+
+def set_jump_volume(volume):
+    main_script.set_jump_volume(volume)
 
 
 class Startmenu():
@@ -123,9 +135,9 @@ class Startmenu():
         self.color_r = (0,0,0)
         self.y = 200
         self.x = screen_size[0]//2
-        self.s1 = Slider(display,self.x-100,self.y,200,20,(50,50,50),0,100,100)
-        self.s2 = Slider(display,self.x-100,self.y+100,200,20,(50,50,50),0,100,100)
-        self.s3 = Slider(display,self.x-100,self.y+200,200,20,(50,50,50),0,100,100)
+        self.s1 = Slider(display,self.x-100,self.y,200,20,(50,50,50),0,100,100,set_master_volume)
+        self.s2 = Slider(display,self.x-100,self.y+100,200,20,(50,50,50),0,100,100,set_jump_volume)
+        self.s3 = Slider(display,self.x-100,self.y+200,200,20,(50,50,50),0,100,100,set_shot_volume)
         
 
 
@@ -203,18 +215,18 @@ options = Options()
 
 gs_optionen = gamestate()
 def main(optionen):
-    gs_optionen.Options_prototype = optionen
+    gs_optionen.Options_prototype = optionen[0]
     print(optionen)
-    start_menu.s1.current_val = int(optionen["master volume"]*100)
-    start_menu.s2.current_val = int(optionen["jump volume"]*100)
-    start_menu.s3.current_val = int(optionen["shot volume"]*100)
+    start_menu.s1.current_val = int(gs_optionen.Options_prototype["master volume"]*100)
+    start_menu.s2.current_val = int(gs_optionen.Options_prototype["jump volume"]*100)
+    start_menu.s3.current_val = int(gs_optionen.Options_prototype["shot volume"]*100)
 
     # pygame.mixer.init()
     # pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
     # pygame.mixer.music.play(-1,0.0)
     gs_optionen.running = True
     while gs_optionen.running:
-        display.fill((0,0,0))
+        display.fill((30,30,30),(screen_size[0]//2-150,screen_size[1]//2-350,300,400))
 
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
@@ -233,7 +245,7 @@ def main(optionen):
         start_menu.draw()
         pygame.display.flip()
         main_script.set_master_volume(gs_optionen.Options_prototype["master volume"])
-    return gs_optionen.Options_prototype
+    return [gs_optionen.Options_prototype]
 
 if __name__ == '__main__':
     main(gs_optionen.Options_prototype)
