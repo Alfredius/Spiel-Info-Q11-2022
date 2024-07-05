@@ -4,7 +4,7 @@ import time
 import math
 import os
 import ctypes
-import server_client
+from socket_client_server import SocketClientServer  # Import the server class
 
 import threading
 import requests
@@ -14,7 +14,22 @@ import json
 
 from sys import platform
 
-client=server_client.server_client()
+network = SocketClientServer()
+
+def setup_network(role):
+    if role == 'server':
+        network.start_server()
+    elif role == 'client':
+        server_info = network.discover_servers()
+        if server_info:
+            host, port = server_info.split(':')
+            network.connect_to_server(host, int(port))
+        else:
+            print('No server found on the LAN')
+
+
+role = input("Enter 'server' to host or 'client' to join: ")
+setup_network(role)
 
 
 pygame.init()
@@ -349,9 +364,19 @@ class Player:
         self.gravity = RUN_SPEED
         self.jump_height = 22
         self.scale = 0.15
-        api_get = client.get()
-        self.id = len(api_get['stored_data'])
-        client.post(self.id, [world.x, world.y], [self.x, self.y], [])
+        if network.is_server:
+            font=pygame.font.SysFont('Comic Sans MS', 30)
+            text_surface = font.render("Warte auf Client", False, (255,255,255))
+            text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
+            display.blit(text_surface, text_rect)
+            pygame.display.flip()
+            network.client_connected.wait()  # Wait until a client connects
+
+        response = network.send({"type": "register"})
+        self.id = response.get('id', None)
+        # Handle case where ID is not assigned due to connection issues
+        if self.id is None:
+            self.id = 0  # Assign a default ID or handle appropriately
         if platform == "linux" or platform == "linux2":
             pass
         elif platform == "darwin":
@@ -492,6 +517,8 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
+        # Update player position on the server
+        network.send({"type": "update", "id": self.id, "position_w": [world.x, world.y], "position_p": [self.x, self.y], "shots": []})
         # if -world.x + self.x >= screen_size[1]*11200/1080 - 700:
         #     gs.movement_enebled = False
         #     if DialogBox.boxes == []:
@@ -637,22 +664,13 @@ def draw_other_player(surface, other_player):
  
 
 def update_other_players():
-    global api_get  # Make sure to use the global variable for shared state
     update_interval = 0.02
     while gs.running:
-        current_time = time.time()
-        if current_time - last_update_time > update_interval:
-            api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
-            last_update_time = current_time
-            print(api_get)
-
-            # Process server response and update other players
-            for p in api_get['stored_data']:
-                print(p['id'])
-                if p['id'] != player.id:
-                    draw_other_player(display, p)
-                # print(p['position_w'][0])
-        time.sleep(0.02)  # Slight delay to prevent excessive CPU usage
+        response = network.send({"type": "get_updates"})
+        for p in response['players']:
+            if p['id'] != player.id:
+                draw_other_player(display, p)
+        time.sleep(update_interval)
 
 
 world = World()
@@ -661,6 +679,7 @@ FPS = pygame.time.Clock()
 DialogBox(["Press Space to start!"], (screen_size[0]//2 + 200,580))
 
 def main(optionen):
+    # Example usage
     gs.Options_prototype = optionen
     gs.running = True
     last_update_time = time.time()
@@ -670,11 +689,11 @@ def main(optionen):
     shot.reloading_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
     for enem in enemy.enemies:
         enem.is_hit_sound.set_volume(0.8*float(optionen["master volume"])*float(optionen["shot volume"]))
-    api_get = client.post(player.id, [world.x, world.y], [player.x, player.y], [])
-    if api_get['num_of_players']>1:
+    api_get = network.send({"type": "init", "id": player.id, "position_w": [world.x, world.y], "position_p": [player.x, player.y], "shots": []})
+    if api_get['num_of_players'] > 1:
         world.move(-3000)
 
-     # Start the thread for updating other players
+    # Start the thread for updating other players
     update_thread = threading.Thread(target=update_other_players)
     update_thread.start()
     
@@ -749,7 +768,7 @@ def main(optionen):
 
         gs.dt_last_frame = FPS.tick()/17
     
-    client.delete(player.id)
+    network.send({"type": "delete", "id": player.id})
     return (player.coin_count)
 
 if __name__ == "__main__":

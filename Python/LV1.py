@@ -90,7 +90,7 @@ background_middle_foreground = pygame.transform.scale(background_middle_foregrou
 
 print(RUN_SPEED)
 
-level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.65*screen_size[1]),(100,200),1,0.5,1],[(LEVEL_WIDTH*0.25,0.505*screen_size[1]),(100,200),2,1,0.5],[(LEVEL_WIDTH*0.316,0.205*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.023),(100,200),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.634),(100,200),5,1],[(LEVEL_WIDTH*0.625,0.15*screen_size[1]),(100,200),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.65),(100,200),5,1]]
+level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.7*screen_size[1]),1,0.5,1],[(LEVEL_WIDTH*0.25,0.555*screen_size[1]),2,1,0.5],[(LEVEL_WIDTH*0.316,0.255*screen_size[1]),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.073),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.684),5,1],[(LEVEL_WIDTH*0.675,0.30*screen_size[1]),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.7),5,1]]
 
 class GameState:
     # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
@@ -110,8 +110,10 @@ class GameState:
 gs = GameState()
 class enemy:
     enemies = []
-    def __init__(self,coordinates,size, hp, shots_per_seconds,shot_speed=1) -> None:
+    def __init__(self,coordinates, hp, shots_per_seconds,shot_speed=1,size=(100,150),) -> None:
         enemy.enemies.append(self)
+        self.shot_ofset = 0
+        self.size = size
         self.last_shot_fired = 0
         self.shots_per_seconds = shots_per_seconds
         self.coordinates = coordinates
@@ -119,18 +121,45 @@ class enemy:
         self.max_health = hp
         self.health = hp
         self.shot_speed = shot_speed
+        self.is_right = False
         if platform == "linux" or platform == "linux2":
             pass
         elif platform == "darwin":
-            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
+            self.image = pygame.image.load("Bilder/downloads/turret1.png").convert_alpha()
+            self.image2 = pygame.image.load("Bilder/downloads/turret_2.png").convert_alpha()
         elif platform == "win32":
-            self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground/Hindernisse\\Container_Side_1.png").convert_alpha()
+            self.image = pygame.image.load("Bilder\\downloads\\turret1.png").convert_alpha()
+            self.image2 = pygame.image.load("Bilder\\downloads\\turret_2.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
+        self.image2 = pygame.transform.scale(self.image2, [s/2 for s in size])
 
 
     def draw(self, surface:pygame.surface):
-       surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
-       self.display_health_bar()
+        if -world.x + player.x > self.x:
+            surface.blit(pygame.transform.flip(self.image, True, False), (self.coordinates[0] + world.x,self.coordinates[1]))
+            d = self.set_direction()
+            d = -get_rotation_angle(d)
+            image2 = pygame.transform.flip(self.image2, False, True)
+            image2 = pygame.transform.rotate(image2,d)
+            surface.blit(image2, (self.coordinates[0] + world.x+40,self.coordinates[1]+20))
+            self.is_right = True
+        else:
+            surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
+            d = self.set_direction()
+            d = -get_rotation_angle(d)
+            image2 = pygame.transform.rotate(self.image2,d)
+            surface.blit(image2, (self.coordinates[0] + world.x-20,self.coordinates[1]+20))
+            self.is_right = False
+        self.display_health_bar()
+
+    def set_direction(self):
+        cords_target = [player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2]
+        coords_origin = [self.x+10, self.y+80]
+        x,y = coords_origin
+        v = [x - cords_target[0], y - cords_target[1]]
+        v_l = math.sqrt(v[0]**2 + v[1]**2)
+        v = [(i/v_l)*10 for i in v]
+        return v
 
     def check_for_hit(self, coordinates) -> bool:
         x,y = coordinates
@@ -154,7 +183,7 @@ class enemy:
 
     def fire_shot(self):
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
-            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False,self.shot_speed)
+            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x if not self.is_right else self.x+self.size[0]-30, self.y+45],False,self.shot_speed)
             self.last_shot_fired = time.time()
 
 for e in level1_enemies_positiones:
@@ -414,14 +443,16 @@ class Player:
                 main_script.sound_jump()
 
     def damage(self, damage):
-        self.health -= damage
+        godemode = False
         pygame.draw.rect(display, (255,0,0),pygame.Rect(0,0,screen_size[0],screen_size[1]),4)
-        if self.health < 0:
-            self.health = 0
-            gs.dead = True
-            world.__init__()
-            gs.dead = False
-            self.health = 7
+        if not godemode:
+            self.health -= damage
+            if self.health < 0:
+                self.health = 0
+                gs.dead = True
+                world.__init__()
+                gs.dead = False
+                self.health = 7
 
     def display_health(self, surface):
         if self.health == 7:
@@ -519,7 +550,7 @@ class shot:
         image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
     elif platform == "win32":
         animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
-        image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
+        image = pygame.image.load("Bilder\\downloads\\rocket_enemy.png")
     current_frame = 0
     last_frame_time = 0
         
@@ -544,7 +575,7 @@ class shot:
             elif platform == "darwin":
                 self.image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
             elif platform == "win32":
-                self.image = pygame.image.load("Bilder\\Objekte\\PNG\\Foreground\\Hindernisse\\Container_Side_1.png")
+                self.image = pygame.image.load("Bilder\\downloads\\rocket_enemy.png")
             self.image = pygame.transform.scale(self.image, (35,20))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -696,4 +727,4 @@ def main(optionen):
     return (player.coin_count, gs.end_of_game)
 
 if __name__ == "__main__":
-    main(gs.Options_prototype)
+    main([gs.Options_prototype])
