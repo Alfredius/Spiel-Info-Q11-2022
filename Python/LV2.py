@@ -131,6 +131,7 @@ class DialogBox:
             DialogBox.boxes.remove(self)
             if gs.end_of_game:
                 gs.running = False
+                gs.end_of_game = True
             return
 
         text_surface = self.text_surfaces[self.current_message]
@@ -627,7 +628,7 @@ def main(Options_prototype):
 
         pygame.display.flip()
         gs.dt_last_frame = FPS.tick()/17
-    return (player.coin_count)
+    return (player.coin_count, gs.end_of_game)
 
 if __name__ == "__main__":
     main({"stuff":"stuff"})
