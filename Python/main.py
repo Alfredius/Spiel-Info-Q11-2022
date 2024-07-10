@@ -8,7 +8,7 @@ from sys import platform
 pygame.mixer.init()
 if platform == "linux" or platform == "linux2":
     print("ERROR: Linux ist aktuell nicht supported.")
-    print("Bitte kontaktiere mich über https://ich.jonas-giessler.de/kontakt.html damit ich dieses Feature umsetzten kann. Oder mach es selber, ist ja nicht soo kompliziert, ich kanns nur nicht testen.")
+    print("Bitte kontaktiere mich oder mach es selber, ist ja nicht soo kompliziert, ich kanns nur nicht testen.")
     sys.exit()
 elif platform == "darwin":
     shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
