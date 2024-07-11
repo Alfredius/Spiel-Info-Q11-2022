@@ -21,8 +21,8 @@ elif platform == "win32":
     shot_sound = pygame.mixer.Sound("Sounds\\Player\\170161__timgormly__8-bit-laser.aiff")
     reloading_sound = pygame.mixer.Sound("Sounds\\Player\\143610__dwoboyle__weapons-synth-blast-02.wav")
     jumping_sound = pygame.mixer.Sound("Sounds\\Player\\399095__plasterbrain__8bit-jump.flac")
-    is_hit_sound = pygame.mixer.Sound("Sounds\\Player/143610__dwoboyle__weapons-synth-blast-02.wav")
-    pygame.mixer.music.load("Sounds\\Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
+    is_hit_sound = pygame.mixer.Sound("Sounds\\Player\\143610__dwoboyle__weapons-synth-blast-02.wav")
+    pygame.mixer.music.load("Sounds\\Background\\696485__gis_sweden__minimal-tech-background-music-mtbm02.wav")
 pygame.mixer.music.play(-1,0.0)
 
 
