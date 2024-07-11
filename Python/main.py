@@ -1,4 +1,5 @@
-import LV1, LV2
+import LV1
+import LV1 as LV2
 import start_menu
 import importlib
 import pygame
