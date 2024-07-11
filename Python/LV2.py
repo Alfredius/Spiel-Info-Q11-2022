@@ -51,7 +51,7 @@ print(f"Number of displays: {num_displays}")
 #     print(f"Display {display_index}:")
 #     print(f"  Resolution: {mode.w}x{mode.h}")
 #     print(f"  Refresh rate: {mode.refresh_rate} Hz")
- RUN_SPEED = RUN_SPEED/60
+RUN_SPEED = RUN_SPEED/60
 
 background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
 background_foreground_1 = pygame.image.load('Bilder/Level 2/Level2_NotOverlay.png').convert_alpha()
