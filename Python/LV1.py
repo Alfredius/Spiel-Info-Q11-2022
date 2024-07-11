@@ -3,7 +3,6 @@ from PIL import Image
 import time
 import math
 import os
-import ctypes
 import main as main_script
 import optionen as optionen_screen
 
@@ -34,6 +33,7 @@ num_displays = pygame.display.get_num_displays()
 print(f"Number of displays: {num_displays}")
 
 if platform == "darwin":
+    import ctypes
     # Load SDL2 shared library
     sdl = ctypes.CDLL(None)
 
