@@ -4,7 +4,7 @@ from PIL import Image
 import time
 import math
 import os
-import ctypes
+# import ctypes
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -25,33 +25,33 @@ display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED
 num_displays = pygame.display.get_num_displays()
 print(f"Number of displays: {num_displays}")
 
-# Load SDL2 shared library
-sdl = ctypes.CDLL(None)
+# # Load SDL2 shared library
+# sdl = ctypes.CDLL(None)
 
-# Define SDL2 structure
-class SDL_DisplayMode(ctypes.Structure):
-    _fields_ = [("format", ctypes.c_uint),
-                ("w", ctypes.c_int),
-                ("h", ctypes.c_int),
-                ("refresh_rate", ctypes.c_int),
-                ("driverdata", ctypes.c_void_p)]
+# # Define SDL2 structure
+# class SDL_DisplayMode(ctypes.Structure):
+#     _fields_ = [("format", ctypes.c_uint),
+#                 ("w", ctypes.c_int),
+#                 ("h", ctypes.c_int),
+#                 ("refresh_rate", ctypes.c_int),
+#                 ("driverdata", ctypes.c_void_p)]
 
-# Define SDL2 functions
-SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
-SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
-SDL_GetDisplayMode.restype = ctypes.c_int
+# # Define SDL2 functions
+# SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
+# SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
+# SDL_GetDisplayMode.restype = ctypes.c_int
 
-# Iterate over each display and get its refresh rate
-for display_index in range(num_displays):
-    mode = SDL_DisplayMode()
-    if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
-        print(f"Could not get display mode for display {display_index}")
-        continue
+# # Iterate over each display and get its refresh rate
+# for display_index in range(num_displays):
+#     mode = SDL_DisplayMode()
+#     if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
+#         print(f"Could not get display mode for display {display_index}")
+#         continue
     
-    print(f"Display {display_index}:")
-    print(f"  Resolution: {mode.w}x{mode.h}")
-    print(f"  Refresh rate: {mode.refresh_rate} Hz")
-    RUN_SPEED = RUN_SPEED/mode.refresh_rate
+#     print(f"Display {display_index}:")
+#     print(f"  Resolution: {mode.w}x{mode.h}")
+#     print(f"  Refresh rate: {mode.refresh_rate} Hz")
+ RUN_SPEED = RUN_SPEED/60
 
 background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
 background_foreground_1 = pygame.image.load('Bilder/Level 2/Level2_NotOverlay.png').convert_alpha()
