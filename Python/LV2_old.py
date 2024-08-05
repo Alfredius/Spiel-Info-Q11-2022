@@ -1,13 +1,10 @@
 import pygame
+import sys
 from PIL import Image
 import time
 import math
 import os
-import main as main_script
-import optionen as optionen_screen
-
-from sys import platform
-
+# import ctypes
 
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -20,10 +17,6 @@ RUN_SPEED = 60
 UI_X = 30
 UI_Y = 850
 
-ASPECT_RATIO = 11200//1080
-LEVEL_WIDTH = screen_size[1]*ASPECT_RATIO
-print(ASPECT_RATIO)
-
 MARGIN = 20
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
@@ -32,135 +25,60 @@ display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED
 num_displays = pygame.display.get_num_displays()
 print(f"Number of displays: {num_displays}")
 
-if platform == "darwin":
-    import ctypes
-    # Load SDL2 shared library
-    sdl = ctypes.CDLL(None)
+# # Load SDL2 shared library
+# sdl = ctypes.CDLL(None)
 
-    # Define SDL2 structure
-    class SDL_DisplayMode(ctypes.Structure):
-        _fields_ = [("format", ctypes.c_uint),
-                    ("w", ctypes.c_int),
-                    ("h", ctypes.c_int),
-                    ("refresh_rate", ctypes.c_int),
-                    ("driverdata", ctypes.c_void_p)]
+# # Define SDL2 structure
+# class SDL_DisplayMode(ctypes.Structure):
+#     _fields_ = [("format", ctypes.c_uint),
+#                 ("w", ctypes.c_int),
+#                 ("h", ctypes.c_int),
+#                 ("refresh_rate", ctypes.c_int),
+#                 ("driverdata", ctypes.c_void_p)]
 
-    # Define SDL2 functions
-    SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
-    SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
-    SDL_GetDisplayMode.restype = ctypes.c_int
+# # Define SDL2 functions
+# SDL_GetDisplayMode = sdl.SDL_GetDisplayMode
+# SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
+# SDL_GetDisplayMode.restype = ctypes.c_int
 
-    # Iterate over each display and get its refresh rate
-    for display_index in range(num_displays):
-        mode = SDL_DisplayMode()
-        if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
-            print(f"Could not get display mode for display {display_index}")
-            continue
-        
-        print(f"Display {display_index}:")
-        print(f"  Resolution: {mode.w}x{mode.h}")
-        print(f"  Refresh rate: {mode.refresh_rate} Hz")
-        RUN_SPEED = 60
-        RUN_SPEED = RUN_SPEED/mode.refresh_rate
+# # Iterate over each display and get its refresh rate
+# for display_index in range(num_displays):
+#     mode = SDL_DisplayMode()
+#     if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
+#         print(f"Could not get display mode for display {display_index}")
+#         continue
+    
+#     print(f"Display {display_index}:")
+#     print(f"  Resolution: {mode.w}x{mode.h}")
+#     print(f"  Refresh rate: {mode.refresh_rate} Hz")
+RUN_SPEED = RUN_SPEED/60
 
-if platform == "linux" or platform == "linux2":
-    pass
-elif platform == "darwin":
-    background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-    background_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
-    background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
+background = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.1_hintergrund_1.png').convert()
+background_foreground_1 = pygame.image.load('Bilder/Level 2/Level2_NotOverlay.png').convert_alpha()
+background_foreground_2 = pygame.image.load('Bilder/Level 2/Level2_Overlay.png').convert_alpha()
+background_middle_foreground = pygame.image.load('Bilder/Level 1/Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
 
-    pass
-elif platform == "win32":
-    background = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.1_hintergrund_1.png').convert()
-    background_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.3_vordergrund.png').convert_alpha()
-    background_middle_foreground = pygame.image.load('Bilder\\Level 1\\Level1_11200x1080_V3.2_hintergrund_2.png').convert_alpha()
-    import win32api
+level1_enemies_positiones = [[(1800,730),(100,200),1,0.5],[(2500,560),(100,200),2,1],[(3550,240),(100,200),5,1],[(5600,30),(100,200),5,2],[(5470,580),(100,200),5,1],[(7000,180),(100,200),5,1],[(7800,730),(100,200),5,1]]
 
-    device = win32api.EnumDisplayDevices()
-    print((device.DeviceName, device.DeviceString))
-    settings = win32api.EnumDisplaySettings(device.DeviceName, -1)
-    for varName in ['Color', 'BitsPerPel', 'DisplayFrequency']:
-        print("%s: %s"%(varName, getattr(settings, varName)))
-        if varName == 'DisplayFrequency':
-            RUN_SPEED = RUN_SPEED/getattr(settings, varName)
-
-background = pygame.transform.scale(background, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
-background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
-background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
-
-print("Run Speed: ", RUN_SPEED)
-
-level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.7*screen_size[1]),1,0.5,1],[(LEVEL_WIDTH*0.25,0.555*screen_size[1]),2,1,0.5],[(LEVEL_WIDTH*0.316,0.255*screen_size[1]),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.073),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.684),5,1],[(LEVEL_WIDTH*0.675,0.30*screen_size[1]),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.7),5,1]]
-
-class GameState:
-    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
-    def __init__(self):
-        self.running = False
-        self.dt_last_frame = 1
-        self.dead = False
-        self.shooting_enebled = False
-        self.movement_enebled = False
-        self.end_of_game = False
-        self.Options_prototype = {
-            "master volume":1,
-            "jump volume":1,
-            "shot volume":1,
-        }
-
-gs = GameState()
 class enemy:
     enemies = []
-    def __init__(self,coordinates, hp, shots_per_seconds,shot_speed=1,size=(100,150),) -> None:
+    def __init__(self,coordinates,size, hp, shots_per_seconds) -> None:
         enemy.enemies.append(self)
-        self.shot_ofset = 0
-        self.size = size
         self.last_shot_fired = 0
         self.shots_per_seconds = shots_per_seconds
         self.coordinates = coordinates
         self.x, self.y = coordinates
         self.max_health = hp
         self.health = hp
-        self.shot_speed = shot_speed
-        self.is_right = False
-        if platform == "linux" or platform == "linux2":
-            pass
-        elif platform == "darwin":
-            self.image = pygame.image.load("Bilder/downloads/turret1.png").convert_alpha()
-            self.image2 = pygame.image.load("Bilder/downloads/turret_2.png").convert_alpha()
-        elif platform == "win32":
-            self.image = pygame.image.load("Bilder\\downloads\\turret1.png").convert_alpha()
-            self.image2 = pygame.image.load("Bilder\\downloads\\turret_2.png").convert_alpha()
+        self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
-        self.image2 = pygame.transform.scale(self.image2, [s/2 for s in size])
+        self.is_hit_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+        self.is_hit_sound.set_volume(0.8)
 
 
     def draw(self, surface:pygame.surface):
-        if -world.x + player.x > self.x:
-            surface.blit(pygame.transform.flip(self.image, True, False), (self.coordinates[0] + world.x,self.coordinates[1]))
-            d = self.set_direction()
-            d = -get_rotation_angle(d)
-            image2 = pygame.transform.flip(self.image2, False, True)
-            image2 = pygame.transform.rotate(image2,d)
-            surface.blit(image2, (self.coordinates[0] + world.x+40,self.coordinates[1]+20))
-            self.is_right = True
-        else:
-            surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
-            d = self.set_direction()
-            d = -get_rotation_angle(d)
-            image2 = pygame.transform.rotate(self.image2,d)
-            surface.blit(image2, (self.coordinates[0] + world.x-20,self.coordinates[1]+20))
-            self.is_right = False
-        self.display_health_bar()
-
-    def set_direction(self):
-        cords_target = [player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2]
-        coords_origin = [self.x+10, self.y+80]
-        x,y = coords_origin
-        v = [x - cords_target[0], y - cords_target[1]]
-        v_l = math.sqrt(v[0]**2 + v[1]**2)
-        v = [(i/v_l)*10 for i in v]
-        return v
+       surface.blit(self.image, (self.coordinates[0] + world.x,self.coordinates[1]))
+       self.display_health_bar()
 
     def check_for_hit(self, coordinates) -> bool:
         x,y = coordinates
@@ -175,7 +93,7 @@ class enemy:
         if self.health <= 0:
             enemy.enemies.remove(self)
             Collectable(self.x+self.image.get_width()//2, self.y+ self.image.get_height()//2)
-        main_script.sound_hit()
+        self.is_hit_sound.play()
 
     def display_health_bar(self):
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
@@ -184,7 +102,7 @@ class enemy:
 
     def fire_shot(self):
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
-            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x if not self.is_right else self.x+self.size[0]-30, self.y+45],False,self.shot_speed)
+            shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x, self.y],False)
             self.last_shot_fired = time.time()
 
 for e in level1_enemies_positiones:
@@ -213,6 +131,7 @@ class DialogBox:
             DialogBox.boxes.remove(self)
             if gs.end_of_game:
                 gs.running = False
+                gs.end_of_game = True
             return
 
         text_surface = self.text_surfaces[self.current_message]
@@ -258,12 +177,21 @@ class Collectable:
                 
 
 
+class GameState:
+    # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
+    def __init__(self):
+        self.running = False
+        self.dt_last_frame = 1
+        self.dead = False
+        self.shooting_enebled = False
+        self.movement_enebled = False
+        self.end_of_game = False
+
 class ObstacleMap:
     # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
-        print((screen_size[1]*ASPECT_RATIO, screen_size[1]))
+        self.image = pygame.transform.scale(self.image, (11200, 1080))
 
     def collides_horizontally_right(self, rect:pygame.Rect):
         for y in range(rect.y+25, rect.y + rect.h-25):
@@ -328,30 +256,26 @@ class ObstacleMap:
 
         return False
     
-if platform == "linux" or platform == "linux2":
-    pass
-elif platform == "darwin":
-    obstacle_map = ObstacleMap("Bilder/Level 1/Level1_11200x1080_V1_Collisions.png")
-
-elif platform == "win32":
-    obstacle_map = ObstacleMap("Bilder\\Level 1\\Level1_11200x1080_V1_Collisions.png")
-
+obstacle_map = ObstacleMap("Bilder/Level 2/Level2_Collisions.png")
 
 class World:
     def __init__(self):
         self.x = 0
         self.y = 0
         self.background_rect = background.get_rect()
-        self.background_foreground_rect = background_foreground.get_rect()
+        self.background_foreground_1_rect = background_foreground_1.get_rect()
+        self.background_foreground_2_rect = background_foreground_2.get_rect()
         self.background_middle_foreground_rect = background_middle_foreground.get_rect()
         self.background = background
-        self.background_foreground = background_foreground
+        self.background_foreground_1 = background_foreground_1
+        self.background_foreground_2 = background_foreground_2
         self.background_middle_foreground = background_middle_foreground
 
     def draw(self, surface):
         surface.blit(self.background, self.background_rect)
         surface.blit(self.background_middle_foreground, self.background_middle_foreground_rect)
-        surface.blit(self.background_foreground, self.background_foreground_rect)
+        surface.blit(self.background_foreground_1, self.background_foreground_1_rect)
+        surface.blit(self.background_foreground_2, self.background_foreground_2_rect)
 
         # self.font = pygame.font.SysFont(None, 18) 
         # text = self.font.render(f"Wo bin ich? {self.x}", True, (200, 200, 200))
@@ -360,7 +284,8 @@ class World:
     def move(self, dx):
         if(self.x <= 0 or dx < 0):
             self.x += dx
-            self.background_foreground_rect = self.background_foreground_rect.move(dx,0)
+            self.background_foreground_1_rect = self.background_foreground_1_rect.move(dx,0)
+            self.background_foreground_2_rect = self.background_foreground_2_rect.move(dx,0)
             self.background_middle_foreground_rect = self.background_middle_foreground_rect.move(dx/2,0)
             self.background_rect = self.background_rect.move(dx/4,0)
 
@@ -370,37 +295,26 @@ class Player:
         self.x, self.y = screen_size[0] // 2, screen_size[1] // 2
         self.dy = 0
         self.jump_enabled = True
-        self.gravity = RUN_SPEED
-        self.jump_height = 22
+        self.gravity = 0.5
+        self.jump_height = 17
         self.scale = 0.15
-        if platform == "linux" or platform == "linux2":
-            pass
-        elif platform == "darwin":
-            self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
-            self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
-            self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
-            self.img_health = pygame.image.load("Bilder/IO/Health_gifs/Health8.png")
-            self.coin_img = pygame.image.load("coins/coin_01.png")
-        elif platform == "win32":
-            self.animation_frames = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
-            self.animation_frames_jumping_up = self.load_gif("Bilder\\Objekte\\Test 2 Animation running 1.gif",self.scale)
-            self.health_bar_gif_folder_path = "Bilder\\IO\\Health_gifs"
-            self.img_health = pygame.image.load("Bilder\\IO\\Health_gifs\\Health8.png")
-            self.coin_img = pygame.image.load("coins\\coin_01.png")
-        self.coin_img = pygame.transform.scale(self.coin_img, (self.coin_img.get_width(), self.coin_img.get_height()))
-        self.img_health = pygame.transform.scale(self.img_health, (self.img_health.get_width() * 2, self.img_health.get_height() * 2))
+        self.animation_frames = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
+        self.animation_frames_jumping_up = self.load_gif("Bilder/Objekte/Test 2 Animation running 1.gif",self.scale)
         self.animation_frames.pop(0)
         self.current_frame = 0
         self.rect = self.animation_frames[0].get_rect()
         self.walking_right = False
         self.walking_left = False
         self.crouch = False
+        self.jumping_sound = pygame.mixer.Sound("Sounds/Player/399095__plasterbrain__8bit-jump.flac")
+        self.jumping_sound.set_volume(0.8)
         self.last_jump = time.time()
 
         self.inventory = []
         self.coin_count = 0
         self.health = 7
         self.health_bar_current_frame = 0
+        self.health_bar_gif_folder_path = "Bilder/IO/Health_gifs"
         self.haelth_bar_gifs = self.load_gifs(self.health_bar_gif_folder_path)
 
     @staticmethod
@@ -441,29 +355,31 @@ class Player:
             self.dy -= self.jump_height
             if (time.time() - self.last_jump) > 0.3:
                 self.last_jump = time.time()
-                main_script.sound_jump()
+                pygame.mixer.Sound.play(self.jumping_sound)
 
     def damage(self, damage):
-        godemode = False
+        self.health -= damage
         pygame.draw.rect(display, (255,0,0),pygame.Rect(0,0,screen_size[0],screen_size[1]),4)
-        if not godemode:
-            self.health -= damage
-            if self.health < 0:
-                self.health = 0
-                gs.dead = True
-                world.__init__()
-                gs.dead = False
-                self.health = 7
+        if self.health < 0:
+            self.health = 0
+            gs.dead = True
+            world.__init__()
+            gs.dead = False
+            self.health = 7
 
     def display_health(self, surface):
         if self.health == 7:
-            surface.blit(self.img_health, (UI_X+170, UI_Y+50))
+            img = pygame.image.load("Bilder/IO/Health_gifs/Health8.png")
+            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
+            surface.blit(img, (UI_X+170, UI_Y+50))
         else: 
             surface.blit(self.haelth_bar_gifs[self.health][int(self.health_bar_current_frame)], (UI_X+170, UI_Y+50))
             self.health_bar_current_frame = (self.health_bar_current_frame + 0.25) % 7
     
     def display_coins(self, surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
-        surface.blit(self.coin_img, (screen_size[0]-190, 50))
+        img = pygame.image.load("coins/coin_01.png")
+        img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+        surface.blit(img, (screen_size[0]-190, 50))
         text_surface = font.render("X", False, (255,255,255))
         text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
         surface.blit(text_surface, text_rect)
@@ -512,11 +428,11 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + self.x >= screen_size[1]*11200/1080 - 700:
+        if -world.x + self.x >= 10800:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
-                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
+                DialogBox(["Wow, du hast es geschafft!", "Bist du bereit für neue Wege?"],(player.x+100, 700))
 
 def get_rotation_angle(velocity):
     # velocity[0] is horizontal speed
@@ -544,22 +460,17 @@ class shot:
     last_shot_fired = 0
     shots_left = 4
     is_reloading = False
-    if platform == "linux" or platform == "linux2":
-        pass
-    elif platform == "darwin":
-        animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
-        image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
-    elif platform == "win32":
-        animation_frames = Player.load_gif("Bilder\\IO\\reload.webp",0.1)
-        image = pygame.image.load("Bilder\\downloads\\rocket_enemy.png")
+    animation_frames = Player.load_gif("Bilder/IO/reload.webp",0.1)
     current_frame = 0
     last_frame_time = 0
+    reloading_sound = pygame.mixer.Sound("Sounds/Player/143610__dwoboyle__weapons-synth-blast-02.wav")
+    reloading_sound.set_volume(0.2)
         
-    def __init__(self, cords_target, coordinates_origin, shot_by_player, shot_speed=1):
-        self.shot_speed = shot_speed
+    def __init__(self, cords_target, coordinates_origin, shot_by_player):
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
+            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
             self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
@@ -567,17 +478,14 @@ class shot:
             self.coordinates = coordinates_origin
             shot.last_shot_fired = time.time()
             shot.shots_left -= 1
-            main_script.sound_shot()
+            self.shot_sound = pygame.mixer.Sound("Sounds/Player/170161__timgormly__8-bit-laser.aiff")
+            self.shot_sound.set_volume(0.8)
+            self.shot_sound.play()
         elif not shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
             self.shot_by_player = shot_by_player
-            if platform == "linux" or platform == "linux2":
-                pass
-            elif platform == "darwin":
-                self.image = pygame.image.load("Bilder/downloads/rocket_enemy.png")
-            elif platform == "win32":
-                self.image = pygame.image.load("Bilder\\downloads\\rocket_enemy.png")
-            self.image = pygame.transform.scale(self.image, (35,20))
+            self.image = pygame.image.load("Bilder/Objekte/PNG/Foreground/Hindernisse/Container_Side_1.png")
+            self.image = pygame.transform.scale(self.image, (50,10))
             self.velocity = self.set_velocities(cords_target, coordinates_origin)
             v = -get_rotation_angle(self.velocity)
             self.image = pygame.transform.rotate(self.image,v)
@@ -586,8 +494,8 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
-        self.coordinates[0] += self.velocity[0]*RUN_SPEED*self.shot_speed
-        self.coordinates[1] += self.velocity[1]*RUN_SPEED*self.shot_speed
+        self.coordinates[0] += self.velocity[0]*gs.dt_last_frame
+        self.coordinates[1] += self.velocity[1]*gs.dt_last_frame
 
         test_rect = pygame.Rect(self.coordinates[0], self.coordinates[1], 5, 5)
         for enem in enemy.enemies:
@@ -595,8 +503,11 @@ class shot:
                 shot.shots_list.remove(self)
                 enem.is_hit()
         if obstacle_map.collides(test_rect):
-            shot.shots_list.remove(self)
-        if abs(self.coordinates[1]) > screen_size[1]:
+            try:
+                shot.shots_list.remove(self)
+            except ValueError:
+                pass
+        if abs(self.coordinates[1]) > 1080:
             shot.shots_list.remove(self)
         if player.check_for_hit(self.coordinates) and not self.shot_by_player:
             player.damage(1)
@@ -607,7 +518,7 @@ class shot:
         if time.time() - shot.last_frame_time > 0.2:
             shot.current_frame = (shot.current_frame + 1)%len(shot.animation_frames)
             if shot.current_frame % 3 == 0:
-                main_script.sound_reloading
+                shot.reloading_sound.play()
             if shot.current_frame % len(shot.animation_frames) == 0:
                 shot.is_reloading = False
                 shot.shots_left = 4
@@ -623,7 +534,6 @@ class shot:
         else:
             shot.reload_animation(surface)
 
-
     def set_velocities_mouse(self) -> list:
         x,y = pygame.mouse.get_pos()
         v = [x - (player.x + player.rect.w/2), y - (player.y + player.rect.h/2)]
@@ -635,26 +545,22 @@ class shot:
         x,y = coords_origin
         v = [x - cords_target[0], y - cords_target[1]]
         v_l = math.sqrt(v[0]**2 + v[1]**2)
-        if self.shot_by_player:
-            v = [(i/v_l)*15 for i in v]
-        else:
-            v = [(i/v_l)*10 for i in v]
+        v = [(i/v_l)*10 for i in v]
         return v
-    
+
     def draw(self,surface):
         surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
 
-
-
 world = World()
+gs = GameState()
 player = Player()
 FPS = pygame.time.Clock()
-DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,580))
+DialogBox(["Willkommen zurück Held!", "Viel Glück!"], (screen_size[0]//2 + 300,470))
 
-def main(optionen):
-    gs.Options_prototype = optionen
+def main(Options_prototype):
     gs.running = True
     while gs.running:
+        display.fill((0,0,0))
 
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
@@ -663,9 +569,7 @@ def main(optionen):
                 gs.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    optionen = optionen_screen.main(optionen)
-                    if optionen_screen.gs_optionen.level == 'exit':
-                        gs.running = False
+                    gs.running = False
                 if event.key == pygame.K_SPACE:
                     dialog.next_message()
 
@@ -703,7 +607,6 @@ def main(optionen):
             player.crouch = False
 
 
-        display.fill((0,0,0))
         player.update()
         world.draw(display)
         player.draw(display)
@@ -728,4 +631,4 @@ def main(optionen):
     return (player.coin_count, gs.end_of_game)
 
 if __name__ == "__main__":
-    main([gs.Options_prototype])
+    main({"stuff":"stuff"})
