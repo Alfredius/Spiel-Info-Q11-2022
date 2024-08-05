@@ -1,3 +1,6 @@
 Unter anderem wurden Assets verwendet von:
 
 -   Dadsky (small animated alien creature) - opengameart.com
+
+Alle Fremden Assets wurden unter Creative Commons Attributiones oder ähnlichen Lizenzen verwendet. 
+Alle nicht aufgeführten Assets entstammen entweder der Freien Domäne oder sind eigene (Informatik Kurs Abiturjahrgang 2023)
