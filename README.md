@@ -5,11 +5,34 @@ Repository zum Informatik Spiel
 
 zum Ausführen main.py starten.
 
-## Neues Level
+Achtung, zur Zeit nur MacOS und Windows Unterstützung.
 
-- LV1 kopieren
-- Hintergrund und Kollisions - Bilder ändern
-- Gegner und Gegnerpositionen anpassen
-- Sonstige benötigte Änderungen durchführen
-- Levelscript in main.py importieren und ins Level-Array einfügen
-- in der init Methode des Startmenu in start_menu.py das Level hinzufügen
+## Spielanleitung
+
+A & D zum links und rechts laufen
+
+Leertaste zum Hüpfen / Fortsetzten des Dialoges
+
+Shift zum Ducken
+
+Esc zum pausieren
+
+Klicke auf eine Stelle am Display und der Spieler schießt dort hin
+
+Automatisches Nachladen und Respawnen
+
+
+## Anlegen neuer Levels
+
+Zum Anlegen neuer Levels:
+- Level1 kopieren
+- Hintergrund-, Vordergrund- und collision Maps austauschen
+- In main.py importieren
+- In das Level-Array Einfügen
+- In start_menu.py neues Levelelement zum anklicken erzeugen
+- Bugs Fixen, weil ich safe was vergessen hab...
+
+## Wer hat den Quatsch zu verantworten?
+
+Dieses kleine Spielchen entstammt eines Projektes aus der Q11 und wurde damals nie fertig gestellt...
+Externe Assets siehe contributions.txt
