@@ -34,5 +34,5 @@ Zum Anlegen neuer Levels:
 
 ## Wer hat den Quatsch zu verantworten?
 
-Dieses kleine Spielchen entstammt eines Projektes aus der Q11 und wurde damals nie fertig gestellt...
+Dieses kleine Spielchen entstammt eines Projektes aus der Q11, wurde damals aber nie fertig gestellt...
 Externe Assets siehe contributions.txt
