@@ -6,7 +6,7 @@ Repository zum Informatik Spiel
 Alle Requirements (siehe requirements.txt) herunterladen.
 Diese Requirementsdatei sollte vollständig sein...hoffentlich...
 
-`pip install -r requirements.txt`
+```pip install -r requirements.txt```
 
 Zum Ausführen main.py starten.
 
