@@ -133,7 +133,7 @@ class Startmenu():
         self.font = pygame.font.SysFont(None, self.font_size) 
         self.color_l = (0,0,0)
         self.color_r = (0,0,0)
-        self.y = 200
+        self.y = screen_size[1]//2 - 250
         self.x = screen_size[0]//2
         self.s1 = Slider(display,self.x-100,self.y,200,20,(50,50,50),0,100,100,set_master_volume)
         self.s2 = Slider(display,self.x-100,self.y+100,200,20,(50,50,50),0,100,100,set_jump_volume)

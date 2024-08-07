@@ -22,7 +22,7 @@ RUN_SPEED = 60
 
 # Position der Spiel UI / Reload und Schussanzahl-Animation
 UI_X = 30
-UI_Y = 850
+UI_Y = screen_size[1] - 300
 
 # zur Unterstützung verschiedener Monitorgrößen
 ASPECT_RATIO = 11200//1080
@@ -99,7 +99,7 @@ background_middle_foreground = pygame.transform.scale(background_middle_foregrou
 print("Run Speed: ", RUN_SPEED)
 
 # Array mit Gegnerinformationen die für die Initialisierung der Gegner verwendet werden
-level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.7*screen_size[1]),1,0.5,1],[(LEVEL_WIDTH*0.25,0.555*screen_size[1]),2,1,0.5],[(LEVEL_WIDTH*0.316,0.255*screen_size[1]),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.073),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.684),5,1],[(LEVEL_WIDTH*0.675,0.30*screen_size[1]),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.7),5,1]]
+level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.75*screen_size[1]),1,0.5,1],[(LEVEL_WIDTH*0.25,0.605*screen_size[1]),2,1,0.5],[(LEVEL_WIDTH*0.316,0.305*screen_size[1]),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.115),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.73),5,1],[(LEVEL_WIDTH*0.675,0.36*screen_size[1]),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.75),5,1]]
 
 class GameState:
     # eine Art globale variablen zu machen, ohne globale variablen zu verwenden
@@ -577,7 +577,7 @@ class Player:
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         else:
             self.current_frame = 3
-        if -world.x + self.x >= screen_size[1]*11200/1080 - 700:
+        if -world.x + self.x >= screen_size[1]*11200/1080 - screen_size[0]//2:
             gs.movement_enebled = False
             if DialogBox.boxes == []:
                 gs.end_of_game = True
