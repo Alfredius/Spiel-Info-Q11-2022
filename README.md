@@ -4,9 +4,9 @@ Repository zum Informatik Spiel
 ## Ausführen
 
 Alle Requirements (siehe requirements.txt) herunterladen.
-Diese Requirements Datei sollte vollständig sein...hoffentlich...
+Diese Requirementsdatei sollte vollständig sein...hoffentlich...
 
-zum Ausführen main.py starten.
+Zum Ausführen main.py starten.
 
 Achtung, zur Zeit nur MacOS und Windows Unterstützung.
 
