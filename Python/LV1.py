@@ -14,12 +14,17 @@ pygame.init()
 info_object = pygame.display.Info()
 screen_size = (info_object.current_w, info_object.current_h)
 
+# Geschwindigkeit zum Laufen zur Seite
 SPEED_LATERAL = 10
 
+# Geschwindigkeit des Spieles in Hz, wird angepasst um verschiedene Monitorgeschwindigkeiten zu nutzten, ohne PyGame typisches tearing bei fixer Wiederholungsrate
 RUN_SPEED = 60
+
+# Position der Spiel UI / Reload und Schussanzahl-Animation
 UI_X = 30
 UI_Y = 850
 
+# zur Unterstützung verschiedener Monitorgrößen
 ASPECT_RATIO = 11200//1080
 LEVEL_WIDTH = screen_size[1]*ASPECT_RATIO
 print(ASPECT_RATIO)
@@ -50,7 +55,8 @@ if platform == "darwin":
     SDL_GetDisplayMode.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(SDL_DisplayMode)]
     SDL_GetDisplayMode.restype = ctypes.c_int
 
-    # Iterate over each display and get its refresh rate
+    # Iterate over each display and get its refresh rate.
+    # Sets the Refreshrate to the Last detected Monitor (Wenn ein Sekundärer Monitor angeschlossen ist, wird dessen Geschwindigkeit genommen!)
     for display_index in range(num_displays):
         mode = SDL_DisplayMode()
         if SDL_GetDisplayMode(display_index, 0, ctypes.pointer(mode)) != 0:
@@ -85,12 +91,14 @@ elif platform == "win32":
         if varName == 'DisplayFrequency':
             RUN_SPEED = RUN_SPEED/getattr(settings, varName)
 
+# initialisiert die Hintergrund Bilder (Vordergrund, 2 Hintergrundbilder für Paralaxeneffekt)
 background = pygame.transform.scale(background, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
 background_foreground = pygame.transform.scale(background_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
 background_middle_foreground = pygame.transform.scale(background_middle_foreground, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
 
 print("Run Speed: ", RUN_SPEED)
 
+# Array mit Gegnerinformationen die für die Initialisierung der Gegner verwendet werden
 level1_enemies_positiones = [[(LEVEL_WIDTH*0.2,0.7*screen_size[1]),1,0.5,1],[(LEVEL_WIDTH*0.25,0.555*screen_size[1]),2,1,0.5],[(LEVEL_WIDTH*0.316,0.255*screen_size[1]),5,1],[(LEVEL_WIDTH*0.511,screen_size[1]*0.073),5,3,0.4],[(LEVEL_WIDTH*0.55,screen_size[1]*0.684),5,1],[(LEVEL_WIDTH*0.675,0.30*screen_size[1]),5,1],[(LEVEL_WIDTH*0.68,screen_size[1]*0.7),5,1]]
 
 class GameState:
@@ -112,6 +120,17 @@ gs = GameState()
 class enemy:
     enemies = []
     def __init__(self,coordinates, hp, shots_per_seconds,shot_speed=1,size=(100,150),) -> None:
+        """Initializes an Enemy Object
+        
+        (world)coordinates: x,y.
+        
+        hp: health.
+        
+        shots_per_second: Shots the enemy can fire per Second.
+        
+        shot_speed: Speed of the shots fired.
+        
+        size: Size of the Enemys"""
         enemy.enemies.append(self)
         self.shot_ofset = 0
         self.size = size
@@ -136,7 +155,8 @@ class enemy:
 
 
     def draw(self, surface:pygame.surface):
-        if -world.x + player.x > self.x:
+        """Draws this Enemy onto the Pygame Surface"""
+        if -world.x + player.x > self.x: # Flippt den Gegner damit dieser immer in die Richtung des Spielers schaut.
             surface.blit(pygame.transform.flip(self.image, True, False), (self.coordinates[0] + world.x,self.coordinates[1]))
             d = self.set_direction()
             d = -get_rotation_angle(d)
@@ -154,6 +174,7 @@ class enemy:
         self.display_health_bar()
 
     def set_direction(self):
+        """Sets the x,y velocity for the shotdirection"""
         cords_target = [player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2]
         coords_origin = [self.x+10, self.y+80]
         x,y = coords_origin
@@ -163,6 +184,7 @@ class enemy:
         return v
 
     def check_for_hit(self, coordinates) -> bool:
+        """Takes Coordinates of the shot. If hit, returnes true."""
         x,y = coordinates
         if x > self.x and x < self.x+self.image.get_width():
             if y > self.y and y < self.y + self.image.get_height():
@@ -171,6 +193,7 @@ class enemy:
 
     
     def is_hit(self):
+        """if it is hit, removes one hp. When at 0 hp, deletes the enemy"""
         self.health -= 1
         if self.health <= 0:
             enemy.enemies.remove(self)
@@ -178,21 +201,34 @@ class enemy:
         main_script.sound_hit()
 
     def display_health_bar(self):
+        """displayed the health bar"""
         color = (int(255-255*(self.health/self.max_health)),int(255*(self.health/self.max_health)),0)
         pygame.draw.rect(display, color,pygame.Rect(self.coordinates[0] + world.x,self.coordinates[1]-25,100,20),3)
         pygame.draw.rect(display, color,pygame.Rect(self.coordinates[0] + world.x,self.coordinates[1]-25,100*(self.health/self.max_health),20))
 
     def fire_shot(self):
+        """fires a shot from the enemy towards the player"""
         if (time.time() - self.last_shot_fired) > (1/self.shots_per_seconds) and abs(player.x + player.rect.w/2 - world.x - self.x) < 1000:
             shot([player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],[self.x if not self.is_right else self.x+self.size[0]-30, self.y+45],False,self.shot_speed)
             self.last_shot_fired = time.time()
 
+# legt für jeden Gegner ein Gegner Objekt an
 for e in level1_enemies_positiones:
     enemy(*e) 
 
 class DialogBox:
+    """Instance of the Dialogbox to be displayed."""
     boxes = []
     def __init__(self, messages, cords, font=pygame.font.SysFont('Comic Sans MS', 30), color=(255, 255, 255)):
+        """defines an Instance of the DialogBox.
+        
+        messages: Array of Strings to display one after the other.
+        
+        cords: Coordinates where to display the Dialog Box.
+        
+        font: pygame Font.
+        
+        color: Color of the Dialog Box."""
         self.coordinates = cords
         self.messages = messages
         self.current_message = 0
@@ -202,7 +238,6 @@ class DialogBox:
         DialogBox.boxes.append(self)
 
     def next_message(self):
-        # No need to check bounds here, the draw method handles the case where we are out of bounds
         self.current_message += 1
 
     def draw(self, win):
@@ -228,6 +263,9 @@ class Collectable:
     # das ist ein Beispiel für ein collectable. Am ende sollten wahrscheinlich mehr sachen collectable sein als Münzen, und münzen werden wahrscheinlich keine collectables bleiben, aber als poc sind die wahrscheinlich ganz gut
     collectables = []
     def __init__(self, x, y):
+        """Defines instance of a collectable.
+        
+        x,y: coordinates of the collectables animation"""
         self.x = x
         self.y = y
         self.img_frames = []
@@ -243,6 +281,9 @@ class Collectable:
             self.last_frame_time = time.time()
     
     def load(self, path):
+        """loads the animation of the collectable.
+        
+        path: path to the folder of the animation."""
         filenames = sorted(os.listdir(path))
         print(filenames)
         for filename in filenames:
@@ -252,6 +293,7 @@ class Collectable:
                 self.img_frames.append(pygame.image.load(filepath))
 
     def collision_with_player(self):
+        """When the player collects the item"""
         if self.x > -world.x + player.x and self.x < -world.x + player.x + player.rect.width and self.y > player.y and self.y < player.y + player.rect.height:
             Collectable.collectables.remove(self)
             player.coin_count += 1
@@ -261,6 +303,9 @@ class Collectable:
 class ObstacleMap:
     # lädt das Bild der collision map. um Kollisionen an einem bestimmten Punkt zu überprüfen wird geschaut, ob die gegebene Koordinate auf dem Bild existiert oder nicht. existiert dort ein Pixel bedeutet das, dass dort ein Hinderniss ist.
     def __init__(self, image_path):
+        """Instance of Obstacle map.
+        
+        image_path: path to obstacle map."""
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (screen_size[1]*ASPECT_RATIO, screen_size[1]))
         print((screen_size[1]*ASPECT_RATIO, screen_size[1]))
@@ -328,6 +373,8 @@ class ObstacleMap:
 
         return False
     
+
+# initialisiert Obstacle Map
 if platform == "linux" or platform == "linux2":
     pass
 elif platform == "darwin":
@@ -338,6 +385,7 @@ elif platform == "win32":
 
 
 class World:
+    # initialisiert Verschiedene Welt-Aspekte, die global für dieses Level gelten sollen.
     def __init__(self):
         self.x = 0
         self.y = 0
@@ -358,6 +406,9 @@ class World:
         # display.blit(text, (screen_size[0]-145, 80))
 
     def move(self, dx):
+        """moves the background (so that it appeares that the player is moving).
+        
+        dx: how much to move the background on the x-axis."""
         if(self.x <= 0 or dx < 0):
             self.x += dx
             self.background_foreground_rect = self.background_foreground_rect.move(dx,0)
@@ -367,10 +418,11 @@ class World:
 
 class Player:
     def __init__(self):
+        """defines the instance of a player."""
         self.x, self.y = screen_size[0] // 2, screen_size[1] // 2
         self.dy = 0
         self.jump_enabled = True
-        self.gravity = RUN_SPEED
+        self.gravity = RUN_SPEED # Je schneller das Spiel läuft, umso geringer ist die Gravitation
         self.jump_height = 22
         self.scale = 0.15
         if platform == "linux" or platform == "linux2":
@@ -397,7 +449,6 @@ class Player:
         self.crouch = False
         self.last_jump = time.time()
 
-        self.inventory = []
         self.coin_count = 0
         self.health = 7
         self.health_bar_current_frame = 0
@@ -405,6 +456,11 @@ class Player:
 
     @staticmethod
     def load_gif(path, scale):
+        """loads a animation, returns the single animation frames.
+        
+        path: path to GIF / Animation.
+        
+        scale: how to scale the animationframes."""
         img = Image.open(path)
         frames = []
         try:
@@ -420,7 +476,7 @@ class Player:
 
     def draw(self, surface):
         image = self.animation_frames[int(self.current_frame)]
-        if self.dy < 0:
+        if self.dy < 0: # wenn der Spieler nach oben springt
             image = self.animation_frames_jumping_up[1]
             image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
             image.set_colorkey((255,255,255))
@@ -436,6 +492,7 @@ class Player:
         surface.blit(image, (self.x, self.y))  
 
     def jump(self):
+        """lets the player jump"""
         test_rect = pygame.Rect(player.x - world.x, player.y, player.rect.w, player.rect.h).move(0, 2*self.dy)
         if obstacle_map.collides_vertically_bottom(test_rect) and self.jump_enabled:
             self.dy -= self.jump_height
@@ -444,6 +501,9 @@ class Player:
                 main_script.sound_jump()
 
     def damage(self, damage):
+        """deducts damage from players health.
+        
+        damage: how much to deduct from player hp"""
         godemode = False
         pygame.draw.rect(display, (255,0,0),pygame.Rect(0,0,screen_size[0],screen_size[1]),4)
         if not godemode:
@@ -456,6 +516,7 @@ class Player:
                 self.health = 7
 
     def display_health(self, surface):
+        """displayes the players health on the given surface."""
         if self.health == 7:
             surface.blit(self.img_health, (UI_X+170, UI_Y+50))
         else: 
@@ -463,6 +524,7 @@ class Player:
             self.health_bar_current_frame = (self.health_bar_current_frame + 0.25) % 7
     
     def display_coins(self, surface,font=pygame.font.SysFont('Comic Sans MS', 30)):
+        """display the players coin count."""
         surface.blit(self.coin_img, (screen_size[0]-190, 50))
         text_surface = font.render("X", False, (255,255,255))
         text_rect = text_surface.get_rect(center=(screen_size[0]-120, 70))
@@ -485,6 +547,7 @@ class Player:
         return all_gifs
     
     def check_for_hit(self, coordinates) -> bool:
+        """checkes if the player is hit"""
         image = self.animation_frames[1]
         x,y = coordinates
         if x > self.x-world.x and x < self.x - world.x + image.get_width():
@@ -494,6 +557,7 @@ class Player:
                 
 
     def update(self):
+        """updates position of the player, checks for obstacles"""
         self.prev_x, self.prev_y = self.x, self.y  # Remember previous position
         self.dy += self.gravity
         test_rect = pygame.Rect(self.x - world.x, self.y, self.rect.w, self.rect.h).move(0, self.dy)
@@ -506,6 +570,7 @@ class Player:
         elif not self.dy < 0:
             self.dy = 0
 
+        # Laufgeschwindigkeit der Animation wird an die Geschwindigkeit des Monitors angepasst.
         if(self.walking_right):
             self.current_frame = (self.current_frame + gs.dt_last_frame/4 * 1) % (len(self.animation_frames))
         elif(self.walking_left):
@@ -519,6 +584,9 @@ class Player:
                 DialogBox(["Wow, du hast es geschafft!", "Bist du bereit weiter zu gehen?"],(player.x+100, 700))
 
 def get_rotation_angle(velocity):
+    """get rotation angles so that something faces the correct direction.
+    
+    velocity: [x velocity, y velocity]"""
     # velocity[0] is horizontal speed
     # velocity[1] is vertical speed
     if velocity[0]==0: # this conditional logic is done in order to handle the case whenever horizontal speed becomes zero to avoid zero division error
@@ -540,6 +608,7 @@ def get_rotation_angle(velocity):
     return final_angle
 
 class shot:
+    """defines the shot class"""
     shots_list = []
     last_shot_fired = 0
     shots_left = 4
@@ -556,6 +625,15 @@ class shot:
     last_frame_time = 0
         
     def __init__(self, cords_target, coordinates_origin, shot_by_player, shot_speed=1):
+        """initializes a new shot.
+        
+        cords_target: target coordinates (to where the shot should fly).
+        
+        coordinates origin: where to spawn the shot, x,y position, to figure out angle.
+        
+        shot_by_player: if the shot is shot by a player.
+        
+        shot speed: speed of the bullet."""
         self.shot_speed = shot_speed
         if (time.time() - shot.last_shot_fired) > 0.2 and shot.shots_left > 0 and shot_by_player and gs.shooting_enebled:
             shot.shots_list.append(self)
@@ -586,6 +664,7 @@ class shot:
             shot.is_reloading = True
     
     def move(self):
+        """moves the shot one frame. If it hits the player / enemy it deals damage. if it exits the bounds or hits an obstacle, the shot despawns."""
         self.coordinates[0] += self.velocity[0]*RUN_SPEED*self.shot_speed
         self.coordinates[1] += self.velocity[1]*RUN_SPEED*self.shot_speed
 
@@ -603,6 +682,7 @@ class shot:
             shot.shots_list.remove(self)
 
     def reload_animation(surface):
+        """initializes the reloading animation."""
         surface.blit(shot.animation_frames[shot.current_frame], (UI_X, UI_Y))
         if time.time() - shot.last_frame_time > 0.2:
             shot.current_frame = (shot.current_frame + 1)%len(shot.animation_frames)
@@ -614,6 +694,7 @@ class shot:
             shot.last_frame_time = time.time()
 
     def display_magazine(surface):
+        """displayes the current number of shots remaining"""
         if shot.shots_left > 0:
             surface.blit(shot.animation_frames[int(shot.shots_left * 3)-2], (UI_X, UI_Y))
         elif shot.is_reloading == False:
@@ -625,6 +706,7 @@ class shot:
 
 
     def set_velocities_mouse(self) -> list:
+        
         x,y = pygame.mouse.get_pos()
         v = [x - (player.x + player.rect.w/2), y - (player.y + player.rect.h/2)]
         v_l = math.sqrt(v[0]**2 + v[1]**2)
@@ -645,13 +727,14 @@ class shot:
         surface.blit(self.image, (self.coordinates[0] + world.x, self.coordinates[1]))
 
 
-
+# initialisiert die Welt, den Spieler und die Dialogboxen
 world = World()
 player = Player()
 FPS = pygame.time.Clock()
 DialogBox(["Hello!", "How are you?", "Good Luck!"], (screen_size[0]//2 + 200,580))
 
-def main(optionen):
+#Haupt Game loop, wird aus main.py gestartet
+def main(optionen): 
     gs.Options_prototype = optionen
     gs.running = True
     while gs.running:
@@ -672,7 +755,8 @@ def main(optionen):
             if event.type == pygame.MOUSEBUTTONUP:
                 cords = pygame.mouse.get_pos()
                 shot([cords[0] - world.x, cords[1]],[player.x + player.rect.w/2 - world.x, player.y + player.rect.h/2],True)
-        # In the game loop
+
+        # man kann sich nur bewegen wenn die Bewegung freigegeben ist (nach den Dialognachrichten), springen nur wenn man gerade auf dem Boden ist.
         if keys[pygame.K_SPACE] and gs.movement_enebled:
             if not player.dy < 0:
                 player.jump()
@@ -694,6 +778,7 @@ def main(optionen):
         else:
             player.walking_left = False
 
+        #Spieler kriecht. Sprünge sind dann deaktiviert
         if keys[pygame.K_LSHIFT] and gs.movement_enebled:
             player.crouch = True
             player.jump_enabled = False

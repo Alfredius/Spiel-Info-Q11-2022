@@ -5,11 +5,11 @@ import main as main_script
 pygame.init()
 # pygame.mouse.set_visible(False)
 info_object = pygame.display.Info()
-screen_size = (info_object.current_w, info_object.current_h)
+screen_size = (info_object.current_w, info_object.current_h) # Breite / Höhe des Bildschirms
 
 display = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.SCALED, vsync=True)
 
-class gamestate:
+class gamestate: 
     def __init__(self):
         self.running = False
         self.level = 0
@@ -20,9 +20,9 @@ class gamestate:
         }
 
 
-class PulsatingText:
+class PulsatingText: # Pulsierender Text, der pro Frame die Helligkeit ändert
 
-    Texts = []
+    Texts = [] # Liste aller Pulsating Text Objekte
     def __init__(self, display, text, center, font_size=36):
         """defines a new pulsating text.
         
@@ -113,7 +113,7 @@ class Slider():
                     self.current_val = int(max(self.min_val, min(self.current_val, self.max_val)))
 
 
-
+# Funktionen die aktiviert werden, wenn die Optionen im Optionsmenü bearbeitet werden
 def set_master_volume(volume):
     main_script.set_master_volume(volume)
 
@@ -183,6 +183,7 @@ class Startmenu():
 
 
 class Options():
+    """Optionsmenü, mit welchem sich die Lautstärke ändern lässt"""
     def __init__(self) -> None:
         self.x = screen_size[0]//2 + 100
         self.y = screen_size[1]//2 + 200
@@ -211,32 +212,25 @@ class Options():
 
 start_menu = Startmenu(display)
 options = Options()
-
-
 gs_optionen = gamestate()
-def main(optionen):
+def main(optionen): # Main Skript des Optionsmenüs
     gs_optionen.Options_prototype = optionen[0]
     print(optionen)
     start_menu.s1.current_val = int(gs_optionen.Options_prototype["master volume"]*100)
     start_menu.s2.current_val = int(gs_optionen.Options_prototype["jump volume"]*100)
     start_menu.s3.current_val = int(gs_optionen.Options_prototype["shot volume"]*100)
 
-    # pygame.mixer.init()
-    # pygame.mixer.music.load("/Users/i589040/Documents/GitHub/Spiel-Info-Q11-2022/Sounds/Background/696485__gis_sweden__minimal-tech-background-music-mtbm02.wav") 
-    # pygame.mixer.music.play(-1,0.0)
     gs_optionen.running = True
     while gs_optionen.running:
         display.fill((30,30,30),(screen_size[0]//2-150,screen_size[1]//2-350,300,400))
 
         events = pygame.event.get()
-        keys = pygame.key.get_pressed()
         for event in events:
             if event.type == pygame.QUIT:
                 gs_optionen.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     gs_optionen.running = False
-                    #gs_optionen.level = "exit"
         options.draw(display)
         start_menu.check_input(events)
         for texts in PulsatingText.Texts:
