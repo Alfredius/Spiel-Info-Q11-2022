@@ -8,6 +8,8 @@ Diese Requirementsdatei sollte vollständig sein...hoffentlich...
 
 ```pip install -r requirements.txt```
 
+Dies wird auf MacOS zu einer Fehlermeldung führen, da pywin32 dort nicht installierbar ist, dies spielt aber keine weitere Rolle, kann also ignoriert werden.
+
 Zum Ausführen main.py starten.
 
 Achtung, zur Zeit nur MacOS und Windows Unterstützung.
